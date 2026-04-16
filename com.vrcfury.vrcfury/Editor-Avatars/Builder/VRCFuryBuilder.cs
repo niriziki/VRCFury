@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using VF.Component;
 using VF.Exceptions;
+using VF.Injector;
 using VF.Feature.Base;
 using VF.Inspector;
 using VF.Model;
