@@ -17,7 +17,8 @@
   ],
   "autoReferenced": false,
   "defineConstraints": [
-    "VRCF_AVATARS"
+    "VRCF_AVATARS",
+    "SPS_NDMF_DISABLED"
   ],
   "versionDefines": [
     {
