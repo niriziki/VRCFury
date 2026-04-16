@@ -7,7 +7,7 @@
         "VRC.SDKBase.Editor.BuildPipeline",
         "VRC.SDKBase.Editor",
         "VRC.SDK3A.Editor",
-        "nadena.dev.ndmf.runtime",
+        "nadena.dev.ndmf",
         "nadena.dev.modular-avatar.core"
     ],
     "includePlatforms": [

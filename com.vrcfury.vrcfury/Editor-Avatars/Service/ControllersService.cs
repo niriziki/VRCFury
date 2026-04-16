@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEditor.Animations;
 using VF.Builder;
 using VF.Injector;
+using VF.Plugin;
 using VF.Utils;
 using VF.Utils.Controller;
 using VRC.SDK3.Avatars.Components;
@@ -15,6 +16,7 @@ namespace VF.Service {
         [VFAutowired] private readonly VRCAvatarDescriptor avatar;
         [VFAutowired] private readonly ParamsService paramsService;
         [VFAutowired] private readonly ParameterSourceService parameterSourceService;
+        [VFAutowired] private readonly IAvatarOutput avatarOutput;
         private ParamManager paramz => paramsService.GetParams();
 
         private readonly Dictionary<VRCAvatarDescriptor.AnimLayerType, ControllerManager> _controllers
@@ -24,7 +26,7 @@ namespace VF.Service {
         }
 
         private ControllerManager MakeController(VRCAvatarDescriptor.AnimLayerType type) {
-            var (isDefault, existingController) = VRCAvatarUtils.GetAvatarController(avatar, type);
+            var (isDefault, existingController) = avatarOutput.GetAvatarController(type);
             
             VFController ctrl = null;
             if (existingController is AnimatorController eac && VrcfObjectFactory.DidCreate(eac)) {
@@ -39,7 +41,7 @@ namespace VF.Service {
                     layerSourceService.SetSource(layer,
                         isDefault ? LayerSourceService.VrcDefaultSource : LayerSourceService.AvatarDescriptorSource);
                 }
-                VRCAvatarUtils.SetAvatarController(avatar, type, ctrl.GetRaw());
+                avatarOutput.SetAvatarController(type, ctrl.GetRaw());
             }
             return new ControllerManager(
                 ctrl,
@@ -63,13 +65,13 @@ namespace VF.Service {
             return _controllers.Values.ToArray();
         }
         public IList<ControllerManager> GetAllUsedControllers() {
-            return VRCAvatarUtils.GetAllControllers(avatar)
+            return avatarOutput.GetAllAvatarControllers()
                 .Where(c => c.controller != null)
                 .Select(c => GetController(c.type))
                 .ToArray();
         }
         public IList<VFController> GetAllReadOnlyControllers() {
-            return VRCAvatarUtils.GetAllControllers(avatar)
+            return avatarOutput.GetAllAvatarControllers()
                 .Select(found => found.controller as AnimatorController)
                 .NotNull()
                 .Select(c => new VFController(c))

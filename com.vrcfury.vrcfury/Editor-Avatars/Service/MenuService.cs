@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using VF.Builder;
 using VF.Injector;
+using VF.Plugin;
 using VF.Utils;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
@@ -10,6 +11,7 @@ namespace VF.Service {
     internal class MenuService {
         [VFAutowired] private readonly GlobalsService globals;
         [VFAutowired] private readonly VRCAvatarDescriptor avatar;
+        [VFAutowired] private readonly IAvatarOutput avatarOutput;
         
         private MenuManager _menu;
         public MenuManager GetMenu() {
@@ -18,10 +20,10 @@ namespace VF.Service {
                 var initializing = true;
                 _menu = new MenuManager(menu, () => initializing ? 0 : globals.currentMenuSortPosition);
 
-                var origMenu = VRCAvatarUtils.GetAvatarMenu(avatar);
+                var origMenu = avatarOutput.GetAvatarMenu();
                 if (origMenu != null) _menu.MergeMenu(origMenu);
-                
-                VRCAvatarUtils.SetAvatarMenu(avatar, menu);
+
+                avatarOutput.SetAvatarMenu(menu);
                 initializing = false;
             }
             return _menu;
@@ -29,7 +31,7 @@ namespace VF.Service {
 
         [CanBeNull]
         public VRCExpressionsMenu GetReadOnlyMenu() {
-            return VRCAvatarUtils.GetAvatarMenu(avatar);
+            return avatarOutput.GetAvatarMenu();
         }
     }
 }
