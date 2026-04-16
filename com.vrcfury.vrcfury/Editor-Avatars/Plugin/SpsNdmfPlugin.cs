@@ -11,8 +11,8 @@ namespace VF.Plugin {
         protected override void Configure() {
             InPhase(BuildPhase.Transforming)
                 .BeforePlugin("nadena.dev.modular-avatar")
-                .Run<SpsBuildPass>()
-                .Then.Run<SpsOutputPass>();
+                .Run(SpsBuildPass.Instance)
+                .Then.Run(SpsOutputPass.Instance);
         }
     }
 }
