@@ -8,9 +8,8 @@ namespace VF.Hooks {
         protected override int order => -10000;
 
         protected override void Process(VFGameObject obj) {
-            if (Application.isPlaying && !PlayModeMenuItem.Get()) return;
-            if (IsActuallyUploadingHook.Get() && !UseInUploadMenuItem.Get()) return;
-            VRCFuryBuilder.RunMain(obj);
+            // SPS-NDMF: VRCFury auto-build disabled, NDMF handles SPS processing
+            return;
         }
     }
 }
