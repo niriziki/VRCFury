@@ -94,39 +94,9 @@ namespace VF.Hooks {
                 );
             }
 
-            foreach (var menuItem in FeatureFinder.GetAllFeaturesForMenu<FeatureBuilder>()) {
-                Add(
-                    $"Component/VRCFury/{menuItem.title} (VRCFury)",
-                    "",
-                    false,
-                    0,
-                    () => {
-                        var failureMsg = menuItem.builderType.GetCustomAttribute<FeatureFailWhenAddedAttribute>()?.Message;
-                        if (failureMsg != null) {
-                            DialogUtils.DisplayDialog($"Error adding {menuItem.title}", failureMsg, "Ok");
-                            return;
-                        }
-                        if (menuItem.warning != null) {
-                            DialogUtils.DisplayDialog("VRCFury Notice", menuItem.warning, "Ok");
-                        }
-                        foreach (var obj in Selection.gameObjects) {
-                            if (obj == null) continue;
-                            var modelInst = Activator.CreateInstance(menuItem.modelType) as FeatureModel;
-                            if (modelInst == null) continue;
-                            if (modelInst is ArmatureLink al) {
-                                al.propBone = ArmatureLinkBuilder.GuessLinkFrom(obj);
-                                ArmatureLinkBuilder.UpdateOnLinkFromChange(al, null, al.propBone);
-                            }
-
-                            var c = Undo.AddComponent<VRCFury>(obj);
-                            var so = new SerializedObject(c);
-                            so.FindProperty("content").managedReferenceValue = modelInst;
-                            so.ApplyModifiedPropertiesWithoutUndo();
-                        }
-                    },
-                    null
-                );
-            }
+            // SPS-NDMF: VRCFury feature menu items disabled.
+            // SPS components (HapticPlug, HapticSocket, etc.) are registered
+            // via [AddComponentMenu] attributes on their MonoBehaviour classes.
         }
     }
 }
