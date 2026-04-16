@@ -213,6 +213,9 @@ namespace VF.Builder {
                     continue;
                 }
 
+                // SPS-NDMF: only run SPS-related actions
+                if (externalInjector != null && !Plugin.SpsServiceFilter.IsAllowed(service)) continue;
+
                 var priority = action.GetPriorty();
                 if (lastPriority != priority) {
                     lastPriority = priority;

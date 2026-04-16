@@ -57,6 +57,9 @@ namespace VF {
         }
 
         private static void Rescan() {
+            // SPS-NDMF: PlayMode processing disabled, NDMF handles SPS
+            return;
+            #pragma warning disable CS0162
             if (!Application.isPlaying) return;
             if (!PlayModeMenuItem.Get()) return;
             if (scannedThisFrame) return;

@@ -9,8 +9,9 @@ using VRC.SDK3.Avatars.ScriptableObjects;
 namespace VF.Plugin {
     /// <summary>
     /// NDMF implementation: records output in internal buffer for MA component generation.
-    /// Does NOT write to Avatar Descriptor. Reads fall back to Descriptor for types not yet Set.
-    /// SpsOutputPass converts recorded data to MA Merge Animator / Menu Installer / Parameters.
+    /// Does NOT write to Avatar Descriptor. Does NOT read from Descriptor.
+    /// Services always start from empty controllers/menu/params, ensuring only
+    /// SPS-generated data is output to MA components via SpsOutputPass.
     /// </summary>
     internal class NdmfAvatarOutput : IAvatarOutput {
         private readonly VRCAvatarDescriptor avatar;
@@ -30,33 +31,23 @@ namespace VF.Plugin {
         }
 
         public (bool isDefault, RuntimeAnimatorController controller) GetAvatarController(VRCAvatarDescriptor.AnimLayerType type) {
-            // Return from buffer if Set was called for this type
             if (Controllers.TryGetValue(type, out var controller)) {
                 return (false, controller);
             }
-            // Fall back to Descriptor for types not yet Set
-            return VRCAvatarUtils.GetAvatarController(avatar, type);
+            // Do not fall back to Descriptor — return empty so MakeController creates
+            // a fresh controller with only SPS-generated layers.
+            return (true, null);
         }
 
         public IList<AvatarOutputController> GetAllAvatarControllers() {
-            // Start with Descriptor state, overlay with Set values
-            var result = VRCAvatarUtils.GetAllControllers(avatar)
-                .Select(c => new AvatarOutputController {
-                    type = c.type,
-                    isDefault = c.isDefault,
-                    controller = c.controller
-                })
-                .ToList();
-
-            foreach (var entry in Controllers) {
-                var existing = result.FirstOrDefault(c => c.type == entry.Key);
-                if (existing != null) {
-                    existing.isDefault = false;
-                    existing.controller = entry.Value;
-                }
-            }
-
-            return result;
+            // Only return controllers that were actually Set by SPS services.
+            // This prevents NoBadControllerParamsService.GetAllUsedControllers() from
+            // triggering MakeController for controller types SPS never touched.
+            return Controllers.Select(kvp => new AvatarOutputController {
+                type = kvp.Key,
+                isDefault = false,
+                controller = kvp.Value
+            }).ToList();
         }
 
         public void SetAvatarMenu(VRCExpressionsMenu menu) {
@@ -65,7 +56,8 @@ namespace VF.Plugin {
 
         [CanBeNull]
         public VRCExpressionsMenu GetAvatarMenu() {
-            return Menu ?? VRCAvatarUtils.GetAvatarMenu(avatar);
+            // Do not fall back to Descriptor — SPS menu items only.
+            return Menu;
         }
 
         public void SetAvatarParams(VRCExpressionParameters prms) {
@@ -74,7 +66,8 @@ namespace VF.Plugin {
 
         [CanBeNull]
         public VRCExpressionParameters GetAvatarParams() {
-            return Params ?? VRCAvatarUtils.GetAvatarParams(avatar);
+            // Do not fall back to Descriptor — SPS params only.
+            return Params;
         }
     }
 }
