@@ -61,7 +61,7 @@ namespace VF.Inspector {
             }.FlexShrink(0);
             row.Add(triangleLeft);
             
-            var label = new Label("VRCFury") {
+            var label = new Label("SPSNDMF") {
                 style = {
                     color = new Color(0.8f, 0.4f, 0f),
                     borderTopRightRadius = 0,
