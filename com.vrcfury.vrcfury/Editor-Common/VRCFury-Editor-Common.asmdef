@@ -1,8 +1,8 @@
 ﻿{
-  "name": "VRCFury-Editor-Common",
+  "name": "VRCFury-SPS-NDMF-Editor-Common",
   "rootNamespace": "VF",
   "references": [
-    "VRCFury",
+    "VRCFury-SPS-NDMF",
     "VRC.SDKBase.Editor.BuildPipeline",
     "VRC.SDKBase.Editor"
   ],

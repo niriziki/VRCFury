@@ -1,12 +1,14 @@
 {
-    "name": "VRCFury-Editor-Avatars",
+    "name": "VRCFury-SPS-NDMF-Editor-Avatars",
     "rootNamespace": "VF",
     "references": [
-        "VRCFury",
-        "VRCFury-Editor-Common",
+        "VRCFury-SPS-NDMF",
+        "VRCFury-SPS-NDMF-Editor-Common",
         "VRC.SDKBase.Editor.BuildPipeline",
         "VRC.SDKBase.Editor",
-        "VRC.SDK3A.Editor"
+        "VRC.SDK3A.Editor",
+        "nadena.dev.ndmf.runtime",
+        "nadena.dev.modular-avatar.core"
     ],
     "includePlatforms": [
         "Editor"
@@ -64,6 +66,11 @@
             "name": "com.vrchat.avatars",
             "expression": "",
             "define": "VRCF_AVATARS"
+        },
+        {
+            "name": "com.vrcfury.vrcfury",
+            "expression": "",
+            "define": "VRCFURY_INSTALLED"
         }
     ],
     "noEngineReferences": false
