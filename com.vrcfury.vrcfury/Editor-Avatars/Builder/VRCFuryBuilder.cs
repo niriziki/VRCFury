@@ -83,9 +83,21 @@ namespace VF.Builder {
             Debug.Log("VRCFury Finished!");
         }
 
+        /// <summary>
+        /// Run VRCFury build logic from an NDMF pass.
+        /// Uses the provided injector (with NdmfAvatarOutput) instead of creating one internally.
+        /// </summary>
+        internal static void RunForNdmf(VFGameObject avatarObject, VRCFuryInjector injector) {
+            foreach (var c in avatarObject.GetComponentsInSelfAndChildren<VRCFuryComponent>()) {
+                c.Upgrade();
+            }
+            ApplyFuryConfigs(avatarObject, null, injector);
+        }
+
         private static void ApplyFuryConfigs(
             VFGameObject avatarObject,
-            VRCFProgressWindow progress
+            VRCFProgressWindow progress,
+            VRCFuryInjector externalInjector = null
         ) {
             var currentModelName = "";
             var currentServiceNumber = 0;
@@ -102,7 +114,7 @@ namespace VF.Builder {
                 throw new Exception("Failed to find VRCAvatarDescriptor on avatar object");
             }
 
-            var injector = VRCFuryInjectorBuilder.GetInjector(avatar);
+            var injector = externalInjector ?? VRCFuryInjectorBuilder.GetInjector(avatar);
             injector.Set("componentObject", new Func<VFGameObject>(() => currentServiceGameObject));
 
             var globals = injector.GetService<GlobalsService>();
@@ -153,7 +165,7 @@ namespace VF.Builder {
                 totalActionCount += list.Count;
             }
 
-            progress.Progress(0, "Collecting VRCFury components");
+            progress?.Progress(0, "Collecting VRCFury components");
             foreach (var c in avatarObject.GetComponentsInSelfAndChildren<VRCFuryComponent>()) {
                 c.Upgrade();
             }
@@ -196,7 +208,7 @@ namespace VF.Builder {
                 var service = action.GetService();
                 if (action.configObject == null) {
                     var statusSkipMessage = $"{service.GetType().Name} ({currentServiceNumber}) Skipped (Object no longer exists)";
-                    progress.Progress(1 - (actions.Count / (float)totalActionCount), statusSkipMessage);
+                    progress?.Progress(1 - (actions.Count / (float)totalActionCount), statusSkipMessage);
                     continue;
                 }
 
@@ -214,7 +226,7 @@ namespace VF.Builder {
                 globals.currentFeatureObjectPath = action.configObject.GetPath(avatarObject);
 
                 var statusMessage = $"{service.GetType().Name}.{action.GetName()} on {objectName} ({currentServiceNumber})";
-                progress.Progress(1 - (actions.Count / (float)totalActionCount), statusMessage);
+                progress?.Progress(1 - (actions.Count / (float)totalActionCount), statusMessage);
 
                 try {
                     action.Call();

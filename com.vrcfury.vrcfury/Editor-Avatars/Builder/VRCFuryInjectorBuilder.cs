@@ -33,9 +33,27 @@ namespace VF.Builder {
             injector.ImportScan(typeof(ActionBuilder));
             injector.Set(avatar);
             injector.Set("avatarObject", avatar.owner());
-            
+
             var globals = new GlobalsService {
                 avatarObject = avatar.owner(),
+            };
+            injector.Set(globals);
+            return injector;
+        }
+
+        /// <summary>
+        /// Create an injector for NDMF mode with NdmfAvatarOutput instead of DescriptorAvatarOutput.
+        /// </summary>
+        public static VRCFuryInjector CreateForNdmf(VRCAvatarDescriptor avatar, VFGameObject avatarObject, Plugin.IAvatarOutput avatarOutput) {
+            var injector = new VRCFuryInjector();
+            injector.ImportScan(typeof(VFServiceAttribute));
+            injector.ImportScan(typeof(ActionBuilder));
+            injector.Set(avatar);
+            injector.Set("avatarObject", avatarObject);
+            injector.Set<Plugin.IAvatarOutput>(avatarOutput);
+
+            var globals = new GlobalsService {
+                avatarObject = avatarObject,
             };
             injector.Set(globals);
             return injector;

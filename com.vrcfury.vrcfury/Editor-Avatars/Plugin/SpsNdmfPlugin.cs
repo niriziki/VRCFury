@@ -9,12 +9,9 @@ namespace VF.Plugin {
         public override string DisplayName => "SPS-NDMF";
 
         protected override void Configure() {
-            InPhase(BuildPhase.Generating)
-                .Run<SpsInitPass>()
-                .Then.Run<SpsSendersPass>()
-                .Then.Run<SpsBakePlugsPass>()
-                .Then.Run<SpsBakeSocketsPass>()
-                .Then.Run<SpsOptionsPass>()
+            InPhase(BuildPhase.Transforming)
+                .BeforePlugin("nadena.dev.modular-avatar")
+                .Run<SpsBuildPass>()
                 .Then.Run<SpsOutputPass>();
         }
     }
