@@ -3,7 +3,6 @@ using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
 using VF.Builder;
-using VF.Injector;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
 
@@ -12,9 +11,12 @@ namespace VF.Plugin {
     /// Default implementation: reads/writes Avatar Descriptor directly via VRCAvatarUtils.
     /// Used when running under VRCFury's own build pipeline.
     /// </summary>
-    [VFService]
     internal class DescriptorAvatarOutput : IAvatarOutput {
-        [VFAutowired] private readonly VRCAvatarDescriptor avatar;
+        private readonly VRCAvatarDescriptor avatar;
+
+        public DescriptorAvatarOutput(VRCAvatarDescriptor avatar) {
+            this.avatar = avatar;
+        }
 
         public void SetAvatarController(VRCAvatarDescriptor.AnimLayerType type, RuntimeAnimatorController controller) {
             VRCAvatarUtils.SetAvatarController(avatar, type, controller);

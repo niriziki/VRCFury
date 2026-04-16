@@ -26,7 +26,7 @@ namespace VF.Plugin.Passes {
                       || avatarObj.GetComponentInChildren<VRCFuryHapticSocket>(true) != null;
             if (!hasSps) return;
 
-            var avatarVf = avatarObj.AsVf();
+            var avatarVf = avatarObj.asVf();
             var output = new NdmfAvatarOutput(avatar);
             var injector = VRCFuryInjectorBuilder.CreateForNdmf(avatar, avatarVf, output);
 

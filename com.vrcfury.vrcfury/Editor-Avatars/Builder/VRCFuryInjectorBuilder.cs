@@ -33,6 +33,7 @@ namespace VF.Builder {
             injector.ImportScan(typeof(ActionBuilder));
             injector.Set(avatar);
             injector.Set("avatarObject", avatar.owner());
+            injector.Set(typeof(Plugin.IAvatarOutput), new Plugin.DescriptorAvatarOutput(avatar));
 
             var globals = new GlobalsService {
                 avatarObject = avatar.owner(),
@@ -50,7 +51,7 @@ namespace VF.Builder {
             injector.ImportScan(typeof(ActionBuilder));
             injector.Set(avatar);
             injector.Set("avatarObject", avatarObject);
-            injector.Set<Plugin.IAvatarOutput>(avatarOutput);
+            injector.Set(typeof(Plugin.IAvatarOutput), avatarOutput);
 
             var globals = new GlobalsService {
                 avatarObject = avatarObject,
