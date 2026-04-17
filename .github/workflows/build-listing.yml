@@ -1,0 +1,67 @@
+name: Build VPM Listing
+
+on:
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
+  workflow_dispatch:
+  push:
+    branches: [ndmf]
+    paths:
+      - .github/vpm-listing/**
+      - .github/workflows/build-listing.yml
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: .github/vpm-listing
+
+jobs:
+  build-listing:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: npm
+          cache-dependency-path: .github/vpm-listing/package-lock.json
+
+      - run: npm ci
+
+      - name: Build Package Version Listing
+        run: npm run build-listing
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
+
+      - name: Build Site
+        run: npm run build
+
+      - name: Copy CNAME
+        run: cp CNAME dist/CNAME
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .github/vpm-listing/dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
