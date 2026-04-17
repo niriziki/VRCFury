@@ -1,0 +1,11 @@
+{
+  "name": "net.nrzk.vfstub",
+  "displayName": "VRCFury Stub",
+  "description": "Type-only stub of VRCFury's Runtime assembly. Preserves VRCFury component types (VF.* namespace, same GUIDs) so existing scenes deserialize without the full VRCFury package. No editor logic or build processing is included.",
+  "version": "0.0.1",
+  "unity": "2019.4",
+  "author": {
+    "name": "niriziki"
+  },
+  "dependencies": {}
+}
