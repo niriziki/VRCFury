@@ -1,0 +1,21 @@
+{
+    "name": "Nrzk.SpsMigrator.Editor",
+    "rootNamespace": "Nrzk.SpsMigrator",
+    "references": [
+        "nadena.dev.modular-avatar.core"
+    ],
+    "includePlatforms": ["Editor"],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "VRCSDKBase.dll",
+        "VRCSDK3A.dll",
+        "VRC.Dynamics.dll",
+        "VRC.SDK3.Dynamics.Contact.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
