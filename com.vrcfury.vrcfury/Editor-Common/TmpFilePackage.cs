@@ -15,8 +15,8 @@ namespace VF {
             public static readonly Action Resolve = typeof(Client).GetMatchingDelegate<Action>("Resolve");
         }
 
-        private const string TmpDirPath = "Packages/com.vrcfury.temp";
-        private const string TmpPackagePath = TmpDirPath + "/" + "package.json";
+        public static string TmpDirPath;
+        private static string TmpPackagePath => TmpDirPath + "/" + "package.json";
 
         public static void Cleanup(ISet<string> usedFolders = null) {
             var tmpDir = GetPathNullable();
@@ -32,9 +32,6 @@ namespace VF {
                     if (path.StartsWith(tmpDir + "/LegacyPrefabsImported")) return false;
                     return true;
                 });
-                if (AssetDatabase.IsValidFolder("Assets/_VRCFury")) {
-                    VRCFuryAssetDatabase.Delete("Assets/_VRCFury");
-                }
             });
             // If we don't disable asset editing temporarily, the asset database does WEIRD things,
             // like showing that the deleted directories still exist, and reusing data from the
@@ -44,7 +41,6 @@ namespace VF {
 
         [CanBeNull]
         public static string GetPathNullable() {
-            if (!AssetDatabase.IsValidFolder(TmpDirPath)) return null;
             return TmpDirPath;
         }
 
@@ -73,7 +69,6 @@ namespace VF {
             Reflection.Resolve?.Invoke();
         }
 
-        [InitializeOnLoadMethod]
         private static void Init() {
             Scheduler.Schedule(InitIfMissing, 5000);
         }

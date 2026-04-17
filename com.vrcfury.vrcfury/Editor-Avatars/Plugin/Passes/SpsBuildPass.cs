@@ -1,4 +1,6 @@
+using System.IO;
 using nadena.dev.ndmf;
+using UnityEditor;
 using VF.Builder;
 using VF.Component;
 using VF.Utils;
@@ -25,6 +27,11 @@ namespace VF.Plugin.Passes {
             var hasSps = avatarObj.GetComponentInChildren<VRCFuryHapticPlug>(true) != null
                       || avatarObj.GetComponentInChildren<VRCFuryHapticSocket>(true) != null;
             if (!hasSps) return;
+
+            var containerPath = AssetDatabase.GetAssetPath(context.AssetContainer);
+            if (string.IsNullOrEmpty(containerPath))
+                throw new System.Exception("SPS-NDMF requires NDMF AssetSaver (got null AssetContainer).");
+            TmpFilePackage.TmpDirPath = Path.Combine(Path.GetDirectoryName(containerPath), "spsndmf-temp");
 
             var avatarVf = avatarObj.asVf();
             var output = new NdmfAvatarOutput(avatar);
