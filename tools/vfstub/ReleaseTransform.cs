@@ -1,5 +1,3 @@
-using System.Text.RegularExpressions;
-
 // --- Paths (relative to this script file) ---
 static string GetScriptDir([System.Runtime.CompilerServices.CallerFilePath] string path = "") =>
     Path.GetDirectoryName(path)!;
@@ -11,8 +9,10 @@ var outputDir = Path.Combine(repoRoot, "net.nrzk.vfstub");
 var outputRuntimeDir = Path.Combine(outputDir, "Runtime");
 
 // --- Configuration ---
-const string OldAsmdefName = "VRCFury";
-const string NewAsmdefName = "Nrzk.VFStub";
+// asmdef name is kept as-is ("VRCFury") so [SerializeReference] type references
+// in existing assets (which embed the assembly name) resolve without MovedFrom
+// attributes. The stub is drop-in compatible and mutually exclusive with the
+// real VRCFury package.
 const string OldMenuLabel = "VRCFury";
 const string NewMenuLabel = "VRCFuryStub";
 
@@ -34,33 +34,7 @@ if (Directory.Exists(outputDir))
 Directory.CreateDirectory(outputDir);
 CopyDirectory(sourceRuntimeDir, outputRuntimeDir);
 
-// --- Step 2: Rewrite asmdef ---
-var sourceAsmdef = Path.Combine(outputRuntimeDir, OldAsmdefName + ".asmdef");
-var sourceAsmdefMeta = sourceAsmdef + ".meta";
-var targetAsmdef = Path.Combine(outputRuntimeDir, NewAsmdefName + ".asmdef");
-var targetAsmdefMeta = targetAsmdef + ".meta";
-
-if (!File.Exists(sourceAsmdef))
-{
-    Console.Error.WriteLine($"asmdef not found at {sourceAsmdef}");
-    return 1;
-}
-
-Console.WriteLine("Rewriting asmdef name...");
-var asmdefContent = File.ReadAllText(sourceAsmdef);
-asmdefContent = Regex.Replace(
-    asmdefContent,
-    "\"name\"\\s*:\\s*\"" + Regex.Escape(OldAsmdefName) + "\"",
-    $"\"name\": \"{NewAsmdefName}\"");
-File.WriteAllText(sourceAsmdef, asmdefContent);
-
-File.Move(sourceAsmdef, targetAsmdef);
-if (File.Exists(sourceAsmdefMeta))
-    File.Move(sourceAsmdefMeta, targetAsmdefMeta);
-
-Console.WriteLine($"  {OldAsmdefName}.asmdef -> {NewAsmdefName}.asmdef");
-
-// --- Step 3: Rewrite AddComponentMenu labels in .cs files ---
+// --- Step 2: Rewrite AddComponentMenu labels in .cs files ---
 Console.WriteLine("Rewriting AddComponentMenu labels...");
 var rewrittenCount = 0;
 foreach (var csFile in Directory.EnumerateFiles(outputRuntimeDir, "*.cs", SearchOption.AllDirectories))
@@ -77,7 +51,7 @@ foreach (var csFile in Directory.EnumerateFiles(outputRuntimeDir, "*.cs", Search
 }
 Console.WriteLine($"  {rewrittenCount} files updated");
 
-// --- Step 4: Copy package.json template ---
+// --- Step 3: Copy package.json template ---
 Console.WriteLine("Copying package.json...");
 var packageJsonTemplate = Path.Combine(scriptDir, "package.json");
 if (!File.Exists(packageJsonTemplate))
