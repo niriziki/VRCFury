@@ -20,7 +20,6 @@ namespace VF.Plugin {
             typeof(BakeHapticPlugsService),
             typeof(BakeHapticSocketsService),
             typeof(BakeHapticVersionsService),
-            typeof(BakeGlobalCollidersService),
             typeof(OverlappingContactsFixService),
             typeof(ForceStateInAnimatorService),
 
