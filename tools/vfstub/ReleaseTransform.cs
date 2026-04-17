@@ -13,6 +13,8 @@ var outputRuntimeDir = Path.Combine(outputDir, "Runtime");
 // --- Configuration ---
 const string OldAsmdefName = "VRCFury";
 const string NewAsmdefName = "Nrzk.VFStub";
+const string OldMenuLabel = "VRCFury";
+const string NewMenuLabel = "VRCFuryStub";
 
 // --- Validate ---
 if (!Directory.Exists(sourceRuntimeDir))
@@ -58,7 +60,24 @@ if (File.Exists(sourceAsmdefMeta))
 
 Console.WriteLine($"  {OldAsmdefName}.asmdef -> {NewAsmdefName}.asmdef");
 
-// --- Step 3: Copy package.json template ---
+// --- Step 3: Rewrite AddComponentMenu labels in .cs files ---
+Console.WriteLine("Rewriting AddComponentMenu labels...");
+var rewrittenCount = 0;
+foreach (var csFile in Directory.EnumerateFiles(outputRuntimeDir, "*.cs", SearchOption.AllDirectories))
+{
+    var original = File.ReadAllText(csFile);
+    var updated = original
+        .Replace($"({OldMenuLabel})\"", $"({NewMenuLabel})\"")
+        .Replace($"\"{OldMenuLabel}/", $"\"{NewMenuLabel}/");
+    if (updated != original)
+    {
+        File.WriteAllText(csFile, updated);
+        rewrittenCount++;
+    }
+}
+Console.WriteLine($"  {rewrittenCount} files updated");
+
+// --- Step 4: Copy package.json template ---
 Console.WriteLine("Copying package.json...");
 var packageJsonTemplate = Path.Combine(scriptDir, "package.json");
 if (!File.Exists(packageJsonTemplate))
