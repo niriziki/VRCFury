@@ -1,0 +1,80 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Run ReleaseTransform
+        run: dotnet run tools/ReleaseTransform.cs
+
+      - name: Set package info
+        working-directory: net.nrzk.spsndmf
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          jq --arg v "$VERSION" '.version = $v' package.json > package.json.tmp
+          mv package.json.tmp package.json
+          cat package.json
+          NAME=$(jq -r .name package.json)
+          PREFIX="$NAME-$VERSION"
+          {
+            echo "VERSION=$VERSION"
+            echo "NAME=$NAME"
+            echo "PREFIX=$PREFIX"
+            echo "ZIP=$PREFIX.zip"
+            echo "VPAI_LATEST=$NAME-installer.unitypackage"
+            echo "VPAI_LATEST_ZIP=$NAME-installer.zip"
+            echo "VPAI_VERSION=$PREFIX-installer.unitypackage"
+            echo "VPAI_VERSION_ZIP=$PREFIX-installer.zip"
+          } >> "$GITHUB_ENV"
+
+      - name: Create package zip
+        working-directory: net.nrzk.spsndmf
+        run: zip -r "../$ZIP" .
+
+      - name: Create VPAI latest
+        uses: anatawa12/sh-actions/create-vpai@master
+        with:
+          repositories: |
+            https://vpm.nadena.dev/vpm.json
+            https://spsndmf.vpm.nrzk.net/index.json
+          packages: ${{ env.NAME }}@^${{ env.VERSION }}
+          output: ${{ env.VPAI_LATEST }}
+
+      - name: Create VPAI version
+        uses: anatawa12/sh-actions/create-vpai@master
+        with:
+          repositories: |
+            https://vpm.nadena.dev/vpm.json
+            https://spsndmf.vpm.nrzk.net/index.json
+          packages: ${{ env.NAME }}@${{ env.VERSION }}
+          output: ${{ env.VPAI_VERSION }}
+
+      - name: Zip VPAI installers
+        run: |
+          zip "$VPAI_LATEST_ZIP" "$VPAI_LATEST"
+          zip "$VPAI_VERSION_ZIP" "$VPAI_VERSION"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: |
+            ${{ env.ZIP }}
+            ${{ env.VPAI_LATEST_ZIP }}
+            ${{ env.VPAI_VERSION_ZIP }}
+            net.nrzk.spsndmf/package.json
