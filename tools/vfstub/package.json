@@ -3,9 +3,11 @@
   "displayName": "VRCFury Stub",
   "description": "Type-only stub of VRCFury's Runtime assembly. Preserves VRCFury component types (VF.* namespace, same GUIDs) so existing scenes deserialize without the full VRCFury package. No editor logic or build processing is included.",
   "version": "0.0.1",
-  "unity": "2019.4",
+  "unity": "2022.3",
   "author": {
     "name": "niriziki"
   },
-  "dependencies": {}
+  "dependencies": {
+    "com.vrchat.avatars": ">=3.7.6"
+  }
 }
