@@ -5,12 +5,13 @@ using System.Text.RegularExpressions;
 // --- Paths (relative to this script file) ---
 static string GetScriptDir([System.Runtime.CompilerServices.CallerFilePath] string path = "") =>
     Path.GetDirectoryName(path)!;
-var repoRoot = Path.GetFullPath(Path.Combine(GetScriptDir(), ".."));
+var scriptDir = GetScriptDir();
+var repoRoot = Path.GetFullPath(Path.Combine(scriptDir, "..", ".."));
 
 var generateNewGuids = args.Contains("--generate-guids");
 
 var sourcePackageDir = Path.Combine(repoRoot, "com.vrcfury.vrcfury");
-var guidMapPath = Path.Combine(repoRoot, "tools", "guid-map.json");
+var guidMapPath = Path.Combine(scriptDir, "guid-map.json");
 var outputDir = Path.Combine(repoRoot, "net.nrzk.spsndmf");
 
 // --- Configuration ---

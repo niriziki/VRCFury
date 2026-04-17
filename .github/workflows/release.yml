@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - "v*"
+      - "*/*"
 
 permissions:
   contents: write
@@ -19,20 +19,34 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
+      - name: Parse tag
+        run: |
+          TAG="$GITHUB_REF_NAME"
+          PKG_SHORT="${TAG%/*}"
+          VERSION="${TAG##*/}"
+          PKG_DIR="net.nrzk.$PKG_SHORT"
+          echo "PKG_SHORT=$PKG_SHORT" >> "$GITHUB_ENV"
+          echo "PKG_DIR=$PKG_DIR" >> "$GITHUB_ENV"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
       - name: Run ReleaseTransform
-        run: dotnet run tools/ReleaseTransform.cs
+        run: |
+          SCRIPT="tools/$PKG_SHORT/ReleaseTransform.cs"
+          if [ -f "$SCRIPT" ]; then
+            dotnet run "$SCRIPT"
+          else
+            echo "No transform script at $SCRIPT; skipping"
+          fi
 
       - name: Set package info
-        working-directory: net.nrzk.spsndmf
+        working-directory: ${{ env.PKG_DIR }}
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
           jq --arg v "$VERSION" '.version = $v' package.json > package.json.tmp
           mv package.json.tmp package.json
           cat package.json
           NAME=$(jq -r .name package.json)
           PREFIX="$NAME-$VERSION"
           {
-            echo "VERSION=$VERSION"
             echo "NAME=$NAME"
             echo "PREFIX=$PREFIX"
             echo "ZIP=$PREFIX.zip"
@@ -43,7 +57,7 @@ jobs:
           } >> "$GITHUB_ENV"
 
       - name: Create package zip
-        working-directory: net.nrzk.spsndmf
+        working-directory: ${{ env.PKG_DIR }}
         run: zip -r "../$ZIP" .
 
       - name: Create VPAI latest
@@ -77,4 +91,4 @@ jobs:
             ${{ env.ZIP }}
             ${{ env.VPAI_LATEST_ZIP }}
             ${{ env.VPAI_VERSION_ZIP }}
-            net.nrzk.spsndmf/package.json
+            ${{ env.PKG_DIR }}/package.json
