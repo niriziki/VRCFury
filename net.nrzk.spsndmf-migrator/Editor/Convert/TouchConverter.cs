@@ -95,7 +95,7 @@ namespace Nrzk.SpsMigrator.Convert {
 
                 var radius = (float)radiusField.GetValue(src);
                 var sender = Undo.AddComponent<VRCContactSender>(go);
-                sender.shape = ContactBase.ShapeType.Sphere;
+                sender.shapeType = ContactBase.ShapeType.Sphere;
                 sender.radius = radius;
                 sender.position = Vector3.zero;
                 sender.collisionTags = new List<string> { "Finger" };
@@ -113,7 +113,7 @@ namespace Nrzk.SpsMigrator.Convert {
             child.transform.SetParent(parent.transform, worldPositionStays: false);
 
             var recv = Undo.AddComponent<VRCContactReceiver>(child);
-            recv.shape = ContactBase.ShapeType.Sphere;
+            recv.shapeType = ContactBase.ShapeType.Sphere;
             recv.radius = radius;
             recv.position = Vector3.zero;
             recv.collisionTags = new List<string>(tags);

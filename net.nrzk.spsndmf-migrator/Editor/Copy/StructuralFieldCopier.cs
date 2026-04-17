@@ -73,12 +73,12 @@ namespace Nrzk.SpsMigrator.Copy {
             if (srcType == targetType) return value;
 
             if (targetType.IsPrimitive || targetType == typeof(string) || targetType == typeof(decimal)) {
-                return Convert.ChangeType(value, targetType);
+                return System.Convert.ChangeType(value, targetType);
             }
 
             if (targetType.IsEnum) {
-                if (srcType.IsEnum) return Enum.ToObject(targetType, Convert.ToInt64(value));
-                return Enum.ToObject(targetType, Convert.ToInt64(value));
+                if (srcType.IsEnum) return Enum.ToObject(targetType, System.Convert.ToInt64(value));
+                return Enum.ToObject(targetType, System.Convert.ToInt64(value));
             }
 
             if (typeof(UObject).IsAssignableFrom(targetType)) {
