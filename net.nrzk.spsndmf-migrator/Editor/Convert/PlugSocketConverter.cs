@@ -1,10 +1,10 @@
 using System;
 using UnityEditor;
 using UnityEngine;
-using net.nrzk.spsndmf.migrator.Copy;
-using net.nrzk.spsndmf.migrator.Reflection;
+using Nrzk.SpsMigrator.Copy;
+using Nrzk.SpsMigrator.Reflection;
 
-namespace net.nrzk.spsndmf.migrator.Convert {
+namespace Nrzk.SpsMigrator.Convert {
     internal static class PlugSocketConverter {
         public static void Plan(GameObject root, bool vrcfToSpsNdmf, ConversionPlan plan) {
             var srcPlug = vrcfToSpsNdmf ? PackageBinding.VrcfPlugType : PackageBinding.SpsNdmfPlugType;

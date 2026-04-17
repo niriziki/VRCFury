@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace net.nrzk.spsndmf.migrator.Copy {
+namespace Nrzk.SpsMigrator.Copy {
     internal sealed class CopyContext {
         public readonly List<CopyWarning> Warnings = new List<CopyWarning>();
         private readonly Dictionary<(Type src, string name), Type> _targetTypeCache

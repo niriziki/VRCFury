@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace net.nrzk.spsndmf.migrator.Reflection {
+namespace Nrzk.SpsMigrator.Reflection {
     internal static class PackageBinding {
         private static readonly Dictionary<string, Type> _cache = new Dictionary<string, Type>();
 

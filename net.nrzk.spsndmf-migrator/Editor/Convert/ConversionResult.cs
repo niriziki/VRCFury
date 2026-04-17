@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
-using net.nrzk.spsndmf.migrator.Copy;
+using Nrzk.SpsMigrator.Copy;
 
-namespace net.nrzk.spsndmf.migrator.Convert {
+namespace Nrzk.SpsMigrator.Convert {
     internal enum ConversionOutcome { Converted, Skipped }
 
     internal sealed class ConversionEntry {

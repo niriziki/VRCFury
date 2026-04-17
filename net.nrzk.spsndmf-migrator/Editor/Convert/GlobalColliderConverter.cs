@@ -2,9 +2,9 @@ using System.Reflection;
 using nadena.dev.modular_avatar.core;
 using UnityEditor;
 using UnityEngine;
-using net.nrzk.spsndmf.migrator.Reflection;
+using Nrzk.SpsMigrator.Reflection;
 
-namespace net.nrzk.spsndmf.migrator.Convert {
+namespace Nrzk.SpsMigrator.Convert {
     internal static class GlobalColliderConverter {
         private const BindingFlags FieldFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;

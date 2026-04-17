@@ -6,9 +6,9 @@ using UnityEditor;
 using UnityEngine;
 using VRC.Dynamics;
 using VRC.SDK3.Dynamics.Contact.Components;
-using net.nrzk.spsndmf.migrator.Reflection;
+using Nrzk.SpsMigrator.Reflection;
 
-namespace net.nrzk.spsndmf.migrator.Convert {
+namespace Nrzk.SpsMigrator.Convert {
     internal static class TouchConverter {
         private const BindingFlags FieldFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;

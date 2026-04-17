@@ -1,4 +1,4 @@
-namespace net.nrzk.spsndmf.migrator.Copy {
+namespace Nrzk.SpsMigrator.Copy {
     internal readonly struct CopyWarning {
         public readonly string Path;
         public readonly string Reason;

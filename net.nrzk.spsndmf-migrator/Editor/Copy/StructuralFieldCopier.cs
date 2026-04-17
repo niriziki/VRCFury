@@ -5,7 +5,7 @@ using System.Reflection;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-namespace net.nrzk.spsndmf.migrator.Copy {
+namespace Nrzk.SpsMigrator.Copy {
     internal static class StructuralFieldCopier {
         private const BindingFlags FieldFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;

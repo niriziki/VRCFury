@@ -1,10 +1,10 @@
 using System;
 using UnityEditor;
 using UnityEngine;
-using net.nrzk.spsndmf.migrator.Convert;
-using net.nrzk.spsndmf.migrator.Reflection;
+using Nrzk.SpsMigrator.Convert;
+using Nrzk.SpsMigrator.Reflection;
 
-namespace net.nrzk.spsndmf.migrator {
+namespace Nrzk.SpsMigrator {
     internal sealed class MigratorWindow : EditorWindow {
         private enum Direction { VrcfToSpsNdmf, SpsNdmfToVrcf }
 

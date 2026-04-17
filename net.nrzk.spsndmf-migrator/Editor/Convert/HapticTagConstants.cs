@@ -1,4 +1,4 @@
-namespace net.nrzk.spsndmf.migrator.Convert {
+namespace Nrzk.SpsMigrator.Convert {
     internal static class HapticTagConstants {
         public const string CONTACT_PEN_CLOSE = "TPS_Pen_Close";
 
