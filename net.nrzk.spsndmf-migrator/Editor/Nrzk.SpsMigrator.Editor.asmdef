@@ -1,5 +1,5 @@
 {
-    "name": "net.nrzk.spsndmf-migrator.editor",
+    "name": "Nrzk.SpsMigrator.Editor",
     "rootNamespace": "Nrzk.SpsMigrator",
     "references": [
         "nadena.dev.modular-avatar.core"
