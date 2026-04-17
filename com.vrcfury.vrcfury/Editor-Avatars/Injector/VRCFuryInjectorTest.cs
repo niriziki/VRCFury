@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using VF.Actions;
 using VF.Feature.Base;
+using VF.Plugin;
 using VF.Service;
 using VF.Utils;
 using VRC.SDK3.Avatars.Components;
@@ -28,7 +29,8 @@ namespace VF.Injector {
                 injector.Set("avatarObject", null);
                 injector.Set("componentObject", null);
                 injector.Set(typeof(GlobalsService), null);
-                injector.Set(typeof(VRCAvatarDescriptor), null); 
+                injector.Set(typeof(VRCAvatarDescriptor), null);
+                injector.Set(typeof(IAvatarOutput), null);
                 injector.GetServices<object>();
             } catch (Exception e) {
                 throw new Exception("Failed to verify main component build context", e);
