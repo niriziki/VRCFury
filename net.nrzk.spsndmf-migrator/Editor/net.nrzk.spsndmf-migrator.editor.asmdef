@@ -1,0 +1,20 @@
+{
+    "name": "net.nrzk.spsndmf-migrator.editor",
+    "rootNamespace": "net.nrzk.spsndmf.migrator",
+    "references": [
+        "nadena.dev.modular-avatar.core"
+    ],
+    "includePlatforms": ["Editor"],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "VRCSDKBase.dll",
+        "VRCSDK3A.dll",
+        "VRC.Dynamics.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
