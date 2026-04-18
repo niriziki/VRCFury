@@ -27,6 +27,11 @@ var asmdefNameMap = new Dictionary<string, string>
     ["com.vrcfury.api"] = "net.nrzk.spsndmf.api",
 };
 
+var excludedRootDirs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+{
+    "Editor-Worlds",
+};
+
 
 // --- Validate ---
 if (!Directory.Exists(sourcePackageDir))
@@ -45,7 +50,7 @@ Console.WriteLine($"GUID map:  {guidMapPath}");
 Console.WriteLine("Copying files...");
 if (Directory.Exists(outputDir))
     Directory.Delete(outputDir, recursive: true);
-CopyDirectory(sourcePackageDir, outputDir);
+CopyPackageRoot(sourcePackageDir, outputDir, excludedRootDirs);
 
 // --- Step 2: Build GUID map ---
 Console.WriteLine("Building GUID map...");
@@ -107,6 +112,26 @@ void CopyDirectory(string source, string dest)
         File.Copy(file, Path.Combine(dest, Path.GetFileName(file)));
     foreach (var dir in Directory.GetDirectories(source))
         CopyDirectory(dir, Path.Combine(dest, Path.GetFileName(dir)));
+}
+
+void CopyPackageRoot(string source, string dest, HashSet<string> excludedTopLevelDirs)
+{
+    Directory.CreateDirectory(dest);
+    foreach (var file in Directory.GetFiles(source))
+    {
+        var fileName = Path.GetFileName(file);
+        var baseName = Path.GetFileNameWithoutExtension(fileName);
+        if (Path.GetExtension(fileName).Equals(".meta", StringComparison.OrdinalIgnoreCase)
+            && excludedTopLevelDirs.Contains(baseName))
+            continue;
+        File.Copy(file, Path.Combine(dest, fileName));
+    }
+    foreach (var dir in Directory.GetDirectories(source))
+    {
+        var dirName = Path.GetFileName(dir);
+        if (excludedTopLevelDirs.Contains(dirName)) continue;
+        CopyDirectory(dir, Path.Combine(dest, dirName));
+    }
 }
 
 Dictionary<string, string> LoadOrBuildGuidMap(string packageDir, string mapPath, bool allowGenerate)
