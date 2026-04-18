@@ -11,9 +11,13 @@ namespace VF.Hooks.VrcsdkFixes {
 
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled global ContactBase.OnValidatePlayers override
+            return;
+            #pragma warning disable CS0162
             if (ContactBase.OnValidatePlayers == null) {
                 ContactBase.OnValidatePlayers = (a, b) => true;
             }
+            #pragma warning restore CS0162
         }
         
         internal class PlayerBuilt : VrcfAvatarPreprocessor {
