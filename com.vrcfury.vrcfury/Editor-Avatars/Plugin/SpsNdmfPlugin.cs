@@ -5,7 +5,7 @@ using VF.Plugin.Passes;
 
 namespace VF.Plugin {
     internal class SpsNdmfPlugin : Plugin<SpsNdmfPlugin> {
-        public override string QualifiedName => "com.vrcfury.sps-ndmf";
+        public override string QualifiedName => "net.nrzk.sps-ndmf";
         public override string DisplayName => "SPS-NDMF";
 
         protected override void Configure() {
