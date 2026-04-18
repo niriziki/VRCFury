@@ -12,6 +12,9 @@ namespace VF.Hooks.UnityFixes {
     internal static class DisableAutoSaveHook {
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled, modifies Unity prefab autosave setting
+            return;
+            #pragma warning disable CS0162
             Scheduler.Schedule(() => {
                 if (UnityCompatUtils.IsEditingPrefab()) {
                     var hasVrcf = VFGameObject.GetRoots()
