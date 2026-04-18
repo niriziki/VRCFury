@@ -33,6 +33,9 @@ namespace VF.Menu {
 
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled Harmony patches and selection subscription (modifies Unity constraint behavior)
+            return;
+            #pragma warning disable CS0162
             if (!ReflectionHelper.IsReady<Reflection>()) return;
 
             EditorApplication.delayCall += UpdateMenu;
