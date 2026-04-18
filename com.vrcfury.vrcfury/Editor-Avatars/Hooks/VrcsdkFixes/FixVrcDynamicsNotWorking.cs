@@ -18,6 +18,9 @@ namespace VF.Hooks.VrcsdkFixes {
 
         [InitializeOnLoadMethod]
         public static void Init() {
+            // SPS-NDMF: disabled playMode subscription + VRCSDK internal field mutation
+            return;
+            #pragma warning disable CS0162
             if (!ReflectionHelper.IsReady<Reflection>()) return;
             EditorApplication.playModeStateChanged += state => {
                 if (state != PlayModeStateChange.ExitingEditMode) return;
