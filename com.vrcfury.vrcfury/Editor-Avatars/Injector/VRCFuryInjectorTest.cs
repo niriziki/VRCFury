@@ -14,6 +14,9 @@ namespace VF.Injector {
     internal static class VRCFuryInjectorTest {
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled assembly-load-time DI context self-test
+            return;
+            #pragma warning disable CS0162
             try {
                 TestUnsafe();
             } catch (Exception e) {
