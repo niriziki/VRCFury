@@ -15,11 +15,14 @@ namespace VF.PlayMode {
         
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled, adds FixWriteDefaults VRCFury component to avatars on playmode transitions
+            return;
+            #pragma warning disable CS0162
             EditorApplication.playModeStateChanged += state => {
                 if (state == PlayModeStateChange.ExitingEditMode) {
                     EditorPrefs.DeleteKey(Key);
                 }
-                
+
                 if (state == PlayModeStateChange.EnteredEditMode) {
                     var data = GetData();
                     EditorPrefs.DeleteKey(Key);
