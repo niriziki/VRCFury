@@ -17,7 +17,8 @@ namespace VF.Menu {
             UnityEditor.Menu.SetChecked(MenuItems.alignMobile, Get());
         }
 
-        [MenuItem(MenuItems.alignMobile, priority = MenuItems.alignMobilePriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.alignMobile, priority = MenuItems.alignMobilePriority)]
         private static void Click() {
             if (Get()) {
                 var ok = DialogUtils.DisplayDialog(
