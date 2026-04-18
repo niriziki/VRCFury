@@ -10,6 +10,9 @@ namespace VF.Hooks.UnityFixes {
     internal static class SetPlayModeSettingsHook {
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled, modifies EditorSettings (enter play mode options)
+            return;
+            #pragma warning disable CS0162
             Scheduler.Schedule(() => {
                 var tmpFolder = TmpFilePackage.GetPathNullable();
                 if (tmpFolder == null) {
