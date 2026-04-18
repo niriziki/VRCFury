@@ -31,6 +31,9 @@ namespace VF.Hooks.UnityFixes {
         
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled Harmony patch (intercepts Unity Animator Editor UI)
+            return;
+            #pragma warning disable CS0162
             if (!ReflectionHelper.IsReady<Reflection>()) return;
             if (Reflection.LayerControllerView_m_LayerScroll.FieldType != typeof(Vector2)) return;
             Reflection.PrefixPatch.apply();
