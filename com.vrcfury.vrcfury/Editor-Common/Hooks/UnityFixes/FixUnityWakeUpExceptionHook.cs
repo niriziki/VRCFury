@@ -23,6 +23,9 @@ namespace VF.Hooks.UnityFixes {
 
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled Harmony patch (intercepts Unity Editor Graphs internals)
+            return;
+            #pragma warning disable CS0162
             if (!ReflectionHelper.IsReady<Reflection>()) return;
             Reflection.Patch.apply();
         }
