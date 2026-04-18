@@ -27,6 +27,9 @@ namespace VF.Hooks.UnityFixes {
 
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled, modifies Unity PackageImportWindow behavior
+            return;
+            #pragma warning disable CS0162
             if (!ReflectionHelper.IsReady<Reflection>()) return;
             Scheduler.Schedule(Check, 0);
         }
