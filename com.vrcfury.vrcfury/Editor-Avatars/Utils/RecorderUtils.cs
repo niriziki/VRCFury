@@ -31,6 +31,9 @@ namespace VF.Utils {
 
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled EditorApplication.update / AssemblyReloadEvents subscription (recorder unused by SPS)
+            return;
+            #pragma warning disable CS0162
             if (!ReflectionHelper.IsReady<Reflection>()) return;
 
             void Cleanup() {
