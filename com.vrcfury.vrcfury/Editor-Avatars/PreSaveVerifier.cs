@@ -11,6 +11,9 @@ namespace VF {
     internal class PreSaveVerifier : UnityEditor.AssetModificationProcessor
     {
         static string[] OnWillSaveAssets(string[] paths) {
+            // SPS-NDMF: disabled, scans all VRCFuryComponents on every asset save
+            return paths;
+            #pragma warning disable CS0162
             var blocked = new List<string>();
             var blockedPaths = new HashSet<string>();
             
