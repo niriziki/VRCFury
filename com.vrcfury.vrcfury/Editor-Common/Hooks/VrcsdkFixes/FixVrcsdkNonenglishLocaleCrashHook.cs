@@ -28,6 +28,9 @@ namespace VF.Hooks.VrcsdkFixes {
 
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled Harmony patch (intercepts Assembly.GetName globally)
+            return;
+            #pragma warning disable CS0162
             if (!ReflectionHelper.IsReady<Reflection>()) return;
             Reflection.Patch.apply();
         }
