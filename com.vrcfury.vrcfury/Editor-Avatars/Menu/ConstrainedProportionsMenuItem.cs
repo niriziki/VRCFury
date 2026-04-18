@@ -85,7 +85,8 @@ namespace VF.Menu {
             UnityEditor.Menu.SetChecked(MenuItems.constrainedProportions, Get());
         }
 
-        [MenuItem(MenuItems.constrainedProportions, priority = MenuItems.constrainedProportionsPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.constrainedProportions, priority = MenuItems.constrainedProportionsPriority)]
         private static void Click() {
             if (Get()) {
                 var ok = DialogUtils.DisplayDialog(
