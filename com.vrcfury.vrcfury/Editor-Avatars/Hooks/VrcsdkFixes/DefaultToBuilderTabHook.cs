@@ -11,6 +11,9 @@ namespace VF.Hooks.VrcsdkFixes {
 
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled SdkControlPanel auto-click and Scheduler loop
+            return;
+            #pragma warning disable CS0162
             VRCSdkControlPanel.OnSdkPanelEnable += (panel, e) => {
                 sdkPanel = panel as EditorWindow;
                 whenSdkPanelLoaded = 0;
