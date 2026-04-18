@@ -20,6 +20,9 @@ namespace VF.Hooks {
 #if VRC_NEW_PUBLIC_SDK
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled VRCSDK build integration (NDMF handles avatar preprocessing)
+            return;
+            #pragma warning disable CS0162
             VRCSdkControlPanel.OnSdkPanelEnable += (sender, e) => {
                 if (VRCSdkControlPanel.TryGetBuilder<IVRCSdkAvatarBuilderApi>(out var builder)) {
                     builder.OnSdkBuildStart += (sender2, target) => {
@@ -41,6 +44,9 @@ namespace VF.Hooks {
 
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled VRCSDK build integration (NDMF handles avatar preprocessing)
+            return;
+            #pragma warning disable CS0162
             if (!ReflectionHelper.IsReady<Reflection>()) return;
             try {
                 PatchPreuploadMethod(Reflection.RunExportAndTestAvatarBlueprint);
