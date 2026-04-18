@@ -22,6 +22,9 @@ namespace VF.Hooks.VrcsdkFixes {
 
         [DidReloadScripts]
         public static void Init() {
+            // SPS-NDMF: disabled VRCSDK _preprocessAvatarCallbacks mutation (NDMF RemoveEditorOnlyPass handles removal)
+            return;
+            #pragma warning disable CS0162
             if (!ReflectionHelper.IsReady<Reflection>()) return;
 
             var _callbacks = Reflection.preprocessAvatarCallbacks.GetValue(null);
