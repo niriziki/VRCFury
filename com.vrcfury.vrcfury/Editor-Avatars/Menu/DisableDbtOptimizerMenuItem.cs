@@ -17,7 +17,8 @@ namespace VF.Menu {
             UnityEditor.Menu.SetChecked(MenuItems.disableDbtMerging, Get());
         }
 
-        [MenuItem(MenuItems.disableDbtMerging, priority = MenuItems.disableDbtMergingPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.disableDbtMerging, priority = MenuItems.disableDbtMergingPriority)]
         private static void Click() {
             if (!Get()) {
                 var ok = DialogUtils.DisplayDialog(
