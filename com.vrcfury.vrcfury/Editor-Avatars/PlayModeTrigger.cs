@@ -21,6 +21,9 @@ namespace VF {
 
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled, playmode triggers unused (NDMF handles SPS processing)
+            return;
+            #pragma warning disable CS0162
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
             VRCFuryComponent._OnValidate = () => {
                 if (Application.isPlaying && !addedTriggerObjectThisPlayMode && PlayModeMenuItem.Get()) {
