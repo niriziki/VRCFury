@@ -28,23 +28,28 @@ namespace VF.Menu {
             UnityEditor.Menu.SetChecked(MenuItems.compressFail, value == Value.Fail);
         }
 
-        [MenuItem(MenuItems.compressHeader, priority = MenuItems.compressHeaderPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.compressHeader, priority = MenuItems.compressHeaderPriority)]
         private static void Header() {}
 
-        [MenuItem(MenuItems.compressHeader, true)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.compressHeader, true)]
         private static bool HeaderEnabled() => false;
 
-        [MenuItem(MenuItems.compressCompress, priority = MenuItems.compressCompressPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.compressCompress, priority = MenuItems.compressCompressPriority)]
         private static void CompressCompress() {
             EditorPrefs.SetInt(EditorPref, 0);
             UpdateMenu();
         }
-        [MenuItem(MenuItems.compressAsk, priority = MenuItems.compressAskPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.compressAsk, priority = MenuItems.compressAskPriority)]
         private static void CompressAsk() {
             EditorPrefs.SetInt(EditorPref, 1);
             UpdateMenu();
         }
-        [MenuItem(MenuItems.compressFail, priority = MenuItems.compressFailPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.compressFail, priority = MenuItems.compressFailPriority)]
         private static void CompressFail() {
             EditorPrefs.SetInt(EditorPref, 2);
             UpdateMenu();
