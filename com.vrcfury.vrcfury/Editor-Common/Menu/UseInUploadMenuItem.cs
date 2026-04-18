@@ -17,7 +17,8 @@ namespace VF.Menu {
             UnityEditor.Menu.SetChecked(MenuItems.uploadMode, Get());
         }
 
-        [MenuItem(MenuItems.uploadMode, priority = MenuItems.uploadModePriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.uploadMode, priority = MenuItems.uploadModePriority)]
         private static void Click() {
             if (Get()) {
                 var ok = DialogUtils.DisplayDialog(
