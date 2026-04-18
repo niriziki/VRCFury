@@ -11,6 +11,9 @@ namespace VF.Hooks.UnityFixes {
     internal static class SaneUnitySettingsHook {
         [InitializeOnLoadMethod]
         private static void Apply() {
+            // SPS-NDMF: disabled, modifies Unity Editor / PlayerSettings globally
+            return;
+            #pragma warning disable CS0162
             DoSafe(DisableErrorPause);
             DoSafe(TurnOffPause);
             DoSafe(EnableErrorLogs);
