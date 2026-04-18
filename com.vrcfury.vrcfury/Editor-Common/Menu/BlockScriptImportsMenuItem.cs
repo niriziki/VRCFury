@@ -17,7 +17,8 @@ namespace VF.Menu {
             UnityEditor.Menu.SetChecked(MenuItems.blockScriptImports, Get());
         }
 
-        [MenuItem(MenuItems.blockScriptImports, priority = MenuItems.blockScriptImportsPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.blockScriptImports, priority = MenuItems.blockScriptImportsPriority)]
         private static void Click() {
             if (!Get()) {
                 var ok = DialogUtils.DisplayDialog(
