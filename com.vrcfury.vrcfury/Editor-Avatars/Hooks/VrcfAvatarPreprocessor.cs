@@ -17,7 +17,6 @@ namespace VF.Hooks {
                 return true;
             }
             return VRCFExceptionUtils.ErrorDialogBoundary(() => Process(obj));
-            #pragma warning restore CS0162
         }
 
         protected abstract int order { get; }

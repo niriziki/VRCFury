@@ -17,7 +17,6 @@ namespace VF.Hooks.VrcsdkFixes {
             if (ContactBase.OnValidatePlayers == null) {
                 ContactBase.OnValidatePlayers = (a, b) => true;
             }
-            #pragma warning restore CS0162
         }
         
         internal class PlayerBuilt : VrcfAvatarPreprocessor {

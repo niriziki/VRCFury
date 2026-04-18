@@ -54,7 +54,6 @@ namespace VF.Utils {
                 ReflectionUtils.CallWithOptionalParams(Reflection.HarmonyUnpatchAll, harmonyInst);
             };
             return harmonyInst;
-            #pragma warning restore CS0162
         });
 
         private static object GetHarmony() {
