@@ -49,7 +49,7 @@ jobs:
           {
             echo "NAME=$NAME"
             echo "PREFIX=$PREFIX"
-            echo "ZIP=$PREFIX.zip"
+            echo "PKG_ZIP=$PREFIX.zip"
             echo "VPAI_LATEST=$NAME-installer.unitypackage"
             echo "VPAI_LATEST_ZIP=$NAME-installer.zip"
             echo "VPAI_VERSION=$PREFIX-installer.unitypackage"
@@ -58,7 +58,7 @@ jobs:
 
       - name: Create package zip
         working-directory: ${{ env.PKG_DIR }}
-        run: zip -r "../$ZIP" .
+        run: zip -r "../$PKG_ZIP" .
 
       - name: Create VPAI latest
         uses: anatawa12/sh-actions/create-vpai@master
@@ -88,7 +88,7 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           files: |
-            ${{ env.ZIP }}
+            ${{ env.PKG_ZIP }}
             ${{ env.VPAI_LATEST_ZIP }}
             ${{ env.VPAI_VERSION_ZIP }}
             ${{ env.PKG_DIR }}/package.json
