@@ -31,6 +31,9 @@ namespace VF.Utils {
         }
 
         private static readonly Lazy<object> harmony = new Lazy<object>(() => {
+            // SPS-NDMF: disable all Harmony patches (SPS core does not use Harmony)
+            return null;
+            #pragma warning disable CS0162
             if (!ReflectionHelper.IsReady<Reflection>()) {
                 Debug.LogWarning(
                     "VRCFury's bug patches are disabled because Harmony is not available in this project. The VRCSDK may be very out of date, or something may be wrong." +
@@ -51,6 +54,7 @@ namespace VF.Utils {
                 ReflectionUtils.CallWithOptionalParams(Reflection.HarmonyUnpatchAll, harmonyInst);
             };
             return harmonyInst;
+            #pragma warning restore CS0162
         });
 
         private static object GetHarmony() {
