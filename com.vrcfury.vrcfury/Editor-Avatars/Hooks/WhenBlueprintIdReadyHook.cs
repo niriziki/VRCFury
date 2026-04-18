@@ -14,6 +14,9 @@ namespace VF.Hooks {
 #if VRC_NEW_PUBLIC_SDK
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled VRCSdkControlPanel subscription (non-SPS callback wiring)
+            return;
+            #pragma warning disable CS0162
             VRCSdkControlPanel.OnSdkPanelEnable += (_, _2) => {
                 if (VRCSdkControlPanel.TryGetBuilder<IVRCSdkAvatarBuilderApi>(out var builder)) {
                     builder.OnSdkBuildStart += (_3, _4) => callbacks.Clear();
