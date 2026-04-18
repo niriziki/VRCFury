@@ -14,6 +14,9 @@ namespace VF.Hooks.VrcsdkFixes {
     internal static class FixVrcsdkValidatorWrongPlatform {
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled EditorUserBuildSettings.selectedBuildTargetGroup override at editor startup
+            return;
+            #pragma warning disable CS0162
             SyncBuildTargetGroup();
 #if VRC_NEW_PUBLIC_SDK
             VRCSdkControlPanel.OnSdkPanelEnable += (sender, e) => {
