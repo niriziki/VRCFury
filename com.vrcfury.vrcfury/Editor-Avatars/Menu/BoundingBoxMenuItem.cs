@@ -17,7 +17,8 @@ namespace VF.Menu {
             UnityEditor.Menu.SetChecked(MenuItems.boundingBoxFix, Get());
         }
 
-        [MenuItem(MenuItems.boundingBoxFix, priority = MenuItems.boundingBoxFixPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.boundingBoxFix, priority = MenuItems.boundingBoxFixPriority)]
         private static void Click() {
             if (Get()) {
                 var ok = DialogUtils.DisplayDialog(
