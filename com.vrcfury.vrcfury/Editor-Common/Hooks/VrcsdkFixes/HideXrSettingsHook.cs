@@ -7,6 +7,9 @@ namespace VF.Hooks.VrcsdkFixes {
     internal static class HideXrSettingsHook {
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled, relocates Assets/XR folder on Unity project
+            return;
+            #pragma warning disable CS0162
             // Delay by one frame to make sure the temp package is ready
             EditorApplication.delayCall += () => {
                 Scheduler.Schedule(Check, 1000);
