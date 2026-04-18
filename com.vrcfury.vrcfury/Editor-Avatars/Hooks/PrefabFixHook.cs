@@ -78,6 +78,9 @@ namespace VF.Hooks {
         
         [InitializeOnLoadMethod]
         private static void InitPlayMode() {
+            // SPS-NDMF: disabled playmode prefab fix (avatar is processed via NDMF)
+            return;
+            #pragma warning disable CS0162
             EditorApplication.playModeStateChanged += state => {
                 if (state == PlayModeStateChange.ExitingEditMode) {
                     if (PlayModeMenuItem.Get()) {
