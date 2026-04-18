@@ -31,6 +31,9 @@ namespace VF.Hooks {
         
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled, removes Unity standard Component menus and registers VRCFury update item
+            return;
+            #pragma warning disable CS0162
             EditorApplication.delayCall += AddToMenu;
             if (Reflection.MenuChangedAddHandler != null) {
                 Action onMenuChange = () => {
@@ -40,7 +43,7 @@ namespace VF.Hooks {
                 };
                 Reflection.MenuChangedAddHandler.Invoke(null, new object[] { onMenuChange });
             }
-        } 
+        }
 
         private static void Add(string path, string shortcut, bool @checked, int priority, Action execute, Func<bool> validate) =>
             Reflection.AddMenuItem?.Invoke(path, shortcut, @checked, priority, execute, validate);
