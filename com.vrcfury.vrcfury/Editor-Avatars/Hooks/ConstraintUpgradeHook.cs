@@ -15,6 +15,9 @@ namespace VF.Hooks {
 #if VRCSDK_HAS_VRCCONSTRAINTS
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled AvatarDynamicsSetup event registration (non-SPS constraint upgrade)
+            return;
+            #pragma warning disable CS0162
             if (BuildTargetUtils.IsDesktop()) {
                 AvatarDynamicsSetup.IsUnityConstraintAutoConverted += constraint => true;
             }
