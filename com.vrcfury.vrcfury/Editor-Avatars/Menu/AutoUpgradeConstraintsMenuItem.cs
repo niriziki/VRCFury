@@ -17,7 +17,8 @@ namespace VF.Menu {
             UnityEditor.Menu.SetChecked(MenuItems.autoUpgradeConstraints, Get());
         }
 
-        [MenuItem(MenuItems.autoUpgradeConstraints, priority = MenuItems.autoUpgradeConstraintsPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.autoUpgradeConstraints, priority = MenuItems.autoUpgradeConstraintsPriority)]
         private static void Click() {
             if (Get()) {
                 var ok = DialogUtils.DisplayDialog(
