@@ -25,3 +25,7 @@ VRCFury / VRCFury スタブ / SPSNDMF / Modular Avatar / VRChat Contacts の間�
 - VRCSDK3 Avatars
 
 VRCFury 本体は必須ではなく、VRCFury 互換のスタブパッケージ（`VF.Component.*` 型を提供）でも動作する。
+
+## ライセンス
+
+本パッケージは VRCFury エコシステム向けに作成されており、VRCFury の **Personal License** の下で配布される。詳細はパッケージ同梱の `LICENSE.md` を参照。

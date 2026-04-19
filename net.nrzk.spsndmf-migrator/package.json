@@ -3,6 +3,8 @@
   "displayName": "SPSNDMF Migrator",
   "description": "Convert SPS components between VRCFury, SPSNDMF, Modular Avatar and VRChat Contacts.",
   "version": "0.0.1",
+  "license": "VRCFury's Personal License",
+  "licensesUrl": "https://github.com/niriziki/SPSNDMF/blob/ndmf/LICENSE.md",
   "unity": "2022.3",
   "author": {
     "name": "niriziki"

@@ -38,6 +38,11 @@ jobs:
             echo "No transform script at $SCRIPT; skipping"
           fi
 
+      - name: Copy LICENSE into package
+        run: |
+          cp LICENSE.md "$PKG_DIR/LICENSE.md"
+          cp .github/files/LICENSE.md.meta "$PKG_DIR/LICENSE.md.meta"
+
       - name: Set package info
         working-directory: ${{ env.PKG_DIR }}
         run: |

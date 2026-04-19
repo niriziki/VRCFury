@@ -3,6 +3,8 @@
   "displayName": "SPS for NDMF",
   "version": "0.0.1",
   "description": "SPS (Super Plug Shader) for NDMF/Modular Avatar",
+  "license": "VRCFury License (Personal / VRCA-VRCW)",
+  "licensesUrl": "https://github.com/niriziki/SPSNDMF/blob/ndmf/LICENSE.md",
   "unity" : "2022.3",
   "author": {
     "name": "niriziki"

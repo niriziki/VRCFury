@@ -3,6 +3,8 @@
   "displayName": "VRCFury Stub",
   "description": "Type-only stub of VRCFury's Runtime assembly. Preserves VRCFury component types (VF.* namespace, same GUIDs) so existing scenes deserialize without the full VRCFury package. No editor logic or build processing is included.",
   "version": "0.0.1",
+  "license": "VRCFury's Personal License",
+  "licensesUrl": "https://github.com/niriziki/SPSNDMF/blob/ndmf/LICENSE.md",
   "unity": "2022.3",
   "author": {
     "name": "niriziki"
