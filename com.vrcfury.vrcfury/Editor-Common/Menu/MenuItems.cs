@@ -85,13 +85,15 @@ namespace VF.Menu {
         public const int compressFailPriority = settingsPriority + 203;
         
 #if UNITY_2022_1_OR_NEWER
-        [MenuItem(recompileAll, priority = recompileAllPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(recompileAll, priority = recompileAllPriority)]
         private static void RecompileAll() {
             CompilationPipeline.RequestScriptCompilation(RequestScriptCompilationOptions.CleanBuildCache);
         }
 #endif
 
-        [MenuItem(listComponents, priority = listComponentsPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(listComponents, priority = listComponentsPriority)]
         private static void ListChildComponents() {
             VRCFExceptionUtils.ErrorDialogBoundary(() => {
                 var obj = Selection.activeGameObject.asVf();
@@ -117,7 +119,8 @@ namespace VF.Menu {
             });
         }
 
-        [MenuItem(reserialize, priority = reserializePriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(reserialize, priority = reserializePriority)]
         private static void Reserialize() {
             VRCFExceptionUtils.ErrorDialogBoundary(() => {
                 var doIt = DialogUtils.DisplayDialog(
