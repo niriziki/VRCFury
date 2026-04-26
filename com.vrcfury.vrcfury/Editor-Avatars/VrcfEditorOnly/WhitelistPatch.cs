@@ -29,6 +29,9 @@ namespace VF.VrcfEditorOnly {
 
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled VRCSDK component whitelist patching (legacy SDK path, NDMF environments use VRC_NEW_HOOK_API)
+            return;
+            #pragma warning disable CS0162
             PerformPatch();
         }
 
