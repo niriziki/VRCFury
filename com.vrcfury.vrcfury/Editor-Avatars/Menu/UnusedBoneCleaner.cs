@@ -7,13 +7,15 @@ using VF.Utils;
 
 namespace VF.Menu {
     internal static class UnusedBoneCleaner {
-        [MenuItem(MenuItems.unusedBones, priority = MenuItems.unusedBonesPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.unusedBones, priority = MenuItems.unusedBonesPriority)]
         private static void Run() {
             VRCFExceptionUtils.ErrorDialogBoundary(() => {
                 Run(MenuUtils.GetSelectedAvatar());
             });
         }
-        [MenuItem(MenuItems.unusedBones, true)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.unusedBones, true)]
         private static bool Check() {
             return MenuUtils.GetSelectedAvatar() != null;
         }
