@@ -204,6 +204,9 @@ void ProcessCsFile(string filePath, Dictionary<string, string> guidMap, Transfor
     // AddComponentMenu: "(VRCFury)" only inside string literals
     content = content.Replace("(VRCFury)\"", "(SPSNDMF)\"");
     content = content.Replace("\"VRCFury/", "\"SPSNDMF/");
+    // Editor menu paths under Tools/ or GameObject/ roots
+    content = content.Replace("Tools/VRCFury/", "Tools/SPSNDMF/");
+    content = content.Replace("GameObject/VRCFury/", "GameObject/SPSNDMF/");
 
     content = ReplaceGuids(content, guidMap);
 
