@@ -7,6 +7,9 @@ namespace VF {
     internal static class BadInstallDetector {
         [InitializeOnLoadMethod]
         private static void Init() {
+            // SPS-NDMF: disabled, hardcoded com.vrcfury.vrcfury path check is irrelevant
+            return;
+            #pragma warning disable CS0162
             var isLocalPackage = Directory.Exists("Packages/com.vrcfury.vrcfury") &&
                                  Path.GetFullPath("Packages/com.vrcfury.vrcfury").StartsWith(Path.GetFullPath("Packages"));
             var manifestPath = "Packages/manifest.json";
