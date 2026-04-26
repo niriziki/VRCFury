@@ -6,14 +6,16 @@ using VF.Utils;
 
 namespace VF.Menu {
     internal static class ZawooDeleter {
-        [MenuItem(MenuItems.nukeZawoo, priority = MenuItems.nukeZawooPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.nukeZawoo, priority = MenuItems.nukeZawooPriority)]
         private static void NukeZawooParts() {
             VRCFExceptionUtils.ErrorDialogBoundary(() => {
                 Run(MenuUtils.GetSelectedAvatar());
             });
         }
 
-        [MenuItem(MenuItems.nukeZawoo, true)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.nukeZawoo, true)]
         private static bool CheckNukeZawooParts() {
             return MenuUtils.GetSelectedAvatar() != null;
         }
