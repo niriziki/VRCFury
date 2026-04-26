@@ -10,7 +10,8 @@ using Object = UnityEngine.Object;
 
 namespace VF.Menu {
     internal static class DuplicatePhysboneDetector {
-        [MenuItem(MenuItems.detectDuplicatePhysbones, priority = MenuItems.detectDuplicatePhysbonesPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.detectDuplicatePhysbones, priority = MenuItems.detectDuplicatePhysbonesPriority)]
         private static void Run() {
             VRCFExceptionUtils.ErrorDialogBoundary(RunUnsafe);
         }
