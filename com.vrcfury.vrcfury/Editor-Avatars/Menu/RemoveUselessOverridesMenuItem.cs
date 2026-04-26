@@ -7,13 +7,15 @@ using VF.Utils;
 
 namespace VF.Menu {
     internal static class RemoveUselessOverridesMenuItem {
-        [MenuItem(MenuItems.uselessOverrides, priority = MenuItems.uselessOverridesPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.uselessOverrides, priority = MenuItems.uselessOverridesPriority)]
         private static void Run() {
             VRCFExceptionUtils.ErrorDialogBoundary(() => {
                 Run(MenuUtils.GetSelectedAvatar());
             });
         }
-        [MenuItem(MenuItems.uselessOverrides, true)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.uselessOverrides, true)]
         private static bool Check() {
             return MenuUtils.GetSelectedAvatar() != null;
         }
