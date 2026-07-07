@@ -36,6 +36,17 @@ Directory.CreateDirectory(outputDir);
 CopyDirectory(sourceRuntimeDir, outputRuntimeDir);
 File.Copy(sourceRuntimeMeta, Path.Combine(outputDir, "Runtime.meta"));
 
+// Upstream folder metas use a legacy minimal format; normalize to Unity's
+// canonical folder meta so shipped packages match what Unity would write.
+foreach (var metaFile in Directory.EnumerateFiles(outputDir, "*.meta", SearchOption.AllDirectories))
+{
+    if (!Directory.Exists(metaFile[..^".meta".Length])) continue;
+    var guidMatch = System.Text.RegularExpressions.Regex.Match(
+        File.ReadAllText(metaFile), @"guid:\s*([0-9a-fA-F]{32})");
+    if (guidMatch.Success)
+        File.WriteAllText(metaFile, CanonicalFolderMeta(guidMatch.Groups[1].Value));
+}
+
 // --- Step 2: Rewrite AddComponentMenu labels in .cs files ---
 Console.WriteLine("Rewriting AddComponentMenu labels...");
 var rewrittenCount = 0;
@@ -69,6 +80,16 @@ Console.WriteLine("Done.");
 return 0;
 
 // ============================================================
+
+string CanonicalFolderMeta(string guid) =>
+    "fileFormatVersion: 2\n" +
+    $"guid: {guid}\n" +
+    "folderAsset: yes\n" +
+    "DefaultImporter:\n" +
+    "  externalObjects: {}\n" +
+    "  userData: \n" +
+    "  assetBundleName: \n" +
+    "  assetBundleVariant: \n";
 
 void CopyDirectory(string source, string dest)
 {

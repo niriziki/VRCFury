@@ -251,6 +251,15 @@ void ProcessMetaFile(string filePath, Dictionary<string, string> guidMap, Transf
     content = Regex.Replace(content, @"(?<=guid:\s*)[0-9a-fA-F]{32}", match =>
         guidMap.TryGetValue(match.Value.ToLowerInvariant(), out var ng) ? ng : match.Value);
 
+    // Upstream folder metas use a legacy minimal format; normalize to Unity's
+    // canonical folder meta so shipped packages match what Unity would write.
+    if (Directory.Exists(filePath[..^".meta".Length]))
+    {
+        var guidMatch = Regex.Match(content, @"guid:\s*([0-9a-fA-F]{32})");
+        if (guidMatch.Success)
+            content = CanonicalFolderMeta(guidMatch.Groups[1].Value);
+    }
+
     if (content != original)
     {
         File.WriteAllText(filePath, content);
@@ -277,6 +286,16 @@ void ProcessSerializedFile(string filePath, Dictionary<string, string> guidMap, 
     s.SerializedFiles++;
     s.FilesProcessed++;
 }
+
+string CanonicalFolderMeta(string guid) =>
+    "fileFormatVersion: 2\n" +
+    $"guid: {guid}\n" +
+    "folderAsset: yes\n" +
+    "DefaultImporter:\n" +
+    "  externalObjects: {}\n" +
+    "  userData: \n" +
+    "  assetBundleName: \n" +
+    "  assetBundleVariant: \n";
 
 string ReplaceGuids(string content, Dictionary<string, string> guidMap)
 {
