@@ -5,6 +5,7 @@ var scriptDir = GetScriptDir();
 var repoRoot = Path.GetFullPath(Path.Combine(scriptDir, "..", ".."));
 
 var sourceRuntimeDir = Path.Combine(repoRoot, "com.vrcfury.vrcfury", "Runtime");
+var sourceRuntimeMeta = Path.Combine(repoRoot, "com.vrcfury.vrcfury", "Runtime.meta");
 var outputDir = Path.Combine(repoRoot, "net.nrzk.vfstub");
 var outputRuntimeDir = Path.Combine(outputDir, "Runtime");
 
@@ -33,6 +34,7 @@ if (Directory.Exists(outputDir))
     Directory.Delete(outputDir, recursive: true);
 Directory.CreateDirectory(outputDir);
 CopyDirectory(sourceRuntimeDir, outputRuntimeDir);
+File.Copy(sourceRuntimeMeta, Path.Combine(outputDir, "Runtime.meta"));
 
 // --- Step 2: Rewrite AddComponentMenu labels in .cs files ---
 Console.WriteLine("Rewriting AddComponentMenu labels...");
@@ -60,6 +62,7 @@ if (!File.Exists(packageJsonTemplate))
     return 1;
 }
 File.Copy(packageJsonTemplate, Path.Combine(outputDir, "package.json"), overwrite: true);
+File.Copy(packageJsonTemplate + ".meta", Path.Combine(outputDir, "package.json.meta"), overwrite: true);
 
 Console.WriteLine();
 Console.WriteLine("Done.");
