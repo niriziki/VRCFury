@@ -30,6 +30,7 @@ var asmdefNameMap = new Dictionary<string, string>
 var excludedRootDirs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 {
     "Editor-Worlds",
+    "UdonApi",
 };
 
 
