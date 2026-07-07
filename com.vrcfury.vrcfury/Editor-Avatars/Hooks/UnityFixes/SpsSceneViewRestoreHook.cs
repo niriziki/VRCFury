@@ -32,11 +32,45 @@ namespace VF.Hooks.UnityFixes {
         }
 
         private static void OnCameraPreCull(Camera camera) {
+            if (!sceneHasSpsContent) return;
             RenderForCamera(camera);
         }
 
         private static void OnEditorUpdate() {
+            // SPS-NDMF: the restore machinery forces constant SceneView repaints;
+            // only run it while something can draw SPS2 marker/resolver passes
+            if (!SceneHasSpsContent()) return;
             SceneView.RepaintAll();
+        }
+
+        private static double lastContentCheckTime = double.NegativeInfinity;
+        private static bool sceneHasSpsContent;
+
+        private static bool SceneHasSpsContent() {
+            var now = EditorApplication.timeSinceStartup;
+            if (now - lastContentCheckTime >= 1) {
+                lastContentCheckTime = now;
+                sceneHasSpsContent = FindSpsContent();
+                if (!sceneHasSpsContent) RemoveCapture();
+            }
+            return sceneHasSpsContent;
+        }
+
+        private static bool FindSpsContent() {
+            foreach (var renderer in Object.FindObjectsOfType<Renderer>()) {
+                foreach (var mat in renderer.sharedMaterials) {
+                    if (mat == null || mat.shader == null) continue;
+                    var shaderName = mat.shader.name;
+                    if (shaderName.StartsWith("Hidden/SPSPatched/")
+                        || shaderName.StartsWith("Hidden/Locked/SPSPatched/")
+                        || shaderName == VF.Builder.Haptics.SpsMarkersService.SocketMarkerShaderName
+                        || shaderName == VF.Builder.Haptics.SpsMarkersService.ResolverShaderName
+                        || shaderName == VF.Builder.Haptics.SpsMarkersService.DataGrabPassShaderName) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private static void RenderForCamera(Camera camera) {
