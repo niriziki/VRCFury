@@ -200,6 +200,17 @@ namespace VF.Builder.Haptics {
             });
 
             var newShader = Shader.Find(newShaderName);
+            if (!newShader && AssetDatabase.LoadAssetAtPath<Shader>(newPath) == null) {
+                // SPS-NDMF: the import was deferred by an outer AssetDatabase.StartAssetEditing scope
+                // (NDMF's ManualProcessAvatar wraps all passes in one); suspend it and re-import
+                try {
+                    AssetDatabase.StopAssetEditing();
+                    AssetDatabase.ImportAsset(newPath, ImportAssetOptions.ForceSynchronousImport);
+                } finally {
+                    AssetDatabase.StartAssetEditing();
+                }
+                newShader = Shader.Find(newShaderName);
+            }
             if (!newShader) {
                 throw new VRCFBuilderException("Patch succeeded, but shader failed to generate. Check the unity log for compile error?\n\n" + newPath);
             }
