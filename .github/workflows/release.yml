@@ -41,7 +41,11 @@ jobs:
       - name: Copy LICENSE into package
         run: |
           cp LICENSE.md "$PKG_DIR/LICENSE.md"
-          cp .github/files/LICENSE.md.meta "$PKG_DIR/LICENSE.md.meta"
+          # Derive a stable per-package GUID so LICENSE.md never collides
+          # across net.nrzk.* packages installed side by side
+          GUID=$(echo -n "$PKG_DIR/LICENSE.md" | md5sum | cut -c1-32)
+          sed "s/^guid: .*/guid: $GUID/" .github/files/LICENSE.md.meta > "$PKG_DIR/LICENSE.md.meta"
+          cat "$PKG_DIR/LICENSE.md.meta"
 
       - name: Set package info
         working-directory: ${{ env.PKG_DIR }}
