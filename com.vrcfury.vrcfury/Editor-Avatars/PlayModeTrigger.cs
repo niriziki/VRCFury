@@ -5,6 +5,7 @@ using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 using VF.Builder;
+using VF.Builder.Haptics;
 using VF.Component;
 using VF.Exceptions;
 using VF.Hooks;
@@ -47,12 +48,13 @@ namespace VF {
             // SPS-NDMF: PlayMode processing disabled, NDMF handles SPS
             return;
             #pragma warning disable CS0162
+            var spsMarkers = new SpsMarkersService();
             foreach (var rootObj in scene.GetRootGameObjects()) {
-                ProcessTree(rootObj);
+                ProcessTree(rootObj, spsMarkers);
             }
         }
 
-        private static void ProcessTree(VFGameObject obj) {
+        private static void ProcessTree(VFGameObject obj, SpsMarkersService spsMarkers) {
             if (obj == null) return;
             if (IsAv3EmulatorClone(obj)) return;
 
@@ -65,7 +67,7 @@ namespace VF {
             var socket = obj.GetComponent<VRCFuryHapticSocket>();
             if (socket != null) {
                 ProcessOnStartComponent.Process(obj, () => {
-                    if (socket != null) ProcessSocket(socket);
+                    if (socket != null) ProcessSocket(socket, spsMarkers);
                 });
                 return;
             }
@@ -73,13 +75,13 @@ namespace VF {
             var plug = obj.GetComponent<VRCFuryHapticPlug>();
             if (plug != null) {
                 ProcessOnStartComponent.Process(obj, () => {
-                    if (plug != null) ProcessPlug(plug);
+                    if (plug != null) ProcessPlug(plug, spsMarkers);
                 });
                 return;
             }
 
             foreach (var child in obj.Children()) {
-                ProcessTree(child);
+                ProcessTree(child, spsMarkers);
             }
         }
 
@@ -95,12 +97,26 @@ namespace VF {
             orig.Destroy();
         }
 
-        private static void ProcessSocket(VRCFuryHapticSocket socket) {
+        private static void ProcessSocket(VRCFuryHapticSocket socket, SpsMarkersService spsMarkers) {
             socket.Upgrade();
             VRCFExceptionUtils.ErrorDialogBoundary(() => {
                 try {
-                    var bakeResult = VRCFuryHapticSocketEditor.Bake(socket);
-                    VRCFuryHideGizmoUnlessSelectedExtensions.Hide(bakeResult.bakeRoot);
+                    var bakeResult = VRCFuryHapticSocketEditor.Bake(socket, spsMarkers);
+                    if (bakeResult != null) {
+                        SpsConfigurer.AddMaterialPropertyAnimator(
+                            bakeResult.screenMarkerResults.SelectMany(result => result.materialProperties)
+                        );
+                        var tmpDir = VRCFuryAssetDatabase.GetUniquePath(TmpFilePackage.GetPath() + "/Builds", "Socket mat");
+                        var saver = new SaveAssetsSession();
+                        foreach (var c in bakeResult.bakeRoot.GetComponentsInSelfAndChildren<UnityEngine.Component>()) {
+                            saver.SaveUnsavedComponentAssets(c, tmpDir);
+                        }
+                        foreach (var c in bakeResult.screenMarkers
+                                     .SelectMany(c => c.GetComponentsInSelfAndChildren<UnityEngine.Component>())) {
+                            saver.SaveUnsavedComponentAssets(c, tmpDir);
+                        }
+                        VRCFuryHideGizmoUnlessSelectedExtensions.Hide(bakeResult.bakeRoot);
+                    }
                 } catch (Exception e) {
                     throw new ExceptionWithCause($"Failed to bake detached SPS Socket: {socket.owner().GetPath()}", e);
                 }
@@ -108,16 +124,22 @@ namespace VF {
             Object.DestroyImmediate(socket);
         }
 
-        private static void ProcessPlug(VRCFuryHapticPlug plug) {
+        private static void ProcessPlug(VRCFuryHapticPlug plug, SpsMarkersService spsMarkers) {
             plug.Upgrade();
             VRCFExceptionUtils.ErrorDialogBoundary(() => {
                 try {
-                    var bakeResult = VRCFuryHapticPlugEditor.Bake(plug);
+                    var bakeResult = VRCFuryHapticPlugEditor.Bake(plug, spsMarkers: spsMarkers);
                     if (bakeResult != null) {
+                        if (bakeResult.resolverMaterialProperties != null) {
+                            SpsConfigurer.AddMaterialPropertyAnimator(bakeResult.resolverMaterialProperties);
+                        }
                         var tmpDir = VRCFuryAssetDatabase.GetUniquePath(TmpFilePackage.GetPath() + "/Builds", bakeResult.oscId);
                         var saver = new SaveAssetsSession();
-                        foreach (var renderer in bakeResult.renderers) {
-                            saver.SaveUnsavedComponentAssets(renderer.renderer, tmpDir);
+                        foreach (var c in bakeResult.bakeRoot.GetComponentsInSelfAndChildren<UnityEngine.Component>()) {
+                            saver.SaveUnsavedComponentAssets(c, tmpDir);
+                        }
+                        foreach (var c in bakeResult.renderers.SelectMany(r => r.renderer.owner().GetComponentsInSelfAndChildren<UnityEngine.Component>())) {
+                            saver.SaveUnsavedComponentAssets(c, tmpDir);
                         }
                         VRCFuryHideGizmoUnlessSelectedExtensions.Hide(bakeResult.bakeRoot);
                     }
