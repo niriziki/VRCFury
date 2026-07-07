@@ -13,7 +13,8 @@ namespace VF.Menu {
             return EditorPrefs.GetBool(EditorPref, false);
         }
 
-        [MenuItem(MenuItems.sceneDirtyLogger, priority = MenuItems.sceneDirtyLoggerPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.sceneDirtyLogger, priority = MenuItems.sceneDirtyLoggerPriority)]
         private static void Click() {
             var enabling = !Get();
             if (enabling) {
@@ -50,6 +51,9 @@ namespace VF.Menu {
 
         [VFInit]
         private static void Init() {
+            // SPS-NDMF: disabled scene dirty logging subscriptions (non-SPS debug utility)
+            return;
+            #pragma warning disable CS0162
             EditorSceneManager.sceneDirtied += scene => {
                 if (!Get()) return;
                 Log("Scene dirtied: " + scene.path);

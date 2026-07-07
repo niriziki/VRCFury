@@ -10,7 +10,8 @@ using Object = UnityEngine.Object;
 
 namespace VF.Menu {
     internal static class LogExternalSceneReferencesMenuItem {
-        [MenuItem(MenuItems.logExternalSceneReferences, priority = MenuItems.logExternalSceneReferencesPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.logExternalSceneReferences, priority = MenuItems.logExternalSceneReferencesPriority)]
         private static void Run() {
             VRCFExceptionUtils.ErrorDialogBoundary(() => {
                 var roots = Selection.gameObjects.AsVf().ToList();

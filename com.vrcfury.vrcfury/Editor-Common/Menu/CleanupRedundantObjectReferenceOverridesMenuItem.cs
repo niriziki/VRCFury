@@ -7,7 +7,8 @@ using VF.Utils;
 
 namespace VF.Menu {
     internal static class CleanupRedundantObjectReferenceOverridesMenuItem {
-        [MenuItem(MenuItems.cleanupRedundantObjectReferenceOverrides, priority = MenuItems.cleanupRedundantObjectReferenceOverridesPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.cleanupRedundantObjectReferenceOverrides, priority = MenuItems.cleanupRedundantObjectReferenceOverridesPriority)]
         private static void Run() {
             VRCFExceptionUtils.ErrorDialogBoundary(() => {
                 var roots = GetSelectedRoots();

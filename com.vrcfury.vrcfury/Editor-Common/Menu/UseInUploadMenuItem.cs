@@ -28,8 +28,7 @@ namespace VF.Menu {
             SessionState.SetBool(Key, !Get());
         }
 
-        // SPS-NDMF: removed menu registration (non-SPS utility)
-        // [MenuItem(MenuItems.uploadMode, true)]
+        [MenuItem(MenuItems.uploadMode, true)]
         private static bool Validate() {
             UnityEditor.Menu.SetChecked(MenuItems.uploadMode, Get());
             return true;

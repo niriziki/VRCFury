@@ -11,7 +11,8 @@ namespace VF.Menu {
             return EditorPrefs.GetBool(EditorPref, false);
         }
 
-        [MenuItem(MenuItems.disableVpmResolverInit, priority = MenuItems.disableVpmResolverInitPriority)]
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.disableVpmResolverInit, priority = MenuItems.disableVpmResolverInitPriority)]
         private static void Click() {
             var enabling = !Get();
             if (enabling) {

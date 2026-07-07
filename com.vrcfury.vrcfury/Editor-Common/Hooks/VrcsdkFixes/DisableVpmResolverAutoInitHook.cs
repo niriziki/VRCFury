@@ -12,6 +12,9 @@ namespace VF.Hooks.VrcsdkFixes {
 
         [VFInit]
         private static void Init() {
+            // SPS-NDMF: disabled, rewrites VPM resolver package source (non-SPS side effect)
+            return;
+            #pragma warning disable CS0162
             Apply();
         }
 
