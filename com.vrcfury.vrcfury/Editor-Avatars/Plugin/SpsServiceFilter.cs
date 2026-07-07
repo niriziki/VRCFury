@@ -24,6 +24,7 @@ namespace VF.Plugin {
             typeof(ForceStateInAnimatorService),
 
             // ---- SPS infrastructure ----
+            typeof(IsObjectEnabledService),
             typeof(NdmfAnimatorSafetyService),
             typeof(RestingStateService),
             typeof(AvatarBindingStateService),
