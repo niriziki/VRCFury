@@ -13,7 +13,7 @@ namespace VF.PlayMode {
     internal static class FixWriteDefaultsLater {
         private const string Key = "vrcfFixWd";
         
-        [InitializeOnLoadMethod]
+        [VFInit]
         private static void Init() {
             // SPS-NDMF: disabled, adds FixWriteDefaults VRCFury component to avatars on playmode transitions
             return;

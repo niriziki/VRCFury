@@ -68,6 +68,11 @@
             "define": "VRCF_AVATARS"
         },
         {
+            "name": "com.vrchat.avatars",
+            "expression": "3.10.3",
+            "define": "VRCSDK_HAS_VRCRAYCAST"
+        },
+        {
             "name": "com.vrcfury.vrcfury",
             "expression": "",
             "define": "VRCFURY_INSTALLED"

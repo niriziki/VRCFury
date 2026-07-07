@@ -53,8 +53,8 @@ namespace VF.Utils {
 
         public static bool IsSameAs(this VRCExpressionParameters paramz, VRCExpressionParameters other) {
             return paramz.parameters.Length == other.parameters.Length
-                   && Enumerable.Zip(paramz.parameters, other.parameters, (a, b) => (a, b))
-                       .All(pair => pair.a.IsSameAs(pair.b));
+                   && paramz.parameters.Zip(other.parameters)
+                       .All(pair => pair.Item1.IsSameAs(pair.Item2));
         }
     }
 }

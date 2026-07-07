@@ -5,16 +5,8 @@ namespace VF.Menu {
     internal static class DisableDbtOptimizerMenuItem {
         private const string Key = "com.vrcfury.disableDbt";
 
-        [InitializeOnLoadMethod]
-        private static void Init() {
-            EditorApplication.delayCall += UpdateMenu;
-        }
-
         public static bool Get() {
             return SessionState.GetBool(Key, false);
-        }
-        private static void UpdateMenu() {
-            UnityEditor.Menu.SetChecked(MenuItems.disableDbtMerging, Get());
         }
 
         // SPS-NDMF: removed menu registration (non-SPS utility)
@@ -33,7 +25,12 @@ namespace VF.Menu {
                 if (!ok) return;
             }
             SessionState.SetBool(Key, !Get());
-            UpdateMenu();
+        }
+
+        [MenuItem(MenuItems.disableDbtMerging, true)]
+        private static bool Validate() {
+            UnityEditor.Menu.SetChecked(MenuItems.disableDbtMerging, Get());
+            return true;
         }
     }
 }

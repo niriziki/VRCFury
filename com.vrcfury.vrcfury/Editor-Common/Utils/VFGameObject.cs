@@ -139,7 +139,9 @@ namespace VF.Utils {
         public T GetComponent<T>() {
             return GetComponents<T>().FirstOrDefault();
         }
-
+        public UnityEngine.Component[] GetComponents() {
+            return GetComponents<UnityEngine.Component>();
+        }
         public UnityEngine.Component[] GetComponents(Type t) {
             // Components can sometimes be null for some reason. Perhaps when they're corrupt?
             // The OfType is required because unity can be tricked into blindly returning things that are NOT components
@@ -149,19 +151,20 @@ namespace VF.Utils {
         public T[] GetComponents<T>() {
             return gameObject.GetComponents<T>().NotNull().OfType<T>().ToArray();
         }
-        
-        public T GetComponentInSelfOrParent<T>() {
-            return GetComponentsInSelfAndParents<T>().FirstOrDefault();
+
+        public UnityEngine.Component[] GetComponentsInSelfAndChildren() {
+            return GetComponentsInSelfAndChildren<UnityEngine.Component>();
         }
-        
         public UnityEngine.Component[] GetComponentsInSelfAndChildren(Type type) {
             return gameObject.GetComponentsInChildren(type, true).NotNull().OfType<UnityEngine.Component>().ToArray();
         }
-
         public T[] GetComponentsInSelfAndChildren<T>() {
             return gameObject.GetComponentsInChildren<T>(true).NotNull().OfType<T>().ToArray();
         }
-        
+
+        public T GetComponentInSelfOrParent<T>() {
+            return GetComponentsInSelfAndParents<T>().FirstOrDefault();
+        }
         public T[] GetComponentsInSelfAndParents<T>() {
             return gameObject.GetComponentsInParent<T>(true).NotNull().OfType<T>().ToArray();
         }
@@ -203,18 +206,11 @@ namespace VF.Utils {
             return Object.Instantiate(gameObject);
         }
 
-        public static VFGameObject[] GetRoots(Scene scene) {
-            return scene
-                .GetRootGameObjects()
-                .Select(Cast)
-                .ToArray();
-        }
-
         public static VFGameObject[] GetRoots() {
             return Enumerable.Range(0, SceneManager.sceneCount)
                 .Select(SceneManager.GetSceneAt)
                 .Where(scene => scene.isLoaded)
-                .SelectMany(GetRoots)
+                .SelectMany(scene => scene.Roots())
                 .ToArray();
         }
 
@@ -254,10 +250,6 @@ namespace VF.Utils {
             }
 
             this.name = name;
-        }
-
-        public int GetInstanceID() {
-            return _gameObject.GetInstanceID();
         }
 
         public bool HasTag(string tag) {
@@ -315,6 +307,14 @@ namespace VF.Utils {
 
         public T[] GetComponentsInUploadRoot<T>() {
             return uploadRoots.SelectMany(r => r.GetComponentsInSelfAndChildren<T>()).ToArray();
+        }
+
+        public static T[] GetComponentsInAllOpenScenes<T>() {
+            return GetRoots().SelectMany(r => r.GetComponentsInSelfAndChildren<T>()).ToArray();
+        }
+
+        public static UnityEngine.Component[] GetComponentsInAllOpenScenes(Type type) {
+            return GetRoots().SelectMany(r => r.GetComponentsInSelfAndChildren(type)).ToArray();
         }
     }
 }

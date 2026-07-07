@@ -16,7 +16,7 @@ namespace VF.Hooks.VrcsdkFixes {
                 .VFStaticField("_latestCompletedFrameNumber");
         }
 
-        [InitializeOnLoadMethod]
+        [VFInit]
         public static void Init() {
             // SPS-NDMF: disabled playMode subscription + VRCSDK internal field mutation
             return;

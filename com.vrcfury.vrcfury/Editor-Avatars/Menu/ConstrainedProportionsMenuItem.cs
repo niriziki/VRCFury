@@ -31,14 +31,12 @@ namespace VF.Menu {
             );
         }
 
-        [InitializeOnLoadMethod]
+        [VFInit]
         private static void Init() {
             // SPS-NDMF: disabled Harmony patches and selection subscription (modifies Unity constraint behavior)
             return;
             #pragma warning disable CS0162
             if (!ReflectionHelper.IsReady<Reflection>()) return;
-
-            EditorApplication.delayCall += UpdateMenu;
 
             Reflection.DoAllGOsHaveConstrainProportionsEnabledPatch.apply();
             Reflection.SetConstrainProportionsPatch.apply();
@@ -81,9 +79,6 @@ namespace VF.Menu {
         public static bool Get() {
             return EditorPrefs.GetBool(EditorPref, true);
         }
-        private static void UpdateMenu() {
-            UnityEditor.Menu.SetChecked(MenuItems.constrainedProportions, Get());
-        }
 
         // SPS-NDMF: removed menu registration (non-SPS utility)
         // [MenuItem(MenuItems.constrainedProportions, priority = MenuItems.constrainedProportionsPriority)]
@@ -100,7 +95,12 @@ namespace VF.Menu {
                 if (!ok) return;
             }
             EditorPrefs.SetBool(EditorPref, !Get());
-            UpdateMenu();
+        }
+
+        [MenuItem(MenuItems.constrainedProportions, true)]
+        private static bool Validate() {
+            UnityEditor.Menu.SetChecked(MenuItems.constrainedProportions, Get());
+            return true;
         }
     }
 }

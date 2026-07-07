@@ -5,16 +5,8 @@ namespace VF.Menu {
     internal static class AlignMobileParamsMenuItem {
         private const string EditorPref = "com.vrcfury.alignMobile";
 
-        [InitializeOnLoadMethod]
-        private static void Init() {
-            EditorApplication.delayCall += UpdateMenu;
-        }
-
         public static bool Get() {
             return EditorPrefs.GetBool(EditorPref, true);
-        }
-        private static void UpdateMenu() {
-            UnityEditor.Menu.SetChecked(MenuItems.alignMobile, Get());
         }
 
         // SPS-NDMF: removed menu registration (non-SPS utility)
@@ -33,7 +25,12 @@ namespace VF.Menu {
                 if (!ok) return;
             }
             EditorPrefs.SetBool(EditorPref, !Get());
-            UpdateMenu();
+        }
+
+        [MenuItem(MenuItems.alignMobile, true)]
+        private static bool Validate() {
+            UnityEditor.Menu.SetChecked(MenuItems.alignMobile, Get());
+            return true;
         }
     }
 }

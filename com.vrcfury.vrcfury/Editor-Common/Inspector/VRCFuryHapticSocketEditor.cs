@@ -9,7 +9,6 @@ using UnityEngine.UIElements;
 using VF.Builder;
 using VF.Builder.Haptics;
 using VF.Component;
-using VF.Service;
 using VF.Utils;
 
 namespace VF.Inspector {
@@ -171,7 +170,7 @@ namespace VF.Inspector {
 
         [CustomEditor(typeof(VRCFurySocketGizmo), true)]
         public class VRCFuryHapticPlaySocketEditor : UnityEditor.Editor {
-            [InitializeOnLoadMethod]
+            [VFInit]
             private static void Init() {
                 VRCFurySocketGizmo.EnableSceneLighting = () => {
                     var sv = EditorWindowFinder.GetWindows<SceneView>().FirstOrDefault();

@@ -5,16 +5,8 @@ namespace VF.Menu {
     internal static class UseInUploadMenuItem {
         private const string Key = "com.vrcfury.useInUpload";
 
-        [InitializeOnLoadMethod]
-        private static void Init() {
-            EditorApplication.delayCall += UpdateMenu;
-        }
-
         public static bool Get() {
             return SessionState.GetBool(Key, true);
-        }
-        private static void UpdateMenu() {
-            UnityEditor.Menu.SetChecked(MenuItems.uploadMode, Get());
         }
 
         // SPS-NDMF: removed menu registration (non-SPS utility)
@@ -34,7 +26,13 @@ namespace VF.Menu {
                 if (!ok) return;
             }
             SessionState.SetBool(Key, !Get());
-            UpdateMenu();
+        }
+
+        // SPS-NDMF: removed menu registration (non-SPS utility)
+        // [MenuItem(MenuItems.uploadMode, true)]
+        private static bool Validate() {
+            UnityEditor.Menu.SetChecked(MenuItems.uploadMode, Get());
+            return true;
         }
     }
 }

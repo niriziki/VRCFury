@@ -125,6 +125,15 @@ namespace VF.Feature {
                     receiver.parameter = RewriteParamName(receiver.parameter);
                 }
             }
+#if VRCSDK_HAS_VRCRAYCAST
+            foreach (var raycast in GetBaseObject(model, featureBaseObject).GetComponentsInSelfAndChildren<VRCRaycast>()) {
+                if (rewrittenParams.ContainsKey(raycast.Parameter + "_Hit") 
+                    || rewrittenParams.ContainsKey(raycast.Parameter + "_Ratio")
+                    || rewrittenParams.ContainsKey(raycast.Parameter + "_Distance")) {
+                    raycast.Parameter = RewriteParamName(raycast.Parameter);
+                }
+            }
+#endif
             foreach (var physbone in GetBaseObject(model, featureBaseObject).GetComponentsInSelfAndChildren<VRCPhysBone>()) {
                 if (rewrittenParams.ContainsKey(physbone.parameter + "_IsGrabbed")
                     || rewrittenParams.ContainsKey(physbone.parameter + "_Angle")

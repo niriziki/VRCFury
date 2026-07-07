@@ -52,6 +52,16 @@ namespace VF.Menu {
         public const int disableDbtMergingPriority = utilitiesPriority + 9;
         public const string spsDevMode = utilities + "Enable SPS Internal Dev Mode";
         public const int spsDevModePriority = utilitiesPriority + 10;
+        public const string udonCleanerUninstallAgain = utilities + "Re-run Udon Cleaner Uninstall";
+        public const int udonCleanerUninstallAgainPriority = utilitiesPriority + 11;
+        public const string cleanupRedundantObjectReferenceOverrides = utilities + "Cleanup Redundant Object Reference Overrides";
+        public const int cleanupRedundantObjectReferenceOverridesPriority = utilitiesPriority + 12;
+        public const string applySuperSampledUiMaterialOverrides = utilities + "Apply VRCSuperSampledUIMaterial Overrides";
+        public const int applySuperSampledUiMaterialOverridesPriority = utilitiesPriority + 13;
+        public const string sceneDirtyLogger = utilities + "Log why Scene is dirtied";
+        public const int sceneDirtyLoggerPriority = utilitiesPriority + 14;
+        public const string logExternalSceneReferences = utilities + "Log External Scene References";
+        public const int logExternalSceneReferencesPriority = utilitiesPriority + 15;
 
         public const string settings = prefix + "Settings/";
         public const int settingsPriority = 1312;
@@ -74,6 +84,10 @@ namespace VF.Menu {
         public const int unpackWarningPriority = settingsPriority + 105;
         public const string alignMobile = settings + "Align Mobile Parameters to match Desktop";
         public const int alignMobilePriority = settingsPriority + 106;
+        public const string disableVpmResolverInit = settings + "Disable Buggy VRCSDK VPM Resolver";
+        public const int disableVpmResolverInitPriority = settingsPriority + 107;
+        public const string udonCleaner = settings + "Enable Udon Cleaner (Alpha)";
+        public const int udonCleanerPriority = settingsPriority + 108;
         
         public const string compressHeader = settings + "When avatar is over parameter limit:";
         public const int compressHeaderPriority = settingsPriority + 200;
@@ -99,7 +113,7 @@ namespace VF.Menu {
                 var obj = Selection.activeGameObject.asVf();
                 if (obj == null) return;
                 var list = new List<string>();
-                foreach (var c in obj.GetComponentsInSelfAndChildren<UnityEngine.Component>()) {
+                foreach (var c in obj.GetComponentsInSelfAndChildren()) {
                     if (c == null || c is Transform) continue;
                     var type = c.GetType().Name;
                     if (c is VRCFury vf) {

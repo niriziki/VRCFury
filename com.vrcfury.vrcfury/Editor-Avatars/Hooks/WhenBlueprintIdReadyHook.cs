@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using VF.Exceptions;
@@ -12,7 +12,7 @@ namespace VF.Hooks {
         private static readonly List<Action> callbacks = new List<Action>();
 
 #if VRC_NEW_PUBLIC_SDK
-        [InitializeOnLoadMethod]
+        [VFInit]
         private static void Init() {
             // SPS-NDMF: disabled VRCSdkControlPanel subscription (non-SPS callback wiring)
             return;

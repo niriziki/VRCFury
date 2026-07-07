@@ -21,15 +21,12 @@ namespace VF {
         public static void Cleanup(ISet<string> usedFolders = null) {
             var tmpDir = GetPathNullable();
             if (tmpDir == null) return;
+            var buildsDir = tmpDir + "/Builds";
+            if (!AssetDatabase.IsValidFolder(buildsDir)) return;
 
             VRCFuryAssetDatabase.WithAssetEditing(() => {
-                VRCFuryAssetDatabase.DeleteFiltered(tmpDir, path => {
+                VRCFuryAssetDatabase.DeleteFiltered(buildsDir, path => {
                     if (usedFolders != null && usedFolders.Any(used => path.StartsWith($"{used}/") || path == used || used.StartsWith($"{path}/"))) return false;
-                    if (path.StartsWith(tmpDir + "/SPS")) return false;
-                    if (path.StartsWith(tmpDir + "/XR")) return false;
-                    if (path.StartsWith(tmpDir + "/package.json")) return false;
-                    if (path.StartsWith(tmpDir + "/PlayModeSettings")) return false;
-                    if (path.StartsWith(tmpDir + "/LegacyPrefabsImported")) return false;
                     return true;
                 });
             });

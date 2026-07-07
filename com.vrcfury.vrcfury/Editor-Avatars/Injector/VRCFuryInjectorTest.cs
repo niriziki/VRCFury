@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
@@ -12,7 +13,7 @@ using VRC.SDK3.Avatars.Components;
 
 namespace VF.Injector {
     internal static class VRCFuryInjectorTest {
-        [InitializeOnLoadMethod]
+        [VFInit]
         private static void Init() {
             // SPS-NDMF: disabled assembly-load-time DI context self-test
             return;
@@ -97,7 +98,17 @@ namespace VF.Injector {
                 }
             }
 
-            foreach (var type in ReflectionUtils.GetTypes(typeof(object))) {
+            var typesToScan =
+                TypeCache.GetMethodsWithAttribute<FeatureBuilderActionAttribute>().Select(m => m.DeclaringType)
+                    .Concat(TypeCache.GetTypesWithAttribute<VFServiceAttribute>())
+                    .Concat(TypeCache.GetTypesDerivedFrom<FeatureBuilder>())
+                    .Concat(TypeCache.GetTypesWithAttribute<VFPrototypeScopeAttribute>())
+                    .Concat(TypeCache.GetTypesDerivedFrom<IVRCFuryBuilder>())
+#if UNITY_2022_1_OR_NEWER
+                    .Concat(TypeCache.GetFieldsWithAttribute<VFAutowiredAttribute>().Select(f => f.DeclaringType))
+#endif
+                    .ToImmutableHashSet();
+            foreach (var type in typesToScan) {
                 var hasBuilderAction = type.GetMethods()
                     .Any(m => m.GetCustomAttribute<FeatureBuilderActionAttribute>() != null);
                 var isService = type.GetCustomAttribute<VFServiceAttribute>() != null;

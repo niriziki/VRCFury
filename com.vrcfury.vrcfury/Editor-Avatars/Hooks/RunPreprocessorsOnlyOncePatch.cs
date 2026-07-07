@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using VF.Model;
@@ -28,7 +28,7 @@ namespace VF.Hooks {
         private static PlayModeState GetPlayModeState(Transform t) =>
             playModeState.TryGetValue(t, out var s) ? s : PlayModeState.Fresh;
 
-        [InitializeOnLoadMethod]
+        [VFInit]
         private static void Init() {
             // SPS-NDMF: disabled Harmony patch and playmode tracking (NDMF handles preprocessor ordering)
             return;

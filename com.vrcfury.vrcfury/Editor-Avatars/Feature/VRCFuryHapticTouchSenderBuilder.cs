@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VF.Builder;
+using VF.Builder.Haptics;
 using VF.Component;
 using VF.Feature.Base;
 using VF.Injector;
@@ -22,7 +23,7 @@ namespace VF.Feature {
                     obj = sender.owner(),
                     objName = "Sender",
                     radius = sender.radius,
-                    tags = new string[] { "Finger" },
+                    tags = new string[] { "Finger", "FingerR", "FingerIndex", "FingerIndexR" },
                     worldScale = false
                 });
             }

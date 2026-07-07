@@ -85,6 +85,11 @@ namespace VF.Utils {
             AssetDatabase.CreateAsset(obj, fullPath);
         }
 
+        public static void MoveAsset(string from, string to) {
+            CreateFolder(GetDirectoryName(to));
+            AssetDatabase.MoveAsset(from, to);
+        }
+
         public static void SaveAsset(Object obj, string dir, string filename) {
             string ext;
             if (obj is AnimationClip) {
@@ -142,7 +147,7 @@ namespace VF.Utils {
         }
 
         public static void Delete(string path) {
-            Debug.Log("Deleting " + path);
+            //Debug.Log("Deleting " + path);
             AssetDatabase.DeleteAsset(path);
         }
 
@@ -252,6 +257,13 @@ namespace VF.Utils {
             var path = AssetDatabase.GUIDToAssetPath(guid);
             if (path.IsEmpty()) return null;
             return AssetDatabase.LoadAssetAtPath<T>(path);
+        }
+
+        public static void DeleteDirIfEmpty(string path) {
+            if (string.IsNullOrEmpty(path)) return;
+            if (!AssetDatabase.IsValidFolder(path)) return;
+            if (AssetDatabase.FindAssets("", new[] { path }).Length > 0) return;
+            AssetDatabase.DeleteAsset(path);
         }
     }
 }

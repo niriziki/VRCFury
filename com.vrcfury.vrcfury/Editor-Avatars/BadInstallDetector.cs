@@ -5,7 +5,7 @@ using VF.Utils;
 
 namespace VF {
     internal static class BadInstallDetector {
-        [InitializeOnLoadMethod]
+        [VFInit]
         private static void Init() {
             // SPS-NDMF: disabled, hardcoded com.vrcfury.vrcfury path check is irrelevant
             return;
