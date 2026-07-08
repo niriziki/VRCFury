@@ -2,7 +2,8 @@
     "name": "Nrzk.SpsMigrator.Editor",
     "rootNamespace": "Nrzk.SpsMigrator",
     "references": [
-        "nadena.dev.modular-avatar.core"
+        "nadena.dev.modular-avatar.core",
+        "nadena.dev.ndmf"
     ],
     "includePlatforms": ["Editor"],
     "excludePlatforms": [],
@@ -16,6 +17,12 @@
     ],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "net.nrzk.vfstub",
+            "expression": "",
+            "define": "SPSNDMF_VFSTUB"
+        }
+    ],
     "noEngineReferences": false
 }

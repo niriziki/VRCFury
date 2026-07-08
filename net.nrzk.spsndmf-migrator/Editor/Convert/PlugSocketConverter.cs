@@ -1,5 +1,4 @@
 using System;
-using UnityEditor;
 using UnityEngine;
 using Nrzk.SpsMigrator.Copy;
 using Nrzk.SpsMigrator.Reflection;
@@ -37,7 +36,7 @@ namespace Nrzk.SpsMigrator.Convert {
             }
         }
 
-        public static void Execute(GameObject root, bool vrcfToSpsNdmf, ConversionPlan plan) {
+        public static void Execute(GameObject root, bool vrcfToSpsNdmf, ConversionPlan plan, IConversionOps ops) {
             var srcPlug = vrcfToSpsNdmf ? PackageBinding.VrcfPlugType : PackageBinding.SpsNdmfPlugType;
             var dstPlug = vrcfToSpsNdmf ? PackageBinding.SpsNdmfPlugType : PackageBinding.VrcfPlugType;
             var srcSock = vrcfToSpsNdmf ? PackageBinding.VrcfSocketType : PackageBinding.SpsNdmfSocketType;
@@ -45,23 +44,23 @@ namespace Nrzk.SpsMigrator.Convert {
 
             if (srcPlug == null || dstPlug == null || srcSock == null || dstSock == null) return;
 
-            ExecuteOne(root, srcPlug, dstPlug, plan);
-            ExecuteOne(root, srcSock, dstSock, plan);
+            ExecuteOne(root, srcPlug, dstPlug, plan, ops);
+            ExecuteOne(root, srcSock, dstSock, plan, ops);
         }
 
-        private static void ExecuteOne(GameObject root, Type srcType, Type dstType, ConversionPlan plan) {
+        private static void ExecuteOne(GameObject root, Type srcType, Type dstType, ConversionPlan plan, IConversionOps ops) {
             foreach (var src in root.GetComponentsInChildren(srcType, true)) {
                 var go = src.gameObject;
                 var entry = plan.Entries.Find(e => e.Target == go && e.SourceTypeName == srcType.FullName);
                 if (entry == null) continue;
                 if (entry.Outcome == ConversionOutcome.Skipped) continue;
 
-                var dst = Undo.AddComponent(go, dstType);
+                var dst = ops.AddComponent(go, dstType);
                 var ctx = new CopyContext();
                 StructuralFieldCopier.CopyFields(src, dst, ctx, go.name);
                 entry.Warnings.AddRange(ctx.Warnings);
 
-                Undo.DestroyObjectImmediate(src);
+                ops.Destroy(src);
             }
         }
     }

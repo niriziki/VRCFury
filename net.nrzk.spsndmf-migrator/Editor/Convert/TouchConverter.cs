@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using UnityEditor;
 using UnityEngine;
 using VRC.Dynamics;
 using VRC.SDK3.Dynamics.Contact.Components;
@@ -50,7 +49,7 @@ namespace Nrzk.SpsMigrator.Convert {
             }
         }
 
-        public static void ExecuteReceiver(GameObject root, ConversionPlan plan) {
+        public static void ExecuteReceiver(GameObject root, ConversionPlan plan, IConversionOps ops) {
             var srcType = PackageBinding.VrcfTouchReceiverType;
             if (srcType == null) return;
 
@@ -74,15 +73,15 @@ namespace Nrzk.SpsMigrator.Convert {
                     .Concat(new[] { HapticTagConstants.CONTACT_PEN_CLOSE }).ToArray();
 
                 CreateChildReceiver(go, UniqueChildName(go, "Self"),
-                    radius, selfTags, paramPrefix + "/Self", party: true, others: false);
+                    radius, selfTags, paramPrefix + "/Self", party: true, others: false, ops);
                 CreateChildReceiver(go, UniqueChildName(go, "Others"),
-                    radius, othersTags, paramPrefix + "/Others", party: false, others: true);
+                    radius, othersTags, paramPrefix + "/Others", party: false, others: true, ops);
 
-                Undo.DestroyObjectImmediate(src);
+                ops.Destroy(src);
             }
         }
 
-        public static void ExecuteSender(GameObject root, ConversionPlan plan) {
+        public static void ExecuteSender(GameObject root, ConversionPlan plan, IConversionOps ops) {
             var srcType = PackageBinding.VrcfTouchSenderType;
             if (srcType == null) return;
 
@@ -94,25 +93,25 @@ namespace Nrzk.SpsMigrator.Convert {
                 if (entry == null || entry.Outcome == ConversionOutcome.Skipped) continue;
 
                 var radius = (float)radiusField.GetValue(src);
-                var sender = Undo.AddComponent<VRCContactSender>(go);
+                var sender = (VRCContactSender)ops.AddComponent(go, typeof(VRCContactSender));
                 sender.shapeType = ContactBase.ShapeType.Sphere;
                 sender.radius = radius;
                 sender.position = Vector3.zero;
                 sender.collisionTags = new List<string> { "Finger" };
 
-                Undo.DestroyObjectImmediate(src);
+                ops.Destroy(src);
             }
         }
 
         private static void CreateChildReceiver(
             GameObject parent, string childName, float radius, string[] tags,
-            string paramName, bool party, bool others) {
+            string paramName, bool party, bool others, IConversionOps ops) {
 
             var child = new GameObject(childName);
-            Undo.RegisterCreatedObjectUndo(child, "Create Touch Receiver child");
+            ops.RegisterCreated(child);
             child.transform.SetParent(parent.transform, worldPositionStays: false);
 
-            var recv = Undo.AddComponent<VRCContactReceiver>(child);
+            var recv = (VRCContactReceiver)ops.AddComponent(child, typeof(VRCContactReceiver));
             recv.shapeType = ContactBase.ShapeType.Sphere;
             recv.radius = radius;
             recv.position = Vector3.zero;

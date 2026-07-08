@@ -208,15 +208,16 @@ namespace Nrzk.SpsMigrator {
             Undo.SetCurrentGroupName("SPSNDMF Migration");
             var group = Undo.GetCurrentGroup();
 
+            var ops = new UndoConversionOps();
             try {
-                PlugSocketConverter.Execute(target, _direction == Direction.VrcfToSpsNdmf, plan);
+                PlugSocketConverter.Execute(target, _direction == Direction.VrcfToSpsNdmf, plan, ops);
                 if (_direction == Direction.VrcfToSpsNdmf) {
                     if (_convertGlobalCollider && PackageBinding.GlobalColliderConvertible)
-                        GlobalColliderConverter.Execute(target, plan);
+                        GlobalColliderConverter.Execute(target, plan, ops);
                     if (_convertTouchReceiver && PackageBinding.TouchReceiverConvertible)
-                        TouchConverter.ExecuteReceiver(target, plan);
+                        TouchConverter.ExecuteReceiver(target, plan, ops);
                     if (_convertTouchSender && PackageBinding.TouchSenderConvertible)
-                        TouchConverter.ExecuteSender(target, plan);
+                        TouchConverter.ExecuteSender(target, plan, ops);
                 }
             } finally {
                 Undo.CollapseUndoOperations(group);
