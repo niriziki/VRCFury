@@ -1,6 +1,5 @@
 using System.Reflection;
 using nadena.dev.modular_avatar.core;
-using UnityEditor;
 using UnityEngine;
 using Nrzk.SpsMigrator.Reflection;
 
@@ -30,7 +29,7 @@ namespace Nrzk.SpsMigrator.Convert {
             }
         }
 
-        public static void Execute(GameObject root, ConversionPlan plan) {
+        public static void Execute(GameObject root, ConversionPlan plan, IConversionOps ops) {
             var srcType = PackageBinding.VrcfGlobalColliderType;
             if (srcType == null) return;
 
@@ -43,13 +42,13 @@ namespace Nrzk.SpsMigrator.Convert {
                 var entry = plan.Entries.Find(e => e.Target == go && e.SourceTypeName == srcType.FullName);
                 if (entry == null || entry.Outcome == ConversionOutcome.Skipped) continue;
 
-                var dst = Undo.AddComponent<ModularAvatarGlobalCollider>(go);
+                var dst = (ModularAvatarGlobalCollider)ops.AddComponent(go, typeof(ModularAvatarGlobalCollider));
                 dst.Radius = (float)radiusField.GetValue(src);
                 dst.Height = (float)heightField.GetValue(src);
                 dst.RootTransform = (Transform)rootTransformField.GetValue(src);
                 dst.ManualRemap = false;
 
-                Undo.DestroyObjectImmediate(src);
+                ops.Destroy(src);
             }
         }
     }
