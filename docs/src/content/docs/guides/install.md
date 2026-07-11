@@ -29,6 +29,6 @@ VPM リポジトリを登録する代わりに、[Releases](https://github.com/n
 
 新規にアバターを組む場合は、通常は本体の SPS for NDMF（`net.nrzk.spsndmf`）だけを入れれば十分です。
 
-すでに VRCFury（またはその SPS 機能）を使ったシーン・プレハブがある場合は、VRCFury Stub（`net.nrzk.vfstub`）や SPSNDMF Migrator（`net.nrzk.spsndmf-migrator`）が必要になることがあります。これらの役割と使い分けについては [パッケージと連携](/packages/overview/) を参照してください。
+すでに VRCFury（またはその SPS 機能）を使ったシーン・プレハブがある場合は、VRCFury Stub（`net.nrzk.vfstub`）や SPSNDMF Migrator（`net.nrzk.spsndmf-migrator`）が必要になることがあります。これらの役割と使い分けについては [パッケージ構成](/guides/packages/) を参照してください。
 
 インストールが終わったら、[クイックスタート](/guides/quickstart/) に進んでください。

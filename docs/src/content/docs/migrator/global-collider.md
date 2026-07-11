@@ -1,10 +1,10 @@
 ---
 title: Global Collider
 sidebar:
-  order: 4
+  order: 2
 ---
 
-Global Collider は、SPS 本体とは別に VRCFury が提供している、関連するハプティクス機能です。[SPS for NDMF はこのコンポーネントをビルド処理の対象にしていません](/packages/spsndmf/)。
+Global Collider は、SPS 本体とは別に VRCFury が提供している、関連するハプティクス機能です。[SPS for NDMF はこのコンポーネントをビルド処理の対象にしていません](/spsndmf/overview/)。
 
 ## これは何か
 
@@ -24,4 +24,4 @@ VRCFury の Global Collider には次の設定があります。
 
 SPS for NDMF は、Plug と Socket 以外の VRCFury コンポーネントをビルド処理の対象にしていません。Global Collider もこの対象外のコンポーネントの一つで、SPSNDMF 環境では VRCFury の Global Collider コンポーネントをそのまま使うことはできません。
 
-SPSNDMF 環境で同等の機能を使いたい場合は、代わりに **Modular Avatar の Global Collider** コンポーネントを使います。すでに VRCFury の Global Collider が設定されたアバターがある場合は、[SPSNDMF Migrator](/packages/migrator/) を使うと、半径・高さ・基準 Transform の設定を引き継いだ状態で Modular Avatar の Global Collider へ変換できます（VRCFury → SPSNDMF 方向のみ）。詳しくは [移行の流れ](/packages/migration-flow/) を参照してください。
+SPSNDMF 環境で同等の機能を使いたい場合は、代わりに **Modular Avatar の Global Collider** コンポーネントを使います。すでに VRCFury の Global Collider が設定されたアバターがある場合は、[SPSNDMF Migrator](/migrator/overview/) を使うと、半径・高さ・基準 Transform の設定を引き継いだ状態で Modular Avatar の Global Collider へ変換できます（VRCFury → SPSNDMF 方向のみ）。詳しくは [移行の流れ](/migrator/migration-flow/) を参照してください。

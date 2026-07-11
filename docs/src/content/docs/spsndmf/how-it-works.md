@@ -1,10 +1,10 @@
 ---
 title: しくみ
 sidebar:
-  order: 6
+  order: 5
 ---
 
-[Plug](/sps/plug/) と [Socket](/sps/socket/) の各ページの「仕組み」節で紹介した内容を、SPS 全体の視点からまとめて説明します。実用的な設定項目だけを知りたい場合は、このページを読む必要はありません。
+[Plug](/spsndmf/plug/) と [Socket](/spsndmf/socket/) の各ページの「仕組み」節で紹介した内容を、SPS 全体の視点からまとめて説明します。実用的な設定項目だけを知りたい場合は、このページを読む必要はありません。
 
 ## SPS シェーダーの原理
 
@@ -12,9 +12,9 @@ SPS の変形処理は、Plug 側のメッシュに組み込まれた専用の�
 
 実行中、このシェーダーは同じフレームの中で Socket 側が書き込んだ位置・向き・種類などの情報を、画面の描画データを介して読み取ります。これによって、CPU 側の処理やアニメーションクリップを介さずに、GPU 上の頂点計算だけで Plug をリアルタイムに曲げることができます。近くに複数の Socket がある場合は、その中から距離やタグ設定に基づいて適切なものが自動的に選ばれます。
 
-Plug の長さ・太さは、Automatically find mesh 等の設定に応じて自動計測されるほか（[Plug のページ](/sps/plug/)を参照）、実行中の曲がり方の太さの変化にもこの計測結果が使われます。テクスチャマスクやボーンウェイトによるマスク設定は、変形させる範囲・長さや太さの計算に使う範囲を絞り込むために使われます。
+Plug の長さ・太さは、Automatically find mesh 等の設定に応じて自動計測されるほか（[Plug のページ](/spsndmf/plug/)を参照）、実行中の曲がり方の太さの変化にもこの計測結果が使われます。テクスチャマスクやボーンウェイトによるマスク設定は、変形させる範囲・長さや太さの計算に使う範囲を絞り込むために使われます。
 
-なお、SPS は旧式の DPS / TPS との互換性のため、Unity のライト（点光源）を使った位置伝達も補助的にサポートしています（[SPS とは](/sps/what-is-sps/)の「DPS / TPS との違い」も参照）。この互換用の仕組みは、Socket の「Enable Legacy Compatibility」設定で個別に ON / OFF できます。
+なお、SPS は旧式の DPS / TPS との互換性のため、Unity のライト（点光源）を使った位置伝達も補助的にサポートしています（[SPS とは](/spsndmf/what-is-sps/)の「DPS / TPS との違い」も参照）。この互換用の仕組みは、Socket の「Enable Legacy Compatibility」設定で個別に ON / OFF できます。
 
 ## VRChat Contacts との関係
 
@@ -34,4 +34,4 @@ SPS for NDMF は、NDMF の非破壊ビルドの中で Modular Avatar より前�
 1. **SPS のビルド処理を実行する** — アバター上の Plug / Socket を検出し、これまでに説明した変形用シェーダーの組み込みや、Contacts の生成、メニュー・パラメータの構築などを行います。
 2. **結果を Modular Avatar のコンポーネントとして出力する** — 1 で生成されたアニメーター・メニュー・パラメータを、Modular Avatar の Merge Animator・Menu Installer・Parameters といったコンポーネントとして出力します。
 
-この2段階の処理は、アバター上に Plug または Socket が1つも無い場合は実行されません。また、SPS for NDMF は SPS に関係する範囲だけを処理するように設計されており、Plug / Socket 以外の VRCFury コンポーネント（[Global Collider](/sps/global-collider/) や [Haptic Touch](/sps/haptic-touch/) など）には影響を与えません。この2段階の処理が完了したあと、続けて Modular Avatar 自体のビルドが実行され、1つのアバターとして統合されます。
+この2段階の処理は、アバター上に Plug または Socket が1つも無い場合は実行されません。また、SPS for NDMF は SPS に関係する範囲だけを処理するように設計されており、Plug / Socket 以外の VRCFury コンポーネント（[Global Collider](/migrator/global-collider/) や [Haptic Touch](/migrator/haptic-touch/) など）には影響を与えません。この2段階の処理が完了したあと、続けて Modular Avatar 自体のビルドが実行され、1つのアバターとして統合されます。

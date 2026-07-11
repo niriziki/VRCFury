@@ -1,14 +1,14 @@
 ---
 title: 移行の流れ
 sidebar:
-  order: 5
+  order: 4
 ---
 
 このページでは、すでに VRCFury のギミック（SPS を含む）が組み込まれたアバターを、**VRCFury 本体をインストールしないまま** SPS for NDMF（SPSNDMF）へ移行するための全体フローを説明します。
 
 ## このページの目的
 
-「VRCFury 本体を導入せずに SPS だけを使いたい」というニーズ（詳しくは [SPS for NDMF とは](/guides/about/)）は、新規制作だけでなく「すでに VRCFury で組んだアバターがある」場合にも当てはまります。この場合、単に VRCFury 本体を消すだけでは、シーンやプレハブに残った VRCFury コンポーネントの設定が読み込めなくなってしまいます。ここでは、[VRCFury Stub](/packages/vfstub/) と [SPSNDMF Migrator](/packages/migrator/) を使って、コンポーネントを壊さずに SPSNDMF へ移行する手順を示します。
+「VRCFury 本体を導入せずに SPS だけを使いたい」というニーズ（詳しくは [SPS for NDMF とは](/guides/about/)）は、新規制作だけでなく「すでに VRCFury で組んだアバターがある」場合にも当てはまります。この場合、単に VRCFury 本体を消すだけでは、シーンやプレハブに残った VRCFury コンポーネントの設定が読み込めなくなってしまいます。ここでは、[VRCFury Stub](/vfstub/overview/) と [SPSNDMF Migrator](/migrator/overview/) を使って、コンポーネントを壊さずに SPSNDMF へ移行する手順を示します。
 
 ## 全体像
 
@@ -31,7 +31,7 @@ VRCFury Stub（`net.nrzk.vfstub`）を導入します。VRCFury Stub は、VRCFu
 
 ### ③ SPSNDMF Migrator で VRCFury → SPSNDMF 変換
 
-SPSNDMF Migrator（`net.nrzk.spsndmf-migrator`）を導入し、`Tools/SPSNDMF/Migrator` から変換対象の GameObject を選び、`VRCFury → SPSNDMF` 方向で変換します。プレビューで変換内容を確認してから実行でき、実行後も Ctrl+Z で取り消し可能です。VRCFury 本体がなくても、VRCFury Stub が提供するコンポーネントに対して変換処理が動作します。変換対象コンポーネントの詳細は [SPSNDMF Migrator の変換対象表](/packages/migrator/#変換対象) を参照してください。
+SPSNDMF Migrator（`net.nrzk.spsndmf-migrator`）を導入し、`Tools/SPSNDMF/Migrator` から変換対象の GameObject を選び、`VRCFury → SPSNDMF` 方向で変換します。プレビューで変換内容を確認してから実行でき、実行後も Ctrl+Z で取り消し可能です。VRCFury 本体がなくても、VRCFury Stub が提供するコンポーネントに対して変換処理が動作します。変換対象コンポーネントの詳細は [SPSNDMF Migrator の変換対象表](/migrator/overview/#変換対象) を参照してください。
 
 ### ④ SPS for NDMF でビルド
 

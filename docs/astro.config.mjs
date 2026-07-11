@@ -18,9 +18,10 @@ export default defineConfig({
       },
       customCss: ['./src/styles/custom.css'],
       sidebar: [
-        { label: 'ガイド', items: [{ autogenerate: { directory: 'guides' } }] },
-        { label: 'パッケージと連携', items: [{ autogenerate: { directory: 'packages' } }] },
-        { label: 'SPS を理解する', items: [{ autogenerate: { directory: 'sps' } }] },
+        { label: 'はじめに', items: [{ autogenerate: { directory: 'guides' } }] },
+        { label: 'SPSNDMF の使い方', items: [{ autogenerate: { directory: 'spsndmf' } }] },
+        { label: 'VRCFury Stub の使い方', items: [{ autogenerate: { directory: 'vfstub' } }] },
+        { label: 'SPSNDMF Migrator の使い方', items: [{ autogenerate: { directory: 'migrator' } }] },
         { label: 'リファレンス', items: [{ autogenerate: { directory: 'reference' } }] },
         { label: '更新履歴', items: [{ autogenerate: { directory: 'changelog' } }] },
       ],

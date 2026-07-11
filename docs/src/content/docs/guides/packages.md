@@ -1,7 +1,7 @@
 ---
 title: パッケージ構成
 sidebar:
-  order: 1
+  order: 4
 ---
 
 SPS for NDMF は、役割の異なる3つのパッケージで構成されています。このページでは、それぞれの役割と依存関係、そして「自分の場合はどれを入れればいいか」を説明します。
@@ -14,7 +14,7 @@ SPS for NDMF は、役割の異なる3つのパッケージで構成されてい
 | **VRCFury Stub**（`net.nrzk.vfstub`） | VRCFury 本体を入れていなくても、既存のシーンやアバターに設定済みの VRCFury のコンポーネント（設定）が壊れたり消えたりせずにそのまま開けるようにするための互換パッケージ。VRCFury のような編集機能やビルド処理は持たない。 |
 | **SPSNDMF Migrator**（`net.nrzk.spsndmf-migrator`） | VRCFury / VRCFury Stub / SPSNDMF / Modular Avatar / VRChat Contacts の間で SPS 関連コンポーネントを相互変換するエディタ拡張。 |
 
-それぞれの詳細は [SPS for NDMF（本体）](/packages/spsndmf/)・[VRCFury Stub](/packages/vfstub/)・[SPSNDMF Migrator](/packages/migrator/) の各ページを参照してください。
+それぞれの詳細は [SPS for NDMF（本体）](/spsndmf/overview/)・[VRCFury Stub](/vfstub/overview/)・[SPSNDMF Migrator](/migrator/overview/) の各ページを参照してください。
 
 ## 依存関係
 
@@ -35,4 +35,4 @@ VRCFury Stub は VRCFury のコンポーネントを保持するだけの軽量�
 - **新規にアバターを組む場合**：通常は本体の SPS for NDMF（`net.nrzk.spsndmf`）だけで十分です。
 - **すでに VRCFury（またはその SPS 機能）を使ったシーン・プレハブがあり、VRCFury 本体を使い続けたくない場合**：SPS for NDMF に加えて VRCFury Stub と SPSNDMF Migrator の3つすべてが必要になります。
 
-3つを組み合わせた移行手順の詳細は [移行の流れ](/packages/migration-flow/) を参照してください。
+3つを組み合わせた移行手順の詳細は [移行の流れ](/migrator/migration-flow/) を参照してください。

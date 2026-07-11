@@ -8,7 +8,7 @@ SPS for NDMF を使って、アバターに Plug / Socket を付けてビルド�
 
 ## このページでできること
 
-このページでは、Modular Avatar で組んだアバターに SPS の Plug と Socket を追加し、アバターに SPS が組み込まれるまでの流れを紹介します。詳細な設定項目やシェーダー・Contacts の仕組みについては、このページでは扱いません（[Plug](/sps/plug/)・[Socket](/sps/socket/) の各ページを参照してください）。
+このページでは、Modular Avatar で組んだアバターに SPS の Plug と Socket を追加し、アバターに SPS が組み込まれるまでの流れを紹介します。詳細な設定項目やシェーダー・Contacts の仕組みについては、このページでは扱いません（[Plug](/spsndmf/plug/)・[Socket](/spsndmf/socket/) の各ページを参照してください）。
 
 ## Plug を付ける
 
@@ -17,7 +17,7 @@ SPS for NDMF を使って、アバターに Plug / Socket を付けてビルド�
 3. 選択していたオブジェクトの子として `SPS Plug` という GameObject が作成され、Plug 用のコンポーネントが追加されます。
 4. 作成後に表示されるダイアログの案内どおり、適切なボーンの下に配置されているか、正しい向きを向いているかを確認・調整します。
 
-Plug の詳しい設定（形状の選択、アニメーション対応など）は [Plug の詳細](/sps/plug/) を参照してください。
+Plug の詳しい設定（形状の選択、アニメーション対応など）は [Plug の詳細](/spsndmf/plug/) を参照してください。
 
 ## Socket を付ける
 
@@ -26,7 +26,7 @@ Plug の詳しい設定（形状の選択、アニメーション対応など）
 3. 選択していたオブジェクトの子として `SPS Socket` という GameObject が作成され、Socket 用のコンポーネントが追加されます。
 4. Plug と同様に、位置と向きを確認・調整します。
 
-Socket の詳しい設定は [Socket の詳細](/sps/socket/) を参照してください。
+Socket の詳しい設定は [Socket の詳細](/spsndmf/socket/) を参照してください。
 
 ## ビルドして確認
 

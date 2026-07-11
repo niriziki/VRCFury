@@ -1,14 +1,14 @@
 ---
 title: SPSNDMF Migrator
 sidebar:
-  order: 4
+  order: 1
 ---
 
 SPSNDMF Migrator（`net.nrzk.spsndmf-migrator`）は、SPS 関連コンポーネントの相互変換を行うエディタ拡張です。
 
 ## 役割
 
-VRCFury / VRCFury Stub / SPSNDMF / Modular Avatar / VRChat Contacts の間で、SPS 関連コンポーネントを相互変換するエディタ拡張です。VRCFury 本体は必須ではなく、[VRCFury Stub](/packages/vfstub/) が入っている環境でも動作します。
+VRCFury / VRCFury Stub / SPSNDMF / Modular Avatar / VRChat Contacts の間で、SPS 関連コンポーネントを相互変換するエディタ拡張です。VRCFury 本体は必須ではなく、[VRCFury Stub](/vfstub/overview/) が入っている環境でも動作します。
 
 ## 使い方
 
@@ -27,7 +27,7 @@ VRCFury / VRCFury Stub / SPSNDMF / Modular Avatar / VRChat Contacts の間で、
 | VRCFury Haptic Touch Receiver | VRC Contact Receiver × 2（子オブジェクト） | VRCFury → SPSNDMF のみ |
 | VRCFury Haptic Touch Sender | VRC Contact Sender | VRCFury → SPSNDMF のみ |
 
-Plug/Socket 以外の3種類は VRCFury → SPSNDMF 方向のみに対応しており、逆方向（SPSNDMF → VRCFury）の変換はできません。既存の VRCFury アバターをこれらのコンポーネントごと移行する場合の全体的な流れは [移行の流れ](/packages/migration-flow/) を参照してください。
+Plug/Socket 以外の3種類は VRCFury → SPSNDMF 方向のみに対応しており、逆方向（SPSNDMF → VRCFury）の変換はできません。既存の VRCFury アバターをこれらのコンポーネントごと移行する場合の全体的な流れは [移行の流れ](/migrator/migration-flow/) を参照してください。
 
 ## 依存
 
