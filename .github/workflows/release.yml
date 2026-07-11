@@ -25,9 +25,13 @@ jobs:
           PKG_SHORT="${TAG%/*}"
           VERSION="${TAG##*/}"
           PKG_DIR="net.nrzk.$PKG_SHORT"
+          # Only the main spsndmf package claims the repo-wide "Latest" release;
+          # the companion packages (vfstub, migrator) never take it over.
+          if [ "$PKG_SHORT" = "spsndmf" ]; then MAKE_LATEST=true; else MAKE_LATEST=false; fi
           echo "PKG_SHORT=$PKG_SHORT" >> "$GITHUB_ENV"
           echo "PKG_DIR=$PKG_DIR" >> "$GITHUB_ENV"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "MAKE_LATEST=$MAKE_LATEST" >> "$GITHUB_ENV"
 
       - name: Run ReleaseTransform
         run: |
@@ -96,6 +100,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
+          make_latest: ${{ env.MAKE_LATEST }}
           files: |
             ${{ env.PKG_ZIP }}
             ${{ env.VPAI_LATEST_ZIP }}
