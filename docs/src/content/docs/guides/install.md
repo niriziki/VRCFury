@@ -17,22 +17,20 @@ VPM 経由でインストールする場合、これらの依存関係は VPM �
 
 ## VPM で入れる
 
-VCC (VRChat Creator Companion) や ALCOM などの VPM 対応マネージャーの「Add Repository」（リポジトリを追加）から、以下の URL を登録します。
+[SPS for NDMF の VPM リポジトリページ](https://spsndmf.vpm.nrzk.net/) を開き、「**Add to VCC**」ボタンから VCC (VRChat Creator Companion) にリポジトリを追加します。
 
-```
-https://spsndmf.vpm.nrzk.net/index.json
-```
+ALCOM など別の VPM 対応マネージャーを使っている場合は、同じページの「Copy URL」でリポジトリの URL をコピーし、各マネージャーの「Add Repository」（リポジトリを追加）から貼り付けて登録してください。
 
 リポジトリを登録すると、対象の Unity プロジェクトに `SPS for NDMF` パッケージを追加できるようになります。
 
 ## VPAI インストーラで入れる
 
-VPM リポジトリを手動で登録したくない場合は、[Releases](https://github.com/niriziki/VRCFury/releases) から VPAI (unitypackage 形式のインストーラ) をダウンロードして使うこともできます。Unity プロジェクトを開いた状態で unitypackage を開くと、VPM リポジトリの登録とパッケージの導入が行えます。
+VPM リポジトリを登録する代わりに、[Releases](https://github.com/niriziki/VRCFury/releases) から VPAI (unitypackage 形式のインストーラ) をダウンロードしてインポートする方法もあります。Unity プロジェクトを開いた状態でこの unitypackage をインポートすると、VPM リポジトリの登録とパッケージの導入がまとめて行われます。
 
 ## どのパッケージを入れるか
 
-新規にアバターを組む場合は、通常は本体の `net.nrzk.spsndmf` だけを入れれば十分です。
+新規にアバターを組む場合は、通常は本体の SPS for NDMF（`net.nrzk.spsndmf`）だけを入れれば十分です。
 
-すでに VRCFury（またはその SPS 機能）を使ったシーン・プレハブがある場合は、`net.nrzk.vfstub` や `net.nrzk.spsndmf-migrator` が必要になることがあります。これらの役割と使い分けについては [パッケージと連携](/packages/overview/) を参照してください。
+すでに VRCFury（またはその SPS 機能）を使ったシーン・プレハブがある場合は、VRCFury Stub（`net.nrzk.vfstub`）や SPSNDMF Migrator（`net.nrzk.spsndmf-migrator`）が必要になることがあります。これらの役割と使い分けについては [パッケージと連携](/packages/overview/) を参照してください。
 
 インストールが終わったら、[クイックスタート](/guides/quickstart/) に進んでください。

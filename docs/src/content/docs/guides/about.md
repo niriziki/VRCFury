@@ -19,7 +19,7 @@ SPS for NDMF は、こうした「VRCFury 全体は導入せず SPS だけを使
 
 ## NDMF・Modular Avatar との関係
 
-SPS for NDMF は NDMF の `BuildPhase.Transforming` で、**Modular Avatar より前**に実行されるプラグインとして登録されています。SPS の処理結果が MA コンポーネントとして出力された状態で、その後の MA のビルドが実行される流れです。NDMF 環境専用の設計になっており、VRC SDK 単体でのビルドや、上流 VRCFury の旧来のビルド経路は使用しません。
+SPS for NDMF は NDMF のビルド処理の中で、**Modular Avatar より前**に実行されるように登録されています。SPS の処理結果が MA コンポーネントとして出力された状態で、その後の MA のビルドが実行される流れです。
 
 内部でどのようにビルドが行われるかは [しくみ](/sps/how-it-works/) で解説します。
 
@@ -29,10 +29,10 @@ SPS for NDMF は NDMF の `BuildPhase.Transforming` で、**Modular Avatar よ�
 
 | パッケージ | 役割 |
 |---|---|
-| `net.nrzk.spsndmf`（SPS for NDMF） | 本体。VRCFury の SPS 機能を NDMF プラグインとして抽出したもの。 |
-| `net.nrzk.vfstub`（VRCFury Stub） | VRCFury Runtime の型のみのスタブ。VRCFury 本体を入れずに、既存のシーン／プレハブに埋め込まれた VRCFury コンポーネントを保持したままロードするための互換レイヤ。 |
-| `net.nrzk.spsndmf-migrator`（SPSNDMF Migrator） | VRCFury / VRCFury Stub / SPSNDMF / Modular Avatar / VRChat Contacts の間で SPS 関連コンポーネントを相互変換するエディタ拡張。 |
+| SPS for NDMF（`net.nrzk.spsndmf`） | 本体。VRCFury の SPS 機能を NDMF プラグインとして抽出したもの。 |
+| VRCFury Stub（`net.nrzk.vfstub`） | VRCFury を入れていなくても、既存アバターに設定済みの VRCFury の設定が壊れたり消えたりせずに開けるようにするための互換用パッケージ。 |
+| SPSNDMF Migrator（`net.nrzk.spsndmf-migrator`） | VRCFury / VRCFury Stub / SPS for NDMF / Modular Avatar / VRChat Contacts の間で、SPS 関連のコンポーネントを相互に変換できるエディタ拡張。 |
 
-通常は本体（`net.nrzk.spsndmf`）だけで利用できます。他の2パッケージが必要になるケースについては [パッケージと連携](/packages/overview/) を参照してください。
+通常は本体の SPS for NDMF（`net.nrzk.spsndmf`）だけで利用できます。他の2パッケージが必要になるケースについては [パッケージと連携](/packages/overview/) を参照してください。
 
 次は [インストール](/guides/install/) に進んでください。

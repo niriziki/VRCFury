@@ -6,9 +6,9 @@ sidebar:
 
 SPS for NDMF を使って、アバターに Plug / Socket を付けてビルドするまでの最短手順です。[インストール](/guides/install/) を先に済ませておいてください。
 
-## この章のゴール
+## このページでできること
 
-Modular Avatar で組んだアバターに SPS の Plug と Socket を1つずつ追加し、ビルドしてエラーなく処理が通ることを確認するところまでを目標とします。詳細な設定項目やシェーダー・Contacts の仕組みについては、このページでは扱いません（[Plug](/sps/plug/)・[Socket](/sps/socket/) の各ページを参照してください）。
+このページでは、Modular Avatar で組んだアバターに SPS の Plug と Socket を追加し、アバターに SPS が組み込まれるまでの流れを紹介します。詳細な設定項目やシェーダー・Contacts の仕組みについては、このページでは扱いません（[Plug](/sps/plug/)・[Socket](/sps/socket/) の各ページを参照してください）。
 
 ## Plug を付ける
 
@@ -30,6 +30,6 @@ Socket の詳しい設定は [Socket の詳細](/sps/socket/) を参照してく
 
 ## ビルドして確認
 
-Plug / Socket を配置したら、いつもどおり Unity のプレイモードに入るか、VRChat SDK の Control Panel から Build & Test / アップロードを行います。この過程で NDMF の非破壊ビルドが自動的に実行されます。
+Plug / Socket を配置したら、いつもどおり Unity のプレイモードに入るか、VRChat SDK の Control Panel から Build & Test / アップロードを行います。
 
-SPS for NDMF は Modular Avatar より前のタイミングでこのビルドに加わり、Plug / Socket の処理結果を MA のコンポーネントとして出力します。Console にエラーが出ていなければ、SPS の処理が正しく走っています。
+SPS for NDMF は Modular Avatar より前のタイミングでこの非破壊ビルドに加わり、配置した Plug / Socket の設定を MA のコンポーネントとして自動的に組み込みます。特別な操作をしなくても、この一連の流れの中で SPS が組み込まれた状態のアバターがアップロードされます。
