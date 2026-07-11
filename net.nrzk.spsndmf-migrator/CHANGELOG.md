@@ -8,6 +8,16 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [0.2.0-beta.7] - 2026-07-11
+### Added / 追加
+- Online documentation site published at https://spsndmf.nrzk.net (`documentationUrl`).
+
+  オンラインドキュメントサイト https://spsndmf.nrzk.net を公開（`documentationUrl`）。
+### Changed / 変更
+- `changelogUrl` now links to the online changelog on the documentation site.
+
+  `changelogUrl` をドキュメントサイト上のオンライン更新履歴に変更。
+
 ## [0.2.0-beta.6] - 2026-07-11
 ### Added / 追加
 - Bundled changelog: a bilingual (English / Japanese) `CHANGELOG.md` is now shipped with the package and linked from `changelogUrl`.
