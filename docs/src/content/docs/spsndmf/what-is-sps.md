@@ -22,15 +22,15 @@ SPS には **SPS1** と **SPS2** という2つの世代があり、本プロジ�
 
 ## DPS / TPS との違い
 
-SPS より前にも、同じような「挿入演出」を実現する仕組みとして DPS や TPS と呼ばれる方式が VRChat コミュニティで使われてきました。SPS は VRCFury が提供する、比較的新しい仕組みです。
+SPS より前にも、同じような「挿入演出」を実現する仕組みとして DPS や TPS と呼ばれる方式が VRChat コミュニティで使われてきました。SPS は VRCFury が提供する、それらの実質的後継です。
 
-## 登場する要素
+## 関連するコンポーネント
 
 SPS に関連するコンポーネントには、次のようなものがあります。それぞれの詳細は各ページを参照してください。
 
-- **[Plug](/spsndmf/plug/)** — Socket に向かって曲がる側のコンポーネント。挿入する側の部位に取り付けます。
-- **[Socket](/spsndmf/socket/)** — Plug を受け入れる側のコンポーネント。挿入される側の部位に取り付けます。
-- **[Global Collider](/migrator/global-collider/)** — 指以外の任意の部位を、他のプレイヤーの PhysBone や触覚通知に反応させるための機能です。SPS 本体とは別の、関連するハプティクス機能です。
-- **[Haptic Touch](/migrator/haptic-touch/)** — 触覚（ハプティクス）対応アプリ向けに、触れたことを送受信するための機能です。こちらも SPS 本体とは別の関連機能です。
-
-これらのうち、SPS for NDMF が実際にビルド処理の対象とするのは Plug と Socket のみです。Global Collider と Haptic Touch を SPSNDMF 環境でどう扱うかは、それぞれのページで説明します。
+- SPSNDMFが扱うもの
+  - **[Plug](/spsndmf/plug/)** — Socket に向かって曲がる側のコンポーネント。挿入する側の部位に取り付けます。
+  - **[Socket](/spsndmf/socket/)** — Plug を受け入れる側のコンポーネント。挿入される側の部位に取り付けます。
+- SPSNDMF Migratorで同等のMA/VRChatネイティブコンポーネントに変換して扱うもの
+  - **[Global Collider](/migrator/global-collider/)** — 指以外の任意の部位を、他のプレイヤーの PhysBone や触覚通知に反応させるための機能です。SPS 本体とは別の、関連するハプティクス機能です。
+  - **[Haptic Touch](/migrator/haptic-touch/)** — 触覚（ハプティクス）対応アプリ向けに、触れたことを送受信するための機能です。こちらも SPS 本体とは別の関連機能です。
