@@ -17,11 +17,9 @@ VPM 経由でインストールする場合、これらの依存関係は VPM �
 
 ## VPM で入れる
 
-[SPS for NDMF の VPM リポジトリページ](https://spsndmf.vpm.nrzk.net/) を開き、「**Add to VCC**」ボタンから VCC (VRChat Creator Companion) にリポジトリを追加します。
+[SPS for NDMF の VPM リポジトリページ](https://spsndmf.vpm.nrzk.net/) を開き、「**Add to VCC**」ボタンからお使いの VPM 対応マネージャー（VCC / ALCOM など）にリポジトリを追加します。
 
-ALCOM など別の VPM 対応マネージャーを使っている場合は、同じページの「Copy URL」でリポジトリの URL をコピーし、各マネージャーの「Add Repository」（リポジトリを追加）から貼り付けて登録してください。
-
-リポジトリを登録すると、対象の Unity プロジェクトに `SPS for NDMF` パッケージを追加できるようになります。
+リポジトリを登録すると、対象の Unity プロジェクトに SPS for NDMF パッケージを追加できるようになります。
 
 ## VPAI インストーラで入れる
 
