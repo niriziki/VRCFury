@@ -9,6 +9,8 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "predev": "node scripts/sync-changelogs.mjs",
+    "prebuild": "node scripts/sync-changelogs.mjs",
     "format": "biome check --write ."
   },
   "dependencies": {
