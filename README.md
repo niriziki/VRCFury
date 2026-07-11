@@ -4,6 +4,12 @@
 
 [Modular Avatar](https://modular-avatar.nadena.dev/) と同じ NDMF ビルドパイプライン上で動作し、非破壊ビルド時に SPS の処理だけをアバターへ適用する。
 
+## ドキュメント
+
+使い方・SPS の詳解・各パッケージの連携（既存 VRCFury ギミックの移行）手順は、ドキュメントサイトを参照してください。
+
+**➡ https://spsndmf.nrzk.net**
+
 ## 位置付け
 
 - VRCFury 全体を導入せず、SPS だけを使いたい環境向け。
@@ -17,7 +23,7 @@
 | パッケージ | 役割 |
 |---|---|
 | `net.nrzk.spsndmf` (SPS for NDMF) | 本体。VRCFury の SPS 機能を NDMF プラグインとして抽出したもの。 |
-| `net.nrzk.vfstub` (VRCFury Stub) | VRCFury Runtime の型のみのスタブ（`VF.*` 名前空間・同一 GUID）。VRCFury 本体を入れずに既存のシーン／プレハブに埋め込まれた VRCFury コンポーネントを保持したままロードするための互換レイヤ。エディタロジック・ビルド処理は持たない。 |
+| `net.nrzk.vfstub` (VRCFury Stub) | VRCFury 本体を入れなくても、既存のシーン／プレハブに設定済みの VRCFury コンポーネントを保持したまま開けるようにする互換用パッケージ。編集機能やビルド処理は持たない。**VRCFury 本体と同時にはインストールできない。** |
 | `net.nrzk.spsndmf-migrator` (SPSNDMF Migrator) | VRCFury / VRCFury Stub / SPSNDMF / Modular Avatar / VRChat Contacts の間で SPS 関連コンポーネントを相互変換するエディタ拡張。 |
 
 ## インストール
@@ -26,6 +32,8 @@ VPAI インストーラまたは VPM リポジトリ経由:
 
 - VPM: `https://spsndmf.vpm.nrzk.net/index.json`
 - VPAI installer (unitypackage) は [Releases](../../releases) から入手可能。
+
+導入後の使い方は [ドキュメントサイト](https://spsndmf.nrzk.net) を参照。
 
 ## ライセンス
 
@@ -43,9 +51,9 @@ VPAI インストーラまたは VPM リポジトリ経由:
 - `net.nrzk.spsndmf/` — `spsndmf` のリリース時に生成される出荷用パッケージ（手編集しない）。
 - `net.nrzk.vfstub/` — `vfstub` のリリース時に生成される出荷用パッケージ（手編集しない）。
 - `net.nrzk.spsndmf-migrator/` — migrator パッケージ本体（生成ではなく直接管理）。
+- `docs/` — ユーザー向けドキュメントサイト（Astro + Starlight。Cloudflare Pages で `spsndmf.nrzk.net` に公開）。
 - `tools/spsndmf/ReleaseTransform.cs` — `com.vrcfury.vrcfury/` → `net.nrzk.spsndmf/` 変換スクリプト。
 - `tools/vfstub/ReleaseTransform.cs` — VRCFury Runtime → `net.nrzk.vfstub/` 変換スクリプト。
-- `.agent-docs/vrcfury-ndmf-complete-reference.md` — VRCFury 処理の網羅リファレンス（内部・開発者向け）。
 
 ## 関連
 
