@@ -6,6 +6,14 @@ All notable changes to **VRCFury Stub** (`net.nrzk.vfstub`) are documented here.
 Only versions that have a published release are listed.
 公開リリースのあるバージョンのみを掲載しています。
 
+## [0.2.0-beta.6] - 2026-07-11
+### Added / 追加
+- Bundled changelog: a bilingual (English / Japanese) `CHANGELOG.md` is now shipped with the package and linked from `changelogUrl`.
+  同梱CHANGELOG: 日英併記の `CHANGELOG.md` をパッケージに同梱し、`changelogUrl` からリンク。
+### Fixed / 修正
+- `licensesUrl` now points to the actual repository (was a dead link).
+  `licensesUrl` を実在するリポジトリへ修正（従来はリンク切れ）。
+
 ## [0.2.0-beta.5] - 2026-07-11
 ### Changed / 変更
 - Version bump to keep the release line aligned with the other SPSNDMF packages. No functional changes to the stub.

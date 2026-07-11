@@ -6,6 +6,14 @@ All notable changes to **SPS for NDMF** (`net.nrzk.spsndmf`) are documented here
 Only versions that have a published release are listed.
 公開リリースのあるバージョンのみを掲載しています。
 
+## [0.2.0-beta.6] - 2026-07-11
+### Added / 追加
+- Bundled changelog: a bilingual (English / Japanese) `CHANGELOG.md` is now shipped with the package and linked from `changelogUrl`.
+  同梱CHANGELOG: 日英併記の `CHANGELOG.md` をパッケージに同梱し、`changelogUrl` からリンク。
+### Fixed / 修正
+- `licensesUrl` now points to the actual repository (was a dead link).
+  `licensesUrl` を実在するリポジトリへ修正（従来はリンク切れ）。
+
 ## [0.2.0-beta.5] - 2026-07-11
 ### Changed / 変更
 - Merged upstream VRCFury 1.1360.0 (SPS2 compile / runtime performance improvements).
