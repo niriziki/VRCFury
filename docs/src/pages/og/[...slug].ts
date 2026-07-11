@@ -6,8 +6,8 @@ const entries = await getCollection('docs');
 export const { getStaticPaths, GET } = await OGImageRoute({
   pages: Object.fromEntries(entries.map((entry) => [entry.id, entry])),
   getImageOptions: (_id, entry) => ({
-    title: entry.data.title,
-    description: 'SPS for NDMF ドキュメント',
+    title: 'SPS for NDMF ドキュメント',
+    description: entry.data.title,
     bgGradient: [
       [30, 27, 46],
       [15, 14, 25],
@@ -18,8 +18,8 @@ export const { getStaticPaths, GET } = await OGImageRoute({
       'https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-jp@latest/japanese-400-normal.ttf',
     ],
     font: {
-      title: { color: [255, 255, 255], size: 66 },
-      description: { color: [167, 139, 250], size: 40 },
+      title: { color: [255, 255, 255], size: 72 },
+      description: { color: [196, 181, 253], size: 46 },
     },
   }),
 });
