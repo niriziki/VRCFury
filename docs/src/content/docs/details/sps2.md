@@ -18,7 +18,7 @@ SPS2 は、Socket の位置や種類を **共有テクスチャ**を介して Pl
 
 Unity の点光源を使わないため、[SPS1](/details/sps1/) のような「同時に認識できる Socket 数の実質的な上限」や「VRChat のライト設定への依存」がありません。多数の Plug / Socket を同時に扱えるほか、この方式によってタグでの絞り込みや複数段の経路（Guided Path）といった高度な指定も可能になっています。
 
-この共有テクスチャは、Unity 標準のスクリーンキャプチャの仕組み（描画中の画面を一時的に取得するもの）を使っています。アバターが持つテクスチャ資産ではないため、パフォーマンスランクの Texture VRAM を増やすものではありません。
+この共有テクスチャは、実行時にシェーダー間でデータを受け渡すための一時的なもので、アバターに保存されるテクスチャ（画像アセット）ではありません。そのため、パフォーマンスランクの Texture VRAM には計上されません。
 
 ## Socket 側の反応（挿入時の変形）
 
@@ -28,20 +28,18 @@ Socket 自体は SPS のシェーダーで変形するわけではありませ�
 
 ## 使用する Contacts
 
-SPS2 の「Plug が Socket へ曲がる」というコアな動きは[共有テクスチャ](#位置を伝えるしくみ動作原理)で行うため、**Contacts を必要としません**。Contacts は、次の付加機能のためだけに使われます（数は Plug 1個・Socket 1個あたり。Sender は発信、Receiver は受信）。
+SPS2 の「Plug が Socket へ曲がる」というコアな動きは[共有テクスチャ](#位置を伝えるしくみ動作原理)で行うため、**Contacts を必要としません**。Contacts は、次の付加機能のためだけに使われます（**P** = Plug の数、**S** = Socket の数。Sender は発信、Receiver は受信）。
 
-| 用途 | 種別 | Plug | Socket | 役割 | 有効になる条件 |
+| 用途 | 種別 | Plug 側 | Socket 側 | 役割 | 有効になる条件 |
 |---|---|---|---|---|---|
-| 位置ビーコン | Sender | 4 | 2 | 「ここに Plug／Socket がある」と発信する。下の Receiver や旧方式（DPS/TPS）の相手が読む | Plug は常時／Socket はメニュー ON 時 |
-| 触覚通知（OGB） | Receiver | 8 | 4〜11 | 位置ビーコンを検知し、触覚アプリに接触・挿入を伝える | OSC 触覚アプリを起動している間だけ |
-| Depth Animations | Receiver | 1〜2 | 3〜6 | 挿入の深さを測り、ブレンドシェイプ等を動かす | [Depth Animations](/spsndmf/socket/) を設定したときだけ |
-| Auto 選択 | Receiver | — | 1※ | 複数の Socket から最寄りを自動で選ぶ | Auto 対象の Socket が2個以上のとき |
+| 位置ビーコン | Sender | 4×P | 2×S | 「ここに Plug／Socket がある」と発信する。下の Receiver が読む | Plug は常時／Socket はメニュー ON 時 |
+| 触覚通知（OGB） | Receiver | 8×P | (4〜11)×S | 位置ビーコンを検知し、触覚アプリに接触・挿入を伝える | OSC 触覚アプリを起動している間だけ |
+| Depth Animations | Receiver | (1〜2)×P | (3〜6)×S | 挿入の深さを測り、ブレンドシェイプ等を動かす | [Depth Animations](/spsndmf/socket/) を設定したときだけ |
+| Auto 選択 | Receiver | — | 1（アバターで共有） | 複数の Socket から最寄りを自動で選ぶ | Auto 対象の Socket が2個以上のとき |
 
-※ Auto 選択の Receiver はアバター全体で共有の1個。
+**位置ビーコン（Sender）を読むのは、上表の「触覚通知」と「Depth Animations」の Receiver です。** Plug のビーコンは Socket 側のこれらの Receiver が、Socket のビーコンは Plug 側のこれらの Receiver が読みます（読み手は自分・相手どちらのアバターにもあります）。
 
-**位置ビーコン（Sender）を読むのは、上表の「触覚通知」と「Depth Animations」の Receiver です。** Plug のビーコンは Socket 側のこれらの Receiver が、Socket のビーコンは Plug 側のこれらの Receiver が読みます（読み手は自分・相手どちらのアバターにもあります）。旧方式（DPS/TPS）の相手も同様に読みます。
-
-ただし、**基本的な使い方（触覚アプリなし・Depth Animations 未設定）では、これらの Receiver は動きません**（OGB はゲートで無効、Depth は未設定なら存在しない）。そのため位置ビーコンは旧方式の相手向けの発信として残るだけで、SPS2 のコアな動きは Contacts 抜きで完結します。これが SPS2 で実際に効く Contacts が少ない理由です。位置ビーコンは Socket の「Legacy Compatibility」設定では消えません（この設定は点光源だけを切り替えます）。
+ただし、**基本的な使い方（触覚アプリなし・Depth Animations 未設定）では、これらの Receiver は動きません**（OGB はゲートで無効、Depth は未設定なら存在しない）。そのため位置ビーコンは、Contacts を使う旧方式（TPS など）との相互検出に残るくらいで、SPS2 のコアな動きは Contacts 抜きで完結します。これが SPS2 で実際に効く Contacts が少ない理由です。位置ビーコンは Socket の「Legacy Compatibility」設定では消えません（この設定は点光源だけを切り替えます）。
 
 ### 実際に有効な Contacts の数
 
