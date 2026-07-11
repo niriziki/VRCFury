@@ -8,12 +8,7 @@ SPS for NDMF のインストール方法を説明します。
 
 ## 前提
 
-SPS for NDMF は **NDMF 環境専用**のパッケージです。次のパッケージが依存関係として必要です。
-
-- `com.vrchat.avatars` `>=3.7.6`
-- `nadena.dev.modular-avatar` `^1.15.0`
-
-VPM 経由でインストールする場合、これらの依存関係は VPM 対応マネージャー（VCC / ALCOM など）が解決します。手動でインポートする場合は、あらかじめ VRChat Avatars SDK と Modular Avatar を導入したプロジェクトを用意してください。
+SPS for NDMF は **NDMF 環境専用**のパッケージです。Modular Avatarが依存関係として必要です。
 
 ## VPM で入れる
 
@@ -21,9 +16,10 @@ VPM 経由でインストールする場合、これらの依存関係は VPM �
 
 リポジトリを登録すると、対象の Unity プロジェクトに SPS for NDMF パッケージを追加できるようになります。
 
-## VPAI インストーラで入れる
+## インストーラで入れる
 
-VPM リポジトリを登録する代わりに、[Releases](https://github.com/niriziki/VRCFury/releases) から VPAI (unitypackage 形式のインストーラ) をダウンロードしてインポートする方法もあります。Unity プロジェクトを開いた状態でこの unitypackage をインポートすると、VPM リポジトリの登録とパッケージの導入がまとめて行われます。
+VPM リポジトリを登録する代わりに、[Releases](https://github.com/niriziki/VRCFury/releases) から `net.nrzk.vfstub-installer.zip
+` をダウンロード＆解凍して unitypackage 形式のインストーラーをインポートする方法もあります。Unity プロジェクトを開いた状態でこの unitypackage をインポートすると、VPM リポジトリの登録とパッケージの導入がまとめて行われます。
 
 ## どのパッケージを入れるか
 

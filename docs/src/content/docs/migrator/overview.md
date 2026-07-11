@@ -23,13 +23,8 @@ VRCFury / VRCFury Stub / SPSNDMF / Modular Avatar / VRChat Contacts の間で、
 | 変換元 | 変換先 | 方向 |
 |---|---|---|
 | VRCFury Plug/Socket | SPSNDMF Plug/Socket | 双方向 |
-| VRCFury Global Collider | MA Global Collider | VRCFury → SPSNDMF のみ |
-| VRCFury Haptic Touch Receiver | VRC Contact Receiver × 2（子オブジェクト） | VRCFury → SPSNDMF のみ |
-| VRCFury Haptic Touch Sender | VRC Contact Sender | VRCFury → SPSNDMF のみ |
+| VRCFury Global Collider | MA Global Collider | VRCFury → NDMF のみ |
+| VRCFury Haptic Touch Receiver | VRC Contact Receiver × 2（子オブジェクト） | VRCFury → VRChat ネイティブコンポーネント のみ |
+| VRCFury Haptic Touch Sender | VRC Contact Sender | VRCFury → VRChat ネイティブコンポーネント のみ |
 
-Plug/Socket 以外の3種類は VRCFury → SPSNDMF 方向のみに対応しており、逆方向（SPSNDMF → VRCFury）の変換はできません。既存の VRCFury アバターをこれらのコンポーネントごと移行する場合の全体的な流れは [移行の流れ](/migrator/migration-flow/) を参照してください。
-
-## 依存
-
-- Modular Avatar
-- VRCSDK3 Avatars
+Plug/Socket 以外の3種類は VRCFury → NDMF 方向のみに対応しており、逆方向（NDMF → VRCFury）の変換はできません。既存の VRCFury アバターをこれらのコンポーネントごと移行する場合の全体的な流れは [移行の流れ](/migrator/migration-flow/) を参照してください。
