@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.astro/
+# ビルド時に CHANGELOG.md から生成される（正本はパッケージ側）
+src/content/docs/changelog/
