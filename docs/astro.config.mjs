@@ -17,6 +17,7 @@ export default defineConfig({
         baseUrl: 'https://github.com/niriziki/VRCFury/edit/ndmf/docs/',
       },
       customCss: ['./src/styles/custom.css'],
+      routeMiddleware: './src/routeData.ts',
       sidebar: [
         { label: 'はじめに', items: [{ autogenerate: { directory: 'guides' } }] },
         { label: 'SPSNDMF の使い方', items: [{ autogenerate: { directory: 'spsndmf' } }] },
