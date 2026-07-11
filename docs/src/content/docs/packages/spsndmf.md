@@ -15,7 +15,7 @@ VRCFury の SPS (Super Plug Shader) 機能を抽出し、NDMF プラグインと
 SPS for NDMF は、Modular Avatar と同じ非破壊ビルドの仕組みの中で、**Modular Avatar より前**に SPS の処理を行うプラグインとして組み込まれています。ビルドは次の2段階で行われます。
 
 1. VRCFury の SPS ビルドロジックをアバターに対して実行する
-2. その結果を Modular Avatar のコンポーネントとして出力する
+2. その結果を Modular Avatar（以下 MA）のコンポーネントとして出力する
 
 この順序により、SPS の処理結果が MA コンポーネントとして出力された状態で、その後の MA のビルドが実行されます。内部の詳しい仕組みは [しくみ](/sps/how-it-works/) を参照してください。
 

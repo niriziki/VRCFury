@@ -8,7 +8,7 @@ sidebar:
 
 ## このページの目的
 
-VRCFury 本体を導入せずに SPS だけを使いたい、という [SPS for NDMF とは](/guides/about/) のニーズは、新規制作だけでなく「すでに VRCFury で組んだアバターがある」場合にも当てはまります。この場合、単に VRCFury 本体を消すだけでは、シーンやプレハブに残った VRCFury コンポーネントの設定が読み込めなくなってしまいます。ここでは、[VRCFury Stub](/packages/vfstub/) と [SPSNDMF Migrator](/packages/migrator/) を使って、コンポーネントを壊さずに SPSNDMF へ移行する手順を示します。
+「VRCFury 本体を導入せずに SPS だけを使いたい」というニーズ（詳しくは [SPS for NDMF とは](/guides/about/)）は、新規制作だけでなく「すでに VRCFury で組んだアバターがある」場合にも当てはまります。この場合、単に VRCFury 本体を消すだけでは、シーンやプレハブに残った VRCFury コンポーネントの設定が読み込めなくなってしまいます。ここでは、[VRCFury Stub](/packages/vfstub/) と [SPSNDMF Migrator](/packages/migrator/) を使って、コンポーネントを壊さずに SPSNDMF へ移行する手順を示します。
 
 ## 全体像
 
