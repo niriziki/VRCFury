@@ -27,33 +27,32 @@ SPS1 を正しく動作させるには、アバター側の VRChat 設定が影�
 - **Avatar Allowed to Interact** が Everyone になっていない場合は警告（他のプレイヤーとの組み合わせに影響する可能性があります）
 - **Pixel Light Count** が High になっていない場合は警告（点光源の認識に影響します。上記の「同時に有効化できる Socket の数」とも関係します）
 
-## 使用する Contacts の内訳
+## 使用する Contacts
 
-SPS1 は、位置の伝達こそ点光源で行いますが、触覚通知や補助的な検出には VRChat Contacts も使います。既定設定でのおおよその内訳は次のとおりです。
+SPS1 は位置の伝達を点光源で行いますが、触覚通知や補助的な検出には VRChat Contacts も使います。役割ごとに並べると次のようになります（数は Plug 1個・Socket 1個あたりの目安）。
 
-**Plug 1個あたり（生成 約18個）**
+| Contact | 種別 | 数 | 役割 | 有効になる条件 |
+|---|---|---|---|---|
+| 位置ビーコン | Sender | Plug 4 ／ Socket 2 | 「ここに Plug（Socket）があります」と発信する。触覚通知の Receiver や、旧方式（DPS/TPS）の相手がこれを読み取る | Plug は常時／Socket はメニューで ON にしている間 |
+| 触覚通知（OGB） | Receiver | Plug 8 ／ Socket 4〜11 | 相手（または自分）の位置ビーコンを検知し、触覚アプリに接触・挿入を伝える | 常時（SPS2 のようなゲートが無い） |
+| 近くの Socket を探す（SPS Plus） | Receiver | Plug 4 | 近くに Socket があるかを検知する補助機能（SPS1 のみ。SPS2 では廃止） | 常時（半径3mと大きい） |
+| スケール補正 | Sender / Receiver | 2 | アバターのスケールを測って挿入の計算を補正する | ほぼ常時 |
+| Depth Animations | Receiver | 数個（設定時のみ） | 挿入の深さを測り、その値でアニメを動かす | Depth Animations を設定したときだけ |
 
-| 用途 | 種類 | 数 | 有効になる条件 |
-|---|---|---|---|
-| 位置検出（発信） | Sender | 4 | 常時 |
-| 触覚通知（OGB） | Receiver | 8 | 常時 |
-| 近くの Socket を探す（SPS Plus） | Receiver | 4 | 常時（半径3mと大きい） |
-| スケール補正 | Sender / Receiver | 2 | ほぼ常時 |
+**Sender と Receiver の関係**は SPS2 と同じで、位置を発信する Sender を、反対側のコンポーネント（Plug の Sender ↔ Socket の Receiver、およびその逆。自分・相手どちらのアバターにもある）の Receiver が受信します。詳しくは [SPS2 の詳細 — 使用する Contacts](/details/sps2/) を参照してください。
 
-**Socket 1個あたり（生成 約6〜13個）**
+### 実際に有効になっている Contacts の数
 
-| 用途 | 種類 | 数 | 有効になる条件 |
-|---|---|---|---|
-| 位置検出（発信） | Sender | 2 | メニューでこの Socket を ON にしている間 |
-| 触覚通知（OGB） | Receiver | 4〜11 | メニューでこの Socket を ON にしている間 |
+SPS1 には SPS2 のような触覚 Receiver のゲート（OSC 触覚アプリ起動時のみ有効化）が無いため、**Plug 側の Contacts（計18個）は常時有効**です。この常時有効な数の多さと、SPS Plus の半径3mという大きさが、他アバターとの干渉のしやすさにつながります。
 
-SPS1 には [SPS2](/details/sps2/) のような触覚 Receiver のゲート（OSC 触覚アプリ起動時のみ有効化）が無いため、**Plug 側の Contacts（計18個）は常時有効**です。この常時有効な数の多さと、SPS Plus の半径3mという大きさが、他アバターとの干渉のしやすさにつながります。
+Socket を1つメニューで ON にした典型的な状態（Plug 1・Socket 1、OSC アプリ無し）で、実際に同時有効な Contacts を比べると、次のようになります。
 
-このうち Plug 側の「SPS Plus」とスケール補正の Contacts（計6個）は、SPS2 では検出を共有テクスチャ方式に移したため不要になり、削減されています。一方、触覚通知（OGB）や検出用 Sender は SPS2 でも同様に使われます（ただし OGB は上記のとおり SPS2 ではゲートで無効化される点が異なります）。
+| 世代 | 実際に有効な合計 |
+|---|---|
+| SPS1 | 約 24個 |
+| SPS2 | 約 6個 |
 
-検出用の Contacts が **Sender**（発信）で、それを **反対側のコンポーネントの Receiver**（Plug の Sender ↔ Socket の Receiver、およびその逆。自分・相手どちらのアバターにもある）が受信する、という関係は SPS1 でも同じです。詳しくは [SPS2 の詳細 — Sender と Receiver の対応](/details/sps2/) を参照してください。
-
-SPS1 では OGB の Receiver にゲートが無く常時有効なので、上記のとおり**実際に同時有効な Contacts は SPS2 より大幅に多くなります**（Socket を1つ ON にした典型ケースで SPS1 は約24個、SPS2 は約6個）。
+SPS1 の「SPS Plus」とスケール補正の Contacts（Plug 側の計6個）は、SPS2 では検出を共有テクスチャ方式に移したため不要になっています。
 
 ## SPS2 との違い
 
