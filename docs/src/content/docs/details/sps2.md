@@ -39,9 +39,15 @@ Contacts には、位置を**発信する Sender** と、それを**検知する
 | Depth Animations | Receiver | 数個（設定時のみ） | Plug と Socket の距離＝挿入の深さを測り、その値でブレンドシェイプ等を動かす | [Depth Animations](/spsndmf/socket/) を設定したときだけ |
 | Auto 選択 | Receiver | 1（アバターで共有） | 複数の Socket から最寄りのものを自動で選ぶ | Auto 対象の Socket が2個以上あるとき |
 
-**Sender と Receiver の関係**: 位置を発信する側が Sender、それを検知して機能を動かす側が Receiver です。Plug が出す位置ビーコン（Sender）は、**Socket 側の Receiver**（触覚通知・Depth Animations）が読み取り、Socket が出す位置ビーコンは **Plug 側の Receiver** が読み取ります。この Receiver は自分のアバターにも相手のアバターにもあり、自分自身との組み合わせ（Self）と他人との組み合わせ（Others）の両方に対応しています。旧方式（DPS/TPS）を使っている相手も、この位置ビーコンを自分の Receiver で検知します。
+**位置ビーコン（Sender）を読み取るのは、上の表の「触覚通知（OGB）」と「Depth Animations」の Receiver です。**
 
-位置ビーコン（Sender）は、SPS2 自身の触覚通知・Depth Animations・Auto 選択が読むため常に生成されます（VRCFury の Socket の「Legacy Compatibility」設定は点光源の出力だけを切り替えるもので、この Sender の生成は止めません）。
+- Plug が出す位置ビーコンは、**Socket 側の触覚通知・Depth Animations の Receiver** が読みます（Socket が「Plug が来た／どれくらい挿入されたか」を知るため）。
+- Socket が出す位置ビーコンは、**Plug 側の触覚通知・Depth Animations の Receiver** が読みます（Plug が「どの Socket が近いか／どれくらい挿入したか」を知るため）。
+- これらの Receiver は自分のアバターにも相手のアバターにもあります（自分自身との組み合わせ＝Self、他人との組み合わせ＝Others の両方に対応）。旧方式（DPS/TPS）を使っている相手のアバターの Receiver も、この位置ビーコンを読みます。
+
+ここで大事なのは、**基本的な使い方（触覚アプリを使わず、Depth Animations も設定していない）では、これらの Receiver はどれも動いていない**という点です。触覚通知の Receiver はゲートで無効、Depth Animations の Receiver は設定していなければそもそも存在しません。そのため位置ビーコンは、実質的に旧方式（DPS/TPS）の相手に向けた発信として残るだけです。**SPS2 のコアな動き（Plug が Socket へ曲がる）は共有テクスチャで完結しており、Contacts は使いません。** これが、SPS2 で実際に効いている Contacts がごく少ない理由です。
+
+なお、位置ビーコン（Sender）は VRCFury の Socket の「Legacy Compatibility」設定では消えません（この設定は点光源の出力だけを切り替えます）。
 
 ### 実際に有効になっている Contacts の数
 
