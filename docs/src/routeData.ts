@@ -4,7 +4,9 @@ export const onRequest = defineRouteMiddleware((context) => {
   const { entry, head } = context.locals.starlightRoute;
   if (!context.site) return;
 
-  const ogImageUrl = new URL(`/og/${entry.id}.png`, context.site);
+  // トップ（splash）ページは entry.id が空文字になるため index にフォールバック
+  const slug = entry.id || 'index';
+  const ogImageUrl = new URL(`/og/${slug}.png`, context.site);
   head.push({ tag: 'meta', attrs: { property: 'og:image', content: ogImageUrl.href } });
   head.push({ tag: 'meta', attrs: { property: 'og:image:width', content: '1200' } });
   head.push({ tag: 'meta', attrs: { property: 'og:image:height', content: '630' } });

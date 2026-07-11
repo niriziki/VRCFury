@@ -2,3 +2,9 @@
 :root {
   --sl-font: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
 }
+
+/* ヘッダーの SPSNDMF ロゴ（ブランド）を目立たせる */
+.site-title img {
+  height: 1.75rem;
+  width: auto;
+}

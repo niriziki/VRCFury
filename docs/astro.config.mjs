@@ -6,6 +6,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'SPS for NDMF',
+      logo: { src: './src/assets/logo.svg', replacesTitle: true },
       defaultLocale: 'root',
       locales: {
         root: { label: '日本語', lang: 'ja' },
