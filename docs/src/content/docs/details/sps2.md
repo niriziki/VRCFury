@@ -48,6 +48,13 @@ SPS2 は位置の伝達を共有テクスチャで行いますが、触覚通知
 
 「有効になる条件」に注目すると、**通常のプレイ（OSC 触覚アプリを起動していない）では OGB の Receiver は有効になりません**。SPS2 が実際に同時に有効化する Contacts は、Plug 側の検出 Sender（約4個）に、メニューで ON にした Socket があればその検出 Sender（2個）が加わる程度の少数に収まります。生成される総数よりも、この「実際に同時に有効な数」が他アバターとの干渉のしやすさに効きます。
 
+検出用の Contacts が **Sender**（発信）なのは、Plug / Socket が「ここに Plug（Socket）があります」と発信するビーコンだからです。それを読む **Receiver は、1つの Plug / Socket の中に対で用意されているのではなく、別の場所**にあります。
+
+- **相手のアバター側** — レガシー（DPS/TPS/SPS1）の相手や、触覚のやり取りの相手が、この Sender を自分の Receiver で検出します。
+- **同じアバター内の別の Receiver** — Depth Animations や Auto Mode、OGB の Receiver が、この検出 Sender のタグを読み取ります（表で別に数えている Receiver 系がこれにあたります）。
+
+なお、**SPS2 自身の「Plug が Socket へ曲がる」検出は共有テクスチャで行う**ため、これらの検出 Sender は SPS2 のコア検出には使われていません（用途はレガシー／相手アバター向けの発信と、上記 Receiver に読ませるためのタグ源です）。
+
 [SPS1](/details/sps1/) では、これらに加えて Plug 側に「近くの Socket を探すための Receiver（SPS Plus）」やスケール補正用の Contacts が常時付いていました。SPS2 ではこの検出を共有テクスチャ方式へ移したためそれらが不要になりましたが、**触覚通知（OGB）と検出用 Sender は SPS2 でも同じように使う**ため、Contacts が大きく減るわけではありません。
 
 ## NDMF ビルドでの処理の流れ
