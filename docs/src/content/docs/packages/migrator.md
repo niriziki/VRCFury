@@ -1,0 +1,35 @@
+---
+title: net.nrzk.spsndmf-migrator（Migrator）
+sidebar:
+  order: 4
+---
+
+`net.nrzk.spsndmf-migrator`（表示名 SPSNDMF Migrator）は、SPS 関連コンポーネントの相互変換を行うエディタ拡張です。
+
+## 役割
+
+VRCFury / VRCFury Stub / SPSNDMF / Modular Avatar / VRChat Contacts の間で、SPS 関連コンポーネントを相互変換するエディタ拡張です。VRCFury 本体は必須ではなく、VRCFury 互換のスタブパッケージ（`net.nrzk.vfstub` が提供する `VF.Component.*` 型）が入っている環境でも動作します。
+
+## 使い方
+
+1. Unity メニューから `Tools/SPSNDMF/Migrator` を開きます。
+2. Hierarchy で変換対象の GameObject（通常はアバタールート）を選択します。
+3. 変換方向を選びます（`VRCFury → SPSNDMF` または `SPSNDMF → VRCFury`）。
+4. `VRCFury → SPSNDMF` のときは、必要に応じて追加の変換チェックボックスを選択します。
+5. `プレビュー` で変換予定の内容を確認し、`実行` で適用します。適用後は Ctrl+Z で取り消し可能です。
+
+## 変換対象
+
+| 変換元 | 変換先 | 方向 |
+|---|---|---|
+| VRCFury Plug/Socket | SPSNDMF Plug/Socket | 双方向 |
+| VRCFury Global Collider | MA Global Collider | VRCFury → SPSNDMF のみ |
+| VRCFury Haptic Touch Receiver | VRC Contact Receiver × 2（子オブジェクト） | VRCFury → SPSNDMF のみ |
+| VRCFury Haptic Touch Sender | VRC Contact Sender | VRCFury → SPSNDMF のみ |
+
+Plug/Socket 以外の3種類は VRCFury → SPSNDMF 方向のみに対応しており、逆方向（SPSNDMF → VRCFury）の変換はできません。既存の VRCFury アバターをこれらのコンポーネントごと移行する場合の全体的な流れは [移行の流れ](/packages/migration-flow/) を参照してください。
+
+## 依存
+
+- Modular Avatar
+- VRCSDK3 Avatars

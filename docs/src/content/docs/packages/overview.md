@@ -1,0 +1,38 @@
+---
+title: パッケージ構成
+sidebar:
+  order: 1
+---
+
+SPS for NDMF は、役割の異なる3つのパッケージで構成されています。このページでは、それぞれの役割と依存関係、そして「自分の場合はどれを入れればいいか」を説明します。
+
+## 3つのパッケージ
+
+| パッケージ | 役割 |
+|---|---|
+| `net.nrzk.spsndmf`（SPS for NDMF） | 本体。VRCFury の SPS 機能を NDMF プラグインとして抽出したもの。 |
+| `net.nrzk.vfstub`（VRCFury Stub） | VRCFury Runtime の型のみのスタブ（`VF.*` 名前空間・同一 GUID）。VRCFury 本体を入れずに既存のシーン／プレハブに埋め込まれた VRCFury コンポーネントを保持したままロードするための互換レイヤ。エディタロジック・ビルド処理は持たない。 |
+| `net.nrzk.spsndmf-migrator`（SPSNDMF Migrator） | VRCFury / VRCFury Stub / SPSNDMF / Modular Avatar / VRChat Contacts の間で SPS 関連コンポーネントを相互変換するエディタ拡張。 |
+
+それぞれの詳細は [SPSNDMF 本体](/packages/spsndmf/)・[VRCFury Stub](/packages/vfstub/)・[Migrator](/packages/migrator/) の各ページを参照してください。
+
+## 依存関係
+
+各パッケージの `package.json` に記載された依存関係は次のとおりです。
+
+| パッケージ | 依存パッケージ |
+|---|---|
+| `net.nrzk.spsndmf` | `com.vrchat.avatars` `>=3.7.6`、`nadena.dev.modular-avatar` `^1.15.0` |
+| `net.nrzk.vfstub` | `com.vrchat.avatars` `>=3.7.6` |
+| `net.nrzk.spsndmf-migrator` | `com.vrchat.avatars` `>=3.7.6`、`nadena.dev.modular-avatar` `^1.15.0`、`nadena.dev.ndmf` `>=1.11.0 <2.0.0-a` |
+
+`net.nrzk.vfstub` は型のみのスタブのため、Modular Avatar や NDMF には依存しません。`net.nrzk.spsndmf` は NDMF プラグインとして動作しますが、`package.json` 上で NDMF 自体を直接指定してはおらず、Modular Avatar 経由で導入されます（Modular Avatar 自体が NDMF 上に構築されたパッケージのため）。`net.nrzk.spsndmf-migrator` はビルド時の自動変換パスを持つため、NDMF を直接の依存として指定しています。
+
+いずれのパッケージも VRCFury 本体（`com.vrcfury.vrcfury`）を依存関係に含みません。`net.nrzk.spsndmf-migrator` の変換処理は、VRCFury 本体または `net.nrzk.vfstub` のどちらが入っていても動作します。
+
+## どれを入れるべきか
+
+- **新規にアバターを組む場合**：通常は本体の `net.nrzk.spsndmf` だけで十分です。
+- **すでに VRCFury（またはその SPS 機能）を使ったシーン・プレハブがあり、VRCFury 本体を使い続けたくない場合**：`net.nrzk.spsndmf` に加えて `net.nrzk.vfstub` と `net.nrzk.spsndmf-migrator` の3つすべてが必要になります。
+
+3つを組み合わせた移行手順の詳細は [移行の流れ](/packages/migration-flow/) を参照してください。
