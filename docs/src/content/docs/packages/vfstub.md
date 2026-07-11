@@ -1,21 +1,21 @@
 ---
-title: net.nrzk.vfstub（VRCFury Stub）
+title: VRCFury Stub
 sidebar:
   order: 3
 ---
 
-`net.nrzk.vfstub`（表示名 VRCFury Stub）は、VRCFury 本体を使わずに VRCFury コンポーネント入りのシーン・プレハブを扱うための互換パッケージです。
+VRCFury Stub（`net.nrzk.vfstub`）は、VRCFury 本体を使わずに VRCFury コンポーネント入りのシーン・プレハブを扱うための互換パッケージです。
 
 ## 役割
 
-VRCFury Runtime の**型のみのスタブ**です。`VF.*` 名前空間・VRCFury 本体と同一の GUID でコンポーネント型を提供し、VRCFury 本体を入れなくても、既存のシーンやプレハブに埋め込まれた VRCFury コンポーネントを保持したままロードできるようにする互換レイヤです。
+VRCFury 本体を入れていなくても、既存のシーンやアバターに設定済みの VRCFury のコンポーネント（設定）が壊れたり消えたりせずにそのまま開けるようにするための互換用パッケージです。VRCFury 本体と同じ扱いでコンポーネントのデータを読み込めるようにする、という仕組みで実現しています。
 
-## エディタ・ビルド処理は持たない
+## 編集機能やビルド処理は持たない
 
-VRCFury Stub は型（コンポーネントのデータ構造）だけを提供するパッケージで、**エディタロジックやビルド処理は一切含みません**。つまり、VRCFury Stub を入れただけでは SPS のビルドは行われません。ビルド時にコンポーネントを SPSNDMF 側の形式へ自動変換する処理は、[Migrator](/packages/migrator/) パッケージが担います。
+VRCFury Stub はコンポーネントの設定を保持するためだけのパッケージで、**VRCFury のような編集機能やビルド処理は一切含みません**。つまり、VRCFury Stub を入れただけでは SPS のビルドは行われません。ビルド時にコンポーネントを SPSNDMF 側の形式へ自動変換する処理は、[SPSNDMF Migrator](/packages/migrator/) パッケージが担います。
 
 ## いつ使うか
 
-すでに VRCFury のギミック（SPS を含む）が組み込まれたプロジェクトから、VRCFury 本体を撤去したいときに使います。VRCFury 本体を削除すると、シーンやプレハブに残った VRCFury コンポーネントは型が解決できずに壊れて（GUID 参照が失われて）しまいますが、VRCFury Stub を代わりに導入しておくことで、コンポーネントの型・データを保持したままロードできる状態を維持できます。
+すでに VRCFury のギミック（SPS を含む）が組み込まれたプロジェクトから、VRCFury 本体を撤去したいときに使います。VRCFury 本体を削除すると、シーンやプレハブに残った VRCFury コンポーネントは設定を読み込めずに壊れてしまいますが、VRCFury Stub を代わりに導入しておくことで、コンポーネントの設定を保持したまま開ける状態を維持できます。
 
 具体的な移行手順は [移行の流れ](/packages/migration-flow/) にまとめています。

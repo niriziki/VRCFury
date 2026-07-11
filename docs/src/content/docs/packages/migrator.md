@@ -1,14 +1,14 @@
 ---
-title: net.nrzk.spsndmf-migrator（Migrator）
+title: SPSNDMF Migrator
 sidebar:
   order: 4
 ---
 
-`net.nrzk.spsndmf-migrator`（表示名 SPSNDMF Migrator）は、SPS 関連コンポーネントの相互変換を行うエディタ拡張です。
+SPSNDMF Migrator（`net.nrzk.spsndmf-migrator`）は、SPS 関連コンポーネントの相互変換を行うエディタ拡張です。
 
 ## 役割
 
-VRCFury / VRCFury Stub / SPSNDMF / Modular Avatar / VRChat Contacts の間で、SPS 関連コンポーネントを相互変換するエディタ拡張です。VRCFury 本体は必須ではなく、VRCFury 互換のスタブパッケージ（`net.nrzk.vfstub` が提供する `VF.Component.*` 型）が入っている環境でも動作します。
+VRCFury / VRCFury Stub / SPSNDMF / Modular Avatar / VRChat Contacts の間で、SPS 関連コンポーネントを相互変換するエディタ拡張です。VRCFury 本体は必須ではなく、[VRCFury Stub](/packages/vfstub/) が入っている環境でも動作します。
 
 ## 使い方
 
