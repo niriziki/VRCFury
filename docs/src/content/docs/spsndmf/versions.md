@@ -39,9 +39,9 @@ DPS と SPS1 が使う Unity の点光源には、**1つのメッシュが同時
 
 ## SPS1 特有の制限: Contacts の多さによる不具合
 
-SPS1 は、Plug / Socket の検出やアニメーションのために **SPS2 より多くの VRChat Contacts** を使用します。アバター上の Contacts が多くなると、VRChat 側の不具合により Contacts が正しく機能せず、SPS がしばしば動作しないことがあります。
+SPS1 は、**近くの Socket を探す検出処理**などに **VRChat の Contacts** を多く使います。アバター上の Contacts が多くなると、VRChat 側の不具合により Contacts が正しく機能せず、SPS がしばしば動作しないことがあります。
 
-SPS2 ではこの Contacts の使用数が大幅に削減されているため、この問題が起きにくくなっています。
+SPS2 では、この Socket の検出を Contacts ではなく[共有テクスチャを介したシェーダー間のやり取り](/details/sps2/)で行うようになったため、Contacts の使用数が大幅に減りました。SPS2 で残る Contacts は、Depth Animations（挿入の深さでアニメーションを駆動）・レガシー互換・触覚通知（OGB）といった用途に限られ、この問題が起きにくくなっています。
 
 ## どちらを使うか
 
