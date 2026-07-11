@@ -29,7 +29,7 @@ Cloudflare Pages のダッシュボードでこのリポジトリを接続し、
 | Root directory | `docs` |
 | Build command | `npm run build` |
 | Build output directory | `dist` |
-| Node version | `22`（`docs/.nvmrc` で指定済み） |
+| Node version | `24`（`docs/.nvmrc` で指定済み） |
 
 `ndmf` への push で本番デプロイ、それ以外のブランチはプレビューデプロイになる。ビルドはリポジトリ全体がチェックアウトされた状態で `docs/` を root として実行されるため、`prebuild`（CHANGELOG 取り込み）が `../tools/**` を読める。
 
