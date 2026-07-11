@@ -24,6 +24,28 @@ Socket 自体は SPS のシェーダーで変形するわけではありませ�
 
 この Depth Animations の仕組みは **SPS1 でも SPS2 でも同じ**です。SPS1 から SPS2 で変わったのは Plug が Socket へ向かうときの「位置の伝え方」（点光源 → 共有テクスチャ）だけで、Socket 側の反応のしくみは変わっていません。設定方法は [Socket](/spsndmf/socket/) の Depth Animations を参照してください。
 
+## 使用する Contacts の内訳
+
+SPS2 は位置の伝達を共有テクスチャで行いますが、触覚通知や一部の検出には VRChat Contacts も使います。既定設定でのおおよその内訳は次のとおりです。
+
+**Plug 1個あたり（合計 約12個）**
+
+| 用途 | 種類 | 数 |
+|---|---|---|
+| 位置・レガシー検出 | Sender | 4 |
+| 触覚通知（OGB） | Receiver | 8 |
+
+**Socket 1個あたり（合計 約6〜13個）**
+
+| 用途 | 種類 | 数 |
+|---|---|---|
+| 位置・レガシー検出 | Sender | 2 |
+| 触覚通知（OGB） | Receiver | 4〜11（ハンドタッチゾーンの有無による） |
+
+このほか、[Depth Animations](/spsndmf/socket/) を使う Plug / Socket では、挿入の深さを測る Receiver が数個ずつ追加されます。
+
+[SPS1](/details/sps1/) では、これらに加えて Plug 側に「近くの Socket を探すための Receiver（SPS Plus）」やスケール補正用の Contacts が常時付いていました。SPS2 ではこの検出を共有テクスチャ方式へ移したためそれらが不要になりましたが、**触覚通知（OGB）と検出用 Sender は SPS2 でも同じように使う**ため、Contacts が大きく減るわけではありません。
+
 ## NDMF ビルドでの処理の流れ
 
 SPS for NDMF は、NDMF の非破壊ビルドの中で、Modular Avatar より前にアバター上の Plug / Socket を処理します。この処理は、アバター上に Plug または Socket が1つも無い場合は実行されません。また、SPS for NDMF は Plug / Socket 以外の VRCFury コンポーネント（[Global Collider](/migrator/global-collider/) や [Haptic Touch](/migrator/haptic-touch/) など）には影響を与えません。

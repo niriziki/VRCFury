@@ -50,12 +50,12 @@ Plug / Socket の数に応じて、次のようなリソースが生成されま
 | リソース | DPS | SPS1 | SPS2 |
 |---|---|---|---|
 | Unity のライト（Point Light） | 2S ＋ P | 2S | 2S（レガシー互換を OFF にすると 0） |
-| VRChat Contacts（Sender ＋ Receiver） | （外部のため不明） | 約 6〜13S ＋ 18P | 約 6〜13S ＋ 12P |
+| VRChat Contacts（Sender ＋ Receiver） | 0（使わない） | 約 6〜13S ＋ 18P | 約 6〜13S ＋ 12P |
 | Mesh Renderer | 0 | 0 | S ＋ P |
 | マテリアルスロット | 0 | 0 | 2S ＋ 2P |
 
 - **ライト**: DPS は Socket に加えて Plug にもライトを出すため、3方式の中で最も多くのライトを使います。SPS1 は Socket のみ、SPS2 は既定では SPS1 と同じですが、レガシー互換を切ればライトを 0 にできます。
-- **Contacts**: Socket 側の幅（6〜13）は、ハンドタッチゾーンや触覚通知（OGB）の有無で変わります。Plug 側は SPS1 が 18、SPS2 が 12 で、SPS2 は検出用の Contacts を共有テクスチャ方式へ移したぶん減っています。Depth Animations を使うと、両世代とも Contacts はさらに増えます。
+- **Contacts**: DPS は Contacts を使いません（点光源ベース）。SPS1・SPS2 は触覚通知や検出のために Contacts を使います。Socket 側の幅（6〜13）は、ハンドタッチゾーンや触覚通知（OGB）の有無で変わります。Plug 側は SPS1 が 18、SPS2 が 12 で、SPS2 は検出用の Contacts を共有テクスチャ方式へ移したぶん減っています（触覚通知や検出 Sender は両世代で共通のため、Contacts が完全に無くなるわけではありません）。それぞれの内訳は [SPS1 の詳細](/details/sps1/)・[SPS2 の詳細](/details/sps2/) を参照してください。Depth Animations を使うと、両世代とも Contacts はさらに増えます。
 - **Mesh Renderer / マテリアルスロット**: SPS2 は Socket・Plug ごとに専用の Mesh Renderer（マテリアル2スロット）を1つ追加します。SPS1・DPS にはこれがありません（既存マテリアルのシェーダーを差し替えるだけでスロット数は変わりません）。
 
 ### パフォーマンスランクへの影響
