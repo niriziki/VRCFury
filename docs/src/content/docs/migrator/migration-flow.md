@@ -38,6 +38,8 @@ VRCFury Stub（`net.nrzk.vfstub`）を導入します。VRCFury Stub は、VRCFu
 
 SPSNDMF Migrator（`net.nrzk.spsndmf-migrator`）を導入し、`Tools/SPSNDMF/Migrator` から変換対象の GameObject を選び、`VRCFury → SPSNDMF` 方向で変換します。プレビューで変換内容を確認してから実行でき、実行後も Ctrl+Z で取り消し可能です。VRCFury 本体がなくても、VRCFury Stub が提供するコンポーネントに対して変換処理が動作します。変換対象コンポーネントの詳細は [SPSNDMF Migrator の変換対象表](/migrator/overview/#変換対象) を参照してください。
 
+この手動変換は、シーンやプレハブに SPSNDMF のコンポーネントを**永続的に書き込みます**。今後 SPSNDMF のコンポーネントとして編集を続けたい場合は、このステップが必要です。ビルド・アップロードだけが目的であれば、この手動変換を行わなくても後述のビルド時自動変換で足ります（違いは後述の「注意点」を参照）。
+
 ### ④ SPS for NDMF でビルド
 
 SPS for NDMF（`net.nrzk.spsndmf`）を導入し、いつもどおり NDMF/Modular Avatar の非破壊ビルドを実行します。SPS for NDMF は Modular Avatar より前のタイミングでビルドに加わり、変換済みの SPS Plug / Socket を処理します。
@@ -46,4 +48,5 @@ SPS for NDMF（`net.nrzk.spsndmf`）を導入し、いつもどおり NDMF/Modul
 
 - Migrator の変換対象のうち、**VRCFury Plug/Socket は双方向**（`VRCFury ⇔ SPSNDMF`）に変換できますが、**Global Collider・Haptic Touch Receiver・Haptic Touch Sender は VRCFury → SPSNDMF 方向のみ**の変換です。SPSNDMF 側から VRCFury 側へ戻す変換はできません。
 - Global Collider や Haptic Touch Receiver/Sender は、SPS for NDMF 本体のビルド処理では扱われず、SPSNDMF Migrator によって Modular Avatar の Global Collider や VRChat の Contact Receiver/Sender といったネイティブなコンポーネントへ変換されます。
-- SPSNDMF Migrator には、`Tools/SPSNDMF/Migrator` からの手動変換とは別に、VRCFury Stub が入った環境でアップロード・テスト用のビルドを行うと、VRCFury → SPSNDMF 相当の変換をビルド時に自動的に行ってSPSとして機能するようにします。
+- SPSNDMF Migrator には、`Tools/SPSNDMF/Migrator` からの手動変換とは別に、VRCFury Stub が入った環境でアップロード・テスト用のビルドを行うと、VRCFury → SPSNDMF 相当の変換をビルド時に自動的に行ってSPSとして機能するようにします。この**ビルド時自動変換は、アップロード・テストビルドのときだけ一時的に行われるもので、シーンやプレハブ自体は書き換えません**（Migrator の手動変換のように SPSNDMF コンポーネントとして永続化されるわけではありません）。
+- 使い分けの目安: **今後 SPSNDMF のコンポーネントとして編集し続けたい場合は③の手動変換が必要**です。**ビルド・アップロードだけが目的であれば、③を省略してビルド時自動変換だけに任せても構いません。**

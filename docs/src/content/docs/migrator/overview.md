@@ -18,8 +18,13 @@ VRCFury Stub は VRCFury 本体と同時にインストールすることはで�
 
 1. Unity メニューから `Tools/SPSNDMF/Migrator` を開きます。
 2. Hierarchy で変換対象の GameObject（通常はアバタールート）を選択します。
-3. 変換方向を選びます（`VRCFury → SPSNDMF` または `SPSNDMF → VRCFury`）。
-4. `VRCFury → SPSNDMF` のときは、必要に応じて追加の変換チェックボックスを選択します。
+3. 変換方向を選びます（`VRCFury → SPSNDMF` または `SPSNDMF → VRCFury`）。※対応する方向はコンポーネントの種類によって異なります（下の「変換対象」表を参照）。
+4. `VRCFury → SPSNDMF` のときは、必要に応じて追加の変換チェックボックスを選択します（既定はすべてON）。
+   - **VRCFury Global Collider を MA Global Collider に変換**
+   - **VRCFury Haptic Touch Receiver を VRC Contact Receiver に変換**
+   - **VRCFury Haptic Touch Sender を VRC Contact Sender に変換**
+   
+   いずれも Plug/Socket 以外の関連コンポーネントを、対応する変換先へ含めるかどうかのチェックボックスです（詳しくは下の「変換対象」表を参照）。
 5. `プレビュー` で変換予定の内容を確認し、`実行` で適用します。適用後は Ctrl+Z で取り消し可能です。
 
 ## 変換対象

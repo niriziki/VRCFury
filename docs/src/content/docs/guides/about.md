@@ -25,7 +25,7 @@ SPS に必要な部分だけを抽出しているため、MA を中心とした�
 | パッケージ | 役割 |
 |---|---|
 | SPS for NDMF（`net.nrzk.spsndmf`） | 本体。VRCFury の SPS 機能を NDMF プラグインとして抽出したもの。 |
-| VRCFury Stub（`net.nrzk.vfstub`） | VRCFury を入れずに、設定済みの VRCFury コンポーネントを変換用に保持するパッケージ。**VRCFuryと同時にインストールすることはできません。** |
+| VRCFury Stub（`net.nrzk.vfstub`） | VRCFury を入れずに、設定済みの VRCFury コンポーネントを（変換前のまま）保持するパッケージ。変換には SPSNDMF Migrator が別途必要です。**VRCFuryと同時にインストールすることはできません。** |
 | SPSNDMF Migrator（`net.nrzk.spsndmf-migrator`） | VRCFury / VRCFury Stub と SPS for NDMF  の間で、SPS 関連のコンポーネントを相互に変換できるエディタ拡張。（Plug/Socket以外の関連コンポーネントはVRCFury→MAの片方向変換です。） |
 
 自分で新規導入する際は本体の SPS for NDMF（`net.nrzk.spsndmf`）だけで利用できます。既存ギミック活用等他の2パッケージが必要になるケースについては [インストール](/guides/install/) を参照してください。

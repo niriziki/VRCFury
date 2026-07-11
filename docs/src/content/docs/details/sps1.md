@@ -38,6 +38,7 @@ SPS1 は位置の伝達を点光源で行いますが、触覚通知や補助的
 | 近くの Socket を探す（SPS Plus） | Receiver | 4 | — | 近くに Socket があるか検知（SPS1 のみ。SPS2 で廃止） | 常時（半径3mと大きい） |
 | スケール補正 | Sender / Receiver | 2 | — | アバターのスケールを測り挿入の計算を補正する | ほぼ常時 |
 | Depth Animations | Receiver | 1〜2 | 3〜6 | 挿入の深さを測り、アニメを動かす | Depth Animations を設定したときだけ |
+| Auto 選択 | Receiver | — | 1（Auto 対象ごと） | 複数 Socket から最寄りを自動選択 | Auto 対象 Socket が2個以上 |
 
 **Sender と Receiver の関係**は SPS2 と同じで、位置を発信する Sender を、反対側のコンポーネント（Plug の Sender ↔ Socket の Receiver、およびその逆。自分・相手どちらのアバターにもある）の Receiver が受信します。詳しくは [SPS2 の詳細 — 使用する Contacts](/details/sps2/) を参照してください。
 

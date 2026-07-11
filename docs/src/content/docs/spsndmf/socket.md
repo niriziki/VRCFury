@@ -10,6 +10,10 @@ Socket は、SPS の中で Plug を受け入れる側のコンポーネントで
 
 Socket（旧称 Orifice）は、挿入される側の部位に取り付けて使うコンポーネントです。Socket 自身が Plug のように変形するわけではなく、Plug が向かって曲がってくるための「受け入れ側の目印」として機能します。
 
+:::note
+SPS1（0.1.x）系を使う場合は、正しく動作させるために VRChat 側の追加設定が必要です。詳しくは [SPS1 の詳細](/details/sps1/#動作に必要な-vrchat-側の設定) を参照してください。
+:::
+
 ## モードと形状
 
 **Enable Deformation** は、この Socket を SPS の対象にするかどうかのメインスイッチです。オンにすると以下の設定が表示されます。
@@ -38,7 +42,7 @@ Radius Offset と Guided Path は、SPS2（0.2.x）系のコンポーネント�
 | 設定 | 内容 |
 |---|---|
 | Name in menu | メニュー上に表示する名前です。 |
-| Include in Auto selection? | 近くの Plug に応じて自動的に選ばれる「Auto」枠の対象に含めるかどうかです。 |
+| Include in Auto selection? | 近くの Plug に応じて自動的に選ばれる「Auto」枠の対象に含めるかどうかです。検出用の Contacts は、SPS2 ではアバター全体で共有の1個ですが、SPS1（0.1.x）では Auto 対象の Socket ごとに1個使います。 |
 | Menu Icon | メニューに表示するアイコンです。 |
 
 ### 同時に有効化できる Socket の数（版差）
