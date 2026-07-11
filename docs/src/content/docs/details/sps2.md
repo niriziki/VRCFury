@@ -28,37 +28,31 @@ Socket 自体は SPS のシェーダーで変形するわけではありませ�
 
 ## 使用する Contacts
 
-SPS2 の「Plug が Socket へ向けて曲がる」というコアな動作は[共有テクスチャ](#位置を伝えるしくみ動作原理)で行うため、**それ自体には VRChat Contacts を必要としません**（同じ画面に相手の Socket も描かれるので、Contacts 無しで相手の Socket も検出できます）。Contacts は、次の付加的な機能のためだけに使われます。
+SPS2 の「Plug が Socket へ曲がる」というコアな動きは[共有テクスチャ](#位置を伝えるしくみ動作原理)で行うため、**Contacts を必要としません**。Contacts は、次の付加機能のためだけに使われます（数は Plug 1個・Socket 1個あたり。Sender は発信、Receiver は受信）。
 
-Contacts には、位置を**発信する Sender** と、それを**検知する Receiver** の2種類があります。SPS2 が使う Contacts を役割ごとに並べると次のようになります（数は Plug 1個・Socket 1個あたりの目安）。
+| 用途 | 種別 | Plug | Socket | 役割 | 有効になる条件 |
+|---|---|---|---|---|---|
+| 位置ビーコン | Sender | 4 | 2 | 「ここに Plug／Socket がある」と発信する。下の Receiver や旧方式（DPS/TPS）の相手が読む | Plug は常時／Socket はメニュー ON 時 |
+| 触覚通知（OGB） | Receiver | 8 | 4〜11 | 位置ビーコンを検知し、触覚アプリに接触・挿入を伝える | OSC 触覚アプリを起動している間だけ |
+| Depth Animations | Receiver | 1〜2 | 3〜6 | 挿入の深さを測り、ブレンドシェイプ等を動かす | [Depth Animations](/spsndmf/socket/) を設定したときだけ |
+| Auto 選択 | Receiver | — | 1※ | 複数の Socket から最寄りを自動で選ぶ | Auto 対象の Socket が2個以上のとき |
 
-| Contact | 種別 | 数 | 役割 | 有効になる条件 |
-|---|---|---|---|---|
-| 位置ビーコン | Sender | Plug 4 ／ Socket 2 | 「ここに Plug（Socket）があります」と発信する。下の Receiver や、旧方式（DPS/TPS）の相手がこれを読み取る | Plug は常時／Socket はメニューで ON にしている間 |
-| 触覚通知（OGB） | Receiver | Plug 8 ／ Socket 4〜11 | 相手（または自分）の位置ビーコンを検知し、触覚アプリに「触れた・挿入された」ことを伝える | 自分のクライアントで OSC 触覚アプリを起動している間だけ |
-| Depth Animations | Receiver | 数個（設定時のみ） | Plug と Socket の距離＝挿入の深さを測り、その値でブレンドシェイプ等を動かす | [Depth Animations](/spsndmf/socket/) を設定したときだけ |
-| Auto 選択 | Receiver | 1（アバターで共有） | 複数の Socket から最寄りのものを自動で選ぶ | Auto 対象の Socket が2個以上あるとき |
+※ Auto 選択の Receiver はアバター全体で共有の1個。
 
-**位置ビーコン（Sender）を読み取るのは、上の表の「触覚通知（OGB）」と「Depth Animations」の Receiver です。**
+**位置ビーコン（Sender）を読むのは、上表の「触覚通知」と「Depth Animations」の Receiver です。** Plug のビーコンは Socket 側のこれらの Receiver が、Socket のビーコンは Plug 側のこれらの Receiver が読みます（読み手は自分・相手どちらのアバターにもあります）。旧方式（DPS/TPS）の相手も同様に読みます。
 
-- Plug が出す位置ビーコンは、**Socket 側の触覚通知・Depth Animations の Receiver** が読みます（Socket が「Plug が来た／どれくらい挿入されたか」を知るため）。
-- Socket が出す位置ビーコンは、**Plug 側の触覚通知・Depth Animations の Receiver** が読みます（Plug が「どの Socket が近いか／どれくらい挿入したか」を知るため）。
-- これらの Receiver は自分のアバターにも相手のアバターにもあります（自分自身との組み合わせ＝Self、他人との組み合わせ＝Others の両方に対応）。旧方式（DPS/TPS）を使っている相手のアバターの Receiver も、この位置ビーコンを読みます。
+ただし、**基本的な使い方（触覚アプリなし・Depth Animations 未設定）では、これらの Receiver は動きません**（OGB はゲートで無効、Depth は未設定なら存在しない）。そのため位置ビーコンは旧方式の相手向けの発信として残るだけで、SPS2 のコアな動きは Contacts 抜きで完結します。これが SPS2 で実際に効く Contacts が少ない理由です。位置ビーコンは Socket の「Legacy Compatibility」設定では消えません（この設定は点光源だけを切り替えます）。
 
-ここで大事なのは、**基本的な使い方（触覚アプリを使わず、Depth Animations も設定していない）では、これらの Receiver はどれも動いていない**という点です。触覚通知の Receiver はゲートで無効、Depth Animations の Receiver は設定していなければそもそも存在しません。そのため位置ビーコンは、実質的に旧方式（DPS/TPS）の相手に向けた発信として残るだけです。**SPS2 のコアな動き（Plug が Socket へ曲がる）は共有テクスチャで完結しており、Contacts は使いません。** これが、SPS2 で実際に効いている Contacts がごく少ない理由です。
+### 実際に有効な Contacts の数
 
-なお、位置ビーコン（Sender）は VRCFury の Socket の「Legacy Compatibility」設定では消えません（この設定は点光源の出力だけを切り替えます）。
-
-### 実際に有効になっている Contacts の数
-
-生成される Contacts の総数よりも、**実行時に同時に有効になっている数**が、他アバターとの干渉のしやすさに効きます。通常のプレイ（OSC 触覚アプリを起動していない）で、Socket を1つメニューで ON にした状態（Plug 1・Socket 1）を比べると、次のようになります。
+干渉のしやすさは、生成された総数よりも**同時に有効な数**で決まります。通常のプレイ（OSC アプリなし）で Socket を1つ ON にした状態（Plug 1・Socket 1）で比べると、次のようになります。
 
 | 世代 | 実際に有効な合計 | 内訳 |
 |---|---|---|
 | SPS1 | 約 24個 | Sender 約7 ＋ Receiver 約17 |
 | SPS2 | 約 6個 | Sender 約6 ＋ Receiver 0 |
 
-SPS2 で Receiver が 0 なのは、触覚通知（OGB）の Receiver が「OSC 触覚アプリ起動時のみ有効」というゲートで**無効化されている**ためです（Receiver が無いわけではなく、アプリを起動すれば有効になります）。SPS1 にはこのゲートが無く OGB の Receiver が常に有効なため、同時に有効な Contacts がずっと多くなります。加えて SPS1 は、SPS2 に無い「近くの Socket を探す Receiver（SPS Plus、半径3mと大きい）」も常時有効です。
+SPS2 で Receiver が 0 なのは、触覚通知の Receiver がゲートで無効だからです（アプリを起動すれば有効）。SPS1 はこのゲートが無く、さらに半径3mと大きい「SPS Plus」Receiver も常時有効なため、同時に有効な Contacts がずっと多くなります。
 
 ## NDMF ビルドでの処理の流れ
 

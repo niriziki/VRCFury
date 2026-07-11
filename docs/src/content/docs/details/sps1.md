@@ -29,15 +29,15 @@ SPS1 を正しく動作させるには、アバター側の VRChat 設定が影�
 
 ## 使用する Contacts
 
-SPS1 は位置の伝達を点光源で行いますが、触覚通知や補助的な検出には VRChat Contacts も使います。役割ごとに並べると次のようになります（数は Plug 1個・Socket 1個あたりの目安）。
+SPS1 は位置の伝達を点光源で行いますが、触覚通知や補助的な検出には VRChat Contacts も使います（数は Plug 1個・Socket 1個あたり。Sender は発信、Receiver は受信）。
 
-| Contact | 種別 | 数 | 役割 | 有効になる条件 |
-|---|---|---|---|---|
-| 位置ビーコン | Sender | Plug 4 ／ Socket 2 | 「ここに Plug（Socket）があります」と発信する。触覚通知の Receiver や、旧方式（DPS/TPS）の相手がこれを読み取る | Plug は常時／Socket はメニューで ON にしている間 |
-| 触覚通知（OGB） | Receiver | Plug 8 ／ Socket 4〜11 | 相手（または自分）の位置ビーコンを検知し、触覚アプリに接触・挿入を伝える | 常時（SPS2 のようなゲートが無い） |
-| 近くの Socket を探す（SPS Plus） | Receiver | Plug 4 | 近くに Socket があるかを検知する補助機能（SPS1 のみ。SPS2 では廃止） | 常時（半径3mと大きい） |
-| スケール補正 | Sender / Receiver | 2 | アバターのスケールを測って挿入の計算を補正する | ほぼ常時 |
-| Depth Animations | Receiver | 数個（設定時のみ） | 挿入の深さを測り、その値でアニメを動かす | Depth Animations を設定したときだけ |
+| 用途 | 種別 | Plug | Socket | 役割 | 有効になる条件 |
+|---|---|---|---|---|---|
+| 位置ビーコン | Sender | 4 | 2 | 「ここに Plug／Socket がある」と発信する。触覚通知の Receiver や旧方式（DPS/TPS）の相手が読む | Plug は常時／Socket はメニュー ON 時 |
+| 触覚通知（OGB） | Receiver | 8 | 4〜11 | 位置ビーコンを検知し、触覚アプリに接触・挿入を伝える | 常時（SPS2 のようなゲートが無い） |
+| 近くの Socket を探す（SPS Plus） | Receiver | 4 | — | 近くに Socket があるか検知（SPS1 のみ。SPS2 で廃止） | 常時（半径3mと大きい） |
+| スケール補正 | Sender / Receiver | 2 | — | アバターのスケールを測り挿入の計算を補正する | ほぼ常時 |
+| Depth Animations | Receiver | 1〜2 | 3〜6 | 挿入の深さを測り、アニメを動かす | Depth Animations を設定したときだけ |
 
 **Sender と Receiver の関係**は SPS2 と同じで、位置を発信する Sender を、反対側のコンポーネント（Plug の Sender ↔ Socket の Receiver、およびその逆。自分・相手どちらのアバターにもある）の Receiver が受信します。詳しくは [SPS2 の詳細 — 使用する Contacts](/details/sps2/) を参照してください。
 
