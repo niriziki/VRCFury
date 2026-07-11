@@ -9,19 +9,19 @@ SPS には **SPS1** と **SPS2** という2つの世代があります。本プ�
 | 系統 | 本パッケージのバージョン | 相当する VRCFury のバージョン | 方式 |
 |---|---|---|---|
 | SPS1 | 0.1.x | 〜 1.1348.0 | Unity の点光源を使ってソケットの位置を伝える方式 |
-| SPS2 | 0.2.x（本ドキュメントが主に扱う版） | 1.1351.0 以降 | 描画（レンダリング）を介してシェーダー間でソケットの位置を伝える方式 |
+| SPS2 | 0.2.x（本ドキュメントが主に扱う版） | 1.1351.0 以降 | 共有テクスチャを介してシェーダー間でソケットの位置を伝える方式 |
 
 ## 違い
 
-SPS の実質的前身にあたる DPS も含めて比較すると、次のようになります。DPS と SPS1 はどちらも Unity の点光源で位置を伝える方式で、SPS2 だけが Unity のライトを使わず、描画（レンダリング）を介してシェーダー間で位置を伝える新しい方式です。
+SPS の実質的前身にあたる DPS も含めて比較すると、次のようになります。DPS と SPS1 はどちらも Unity の点光源で位置を伝える方式で、SPS2 だけが Unity のライトを使わず、Socket 側と Plug 側のシェーダーが共有テクスチャを介して位置を伝える新しい方式です。
 
 | 観点 | DPS | SPS1（0.1.x） | SPS2（0.2.x） |
 |---|---|---|---|
-| Socket 位置の伝え方 | Unity の Point Light | Unity の Point Light | 描画を介したシェーダー間の受け渡し（Unity のライトを使わない） |
+| Socket 位置の伝え方 | Unity の Point Light | Unity の Point Light | 共有テクスチャを介したシェーダー間の受け渡し（Unity のライトを使わない） |
 | 同時に有効化できる Socket の数 | 実質1個（既定で自動排他。Dual Mode で2個までだが煩雑） | 実質1個（既定で自動排他。Dual Mode で2個まで、強い警告付き） | 実質無制限 |
 | タグによる絞り込み | 無し | 無し | あり（Include / Exclude Tags） |
 | 挿入経路 | 単純な変形 | Socket 1つへの直線的な変形のみ | Guided Path（中継地点）による複数段の経路指定に対応 |
-| 挿入時のSocket側変形 | あるが設定が複雑 (Point Light 式) | ある (Contact 式) | ある |
+| 挿入時のSocket側変形 | あるが設定が複雑 (Point Light 式) | ある (Contact 式・Depth Animations) | ある (Contact 式・Depth Animations。SPS1 と同じ) |
 | Radius Offset | 無し | 無し | あり（Socket の太さ分だけ Plug の向かう先をオフセット） |
 | 提供元 | Raliv | VRCFury（SPS） | VRCFury（SPS） |
 
