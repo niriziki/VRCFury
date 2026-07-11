@@ -34,28 +34,46 @@ SPS2 は位置の伝達を共有テクスチャで行いますが、触覚通知
 
 | 用途 | 種類 | 数 | 有効になる条件 |
 |---|---|---|---|
-| 位置・レガシー検出 | Sender | 4 | 常時 |
+| 位置検出（発信） | Sender | 4 | 常時 |
 | 触覚通知（OGB） | Receiver | 8 | 自分のクライアントで OSC 触覚アプリを起動している間だけ |
 
 **Socket 1個あたり（生成 約6〜13個）**
 
 | 用途 | 種類 | 数 | 有効になる条件 |
 |---|---|---|---|
-| 位置・レガシー検出 | Sender | 2 | メニューでこの Socket を ON にしている間 |
+| 位置検出（発信） | Sender | 2 | メニューでこの Socket を ON にしている間 |
 | 触覚通知（OGB） | Receiver | 4〜11 | メニュー ON かつ OSC 触覚アプリを起動している間だけ |
 
 このほか、[Depth Animations](/spsndmf/socket/) を使う Plug / Socket では、挿入の深さを測る Receiver が数個ずつ追加されます。
 
 「有効になる条件」に注目すると、**通常のプレイ（OSC 触覚アプリを起動していない）では OGB の Receiver は有効になりません**。SPS2 が実際に同時に有効化する Contacts は、Plug 側の検出 Sender（約4個）に、メニューで ON にした Socket があればその検出 Sender（2個）が加わる程度の少数に収まります。生成される総数よりも、この「実際に同時に有効な数」が他アバターとの干渉のしやすさに効きます。
 
-検出用の Contacts が **Sender**（発信）なのは、Plug / Socket が「ここに Plug（Socket）があります」と発信するビーコンだからです。それを読む **Receiver は、1つの Plug / Socket の中に対で用意されているのではなく、別の場所**にあります。
+### Sender と Receiver の対応
 
-- **相手のアバター側** — レガシー（DPS/TPS/SPS1）の相手や、触覚のやり取りの相手が、この Sender を自分の Receiver で検出します。
-- **同じアバター内の別の Receiver** — Depth Animations や Auto Mode、OGB の Receiver が、この検出 Sender のタグを読み取ります（表で別に数えている Receiver 系がこれにあたります）。
+Contact は「発信する Sender」と「受信する Receiver」がタグで対になって働きます。SPS の検出は、Plug と Socket が **Sender で「ここに Plug（Socket）があります」と発信**し、それを **反対側のコンポーネントの Receiver が受信**する形です。
 
-なお、**SPS2 自身の「Plug が Socket へ曲がる」検出は共有テクスチャで行う**ため、これらの検出 Sender は SPS2 のコア検出には使われていません（用途はレガシー／相手アバター向けの発信と、上記 Receiver に読ませるためのタグ源です）。
+- Plug が出す Sender は、**Socket 側の Receiver**（OGB や Depth Animations の Receiver）が受信します。
+- Socket が出す Sender は、**Plug 側の Receiver** が受信します。
+- これらの Receiver は、**自分のアバターにも相手のアバターにも**あります（自分自身との組み合わせ用の「Self」受信と、他人との「Others」受信の両方が用意されています）。上の表で Receiver として数えている OGB や Depth の Contacts がこれにあたります。
 
-[SPS1](/details/sps1/) では、これらに加えて Plug 側に「近くの Socket を探すための Receiver（SPS Plus）」やスケール補正用の Contacts が常時付いていました。SPS2 ではこの検出を共有テクスチャ方式へ移したためそれらが不要になりましたが、**触覚通知（OGB）と検出用 Sender は SPS2 でも同じように使う**ため、Contacts が大きく減るわけではありません。
+つまり Sender と Receiver は、1つの Plug / Socket の中で対になっているのではなく、**Plug の Sender ↔ Socket の Receiver**（およびその逆）という反対コンポーネント同士で対になっています。「Plug も Socket も検出は Sender」でも、受信する Receiver はちゃんと存在します。
+
+これらの検出 Sender の多く（Plug の Root / Length / Width、Socket の Root）は、上記のとおり **SPS2 自身の OGB・Depth Animations・Auto Mode が使っている**ため常に生成されます。純粋に旧方式（DPS/TPS）互換のためだけの発信は Socket の「Front」など一部に限られます。なお VRCFury の Socket の「Legacy Compatibility」設定は**点光源の出力だけ**を切り替えるもので、これらの Contacts の生成は止めません。
+
+なお、**SPS2 の「Plug が Socket へ曲がる」というコアな検出は共有テクスチャで行う**ため、これらの Contacts はコアな曲がり検出には使われていません（同じ画面に相手の Socket も描かれるので、Contacts 無しでも相手の Socket を検出できます）。Contacts の用途は触覚通知（OGB）・Depth Animations・Auto Mode と、旧方式との相互検出です。
+
+### 実質的に有効な Contacts の数
+
+通常のプレイ（OSC 触覚アプリを起動していない）で、Socket を1つメニューで ON にした典型的な状態（Plug 1・Socket 1）では、実際に同時有効な Contacts はおおよそ次のようになります。
+
+| 世代 | 実質有効な合計 | 内訳 |
+|---|---|---|
+| SPS1 | 約 24個 | Sender 約7 ＋ Receiver 約17（OGB Receiver も常時有効） |
+| SPS2 | 約 6個 | Sender 約6 ＋ Receiver 0（OGB Receiver はゲートで無効） |
+
+Receiver が存在しないのではなく、SPS2 では OGB の Receiver が「OSC 触覚アプリ起動時のみ有効」というゲートで**無効化されている**ためです（OSC アプリを起動すると SPS2 でも OGB Receiver が有効になり、数は増えます）。生成される総数以上に、この実質的に有効な数の差が、他アバターとの干渉のしやすさに効きます。
+
+[SPS1](/details/sps1/) では、これらに加えて Plug 側に「近くの Socket を探すための Receiver（SPS Plus）」やスケール補正用の Contacts が常時付いていました。SPS2 ではこの検出を共有テクスチャ方式へ移したためそれらが不要になっています。
 
 ## NDMF ビルドでの処理の流れ
 
