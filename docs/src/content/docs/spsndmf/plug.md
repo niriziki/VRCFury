@@ -1,7 +1,7 @@
 ---
 title: Plug
 sidebar:
-  order: 3
+  order: 4
 ---
 
 Plug は、SPS の中で Socket に向かって曲がっていく側のコンポーネントです。[SPS for NDMF が実際にビルド処理の対象とする](/spsndmf/overview/)2つのコンポーネントのうちの1つです。

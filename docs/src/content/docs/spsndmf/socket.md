@@ -1,7 +1,7 @@
 ---
 title: Socket
 sidebar:
-  order: 4
+  order: 5
 ---
 
 Socket は、SPS の中で Plug を受け入れる側のコンポーネントです。[SPS for NDMF が実際にビルド処理の対象とする](/spsndmf/overview/)2つのコンポーネントのうちの1つです。

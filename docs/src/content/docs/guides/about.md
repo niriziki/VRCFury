@@ -21,7 +21,7 @@ SPS for NDMF は、こうした「VRCFury 全体は導入せず SPS だけを使
 
 SPS for NDMF は NDMF のビルド処理の中で、**Modular Avatar より前**に実行されるように登録されています。SPS の処理結果が MA コンポーネントとして出力された状態で、その後の MA のビルドが実行される流れです。
 
-内部でどのようにビルドが行われるかは [しくみ](/spsndmf/how-it-works/) で解説します。
+内部でどのようにビルドが行われるかは [SPS2 のしくみ](/spsndmf/how-it-works-sps2/) で解説します。
 
 ## 3つのパッケージ
 
