@@ -15,16 +15,13 @@ VRCFury は非破壊ビルドのための多機能ツールですが、SPS for N
 - VRCFury 全体は導入したくないが、SPS の Plug / Socket 機能だけは使いたい。
 - すでに Modular Avatar で非破壊ビルドの構成を組んでいて、そこに別のビルドシステムを持ち込みたくない。
 
-VRCFury 本体をそのまま導入すると、SPS 以外の機能も一緒に有効になり、MA と役割が重なったり干渉したりする可能性があります。SPS for NDMF は SPS に必要な部分だけを抽出しているため、MA を中心とした構成に SPS だけを過不足なく足すことができます。
+SPS for NDMF は、こうした「VRCFury 全体は導入せず SPS だけを使いたい」「既存の MA 中心の非破壊ビルドに、そのまま SPS だけを足したい」というニーズに応えるために作られています。SPS に必要な部分だけを抽出しているため、MA を中心とした構成に SPS だけを過不足なく追加できます。
 
 ## NDMF・Modular Avatar との関係
 
-SPS for NDMF は NDMF の `BuildPhase.Transforming` で、**Modular Avatar より前**に実行されるプラグインとして登録されています。ビルド時には次の2パスが順番に走ります。
+SPS for NDMF は NDMF の `BuildPhase.Transforming` で、**Modular Avatar より前**に実行されるプラグインとして登録されています。SPS の処理結果が MA コンポーネントとして出力された状態で、その後の MA のビルドが実行される流れです。NDMF 環境専用の設計になっており、VRC SDK 単体でのビルドや、上流 VRCFury の旧来のビルド経路は使用しません。
 
-1. `SpsBuildPass` — VRCFury の SPS ビルドロジックをアバターに適用する。
-2. `SpsOutputPass` — その結果を MA のコンポーネントとして出力する。
-
-SPS の処理結果が MA コンポーネントとして出力された状態で、その後の MA のビルドが実行される流れです。NDMF 環境専用の設計になっており、VRC SDK 単体でのビルドや、上流 VRCFury の旧来のビルド経路は使用しません。
+内部でどのようにビルドが行われるかは [しくみ](/sps/how-it-works/) で解説します。
 
 ## 3つのパッケージ
 
