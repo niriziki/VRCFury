@@ -45,7 +45,7 @@ VPAI インストーラまたは VPM リポジトリ経由:
 - `net.nrzk.spsndmf-migrator/` — migrator パッケージ本体（生成ではなく直接管理）。
 - `tools/spsndmf/ReleaseTransform.cs` — `com.vrcfury.vrcfury/` → `net.nrzk.spsndmf/` 変換スクリプト。
 - `tools/vfstub/ReleaseTransform.cs` — VRCFury Runtime → `net.nrzk.vfstub/` 変換スクリプト。
-- `docs/vrcfury-ndmf-complete-reference.md` — VRCFury 処理の網羅リファレンス。
+- `.agent-docs/vrcfury-ndmf-complete-reference.md` — VRCFury 処理の網羅リファレンス（内部・開発者向け）。
 
 ## 関連
 
