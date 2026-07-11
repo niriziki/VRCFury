@@ -1,0 +1,32 @@
+---
+title: SPS for NDMF
+description: VRCFury の SPS 機能だけを NDMF / Modular Avatar 環境で使うためのパッケージ群のドキュメント。
+template: splash
+hero:
+  tagline: VRCFury の SPS を、Modular Avatar と同じ NDMF ビルドで。
+  actions:
+    - text: はじめに
+      link: /guides/about/
+      icon: right-arrow
+    - text: GitHub
+      link: https://github.com/niriziki/VRCFury
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid stagger>
+  <Card title="ガイド" icon="open-book">
+    SPS for NDMF とは何か、インストール、最小の使い方。[はじめに](/guides/about/)
+  </Card>
+  <Card title="パッケージと連携" icon="puzzle">
+    3パッケージの役割と、既存 VRCFury ギミックの移行フロー。[概要](/packages/overview/)
+  </Card>
+  <Card title="SPS を理解する" icon="setting">
+    Plug / Socket などの実用解説と、シェーダー・Contacts の仕組み。[SPS とは](/sps/what-is-sps/)
+  </Card>
+  <Card title="リファレンス" icon="list-format">
+    用語集・FAQ・トラブルシューティング。[用語集](/reference/glossary/)
+  </Card>
+</CardGrid>
