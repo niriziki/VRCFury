@@ -5,6 +5,7 @@
   "version": "0.0.1",
   "license": "VRCFury's Personal License",
   "licensesUrl": "https://github.com/niriziki/SPSNDMF/blob/ndmf/LICENSE.md",
+  "changelogUrl": "https://github.com/niriziki/VRCFury/blob/ndmf/net.nrzk.spsndmf-migrator/CHANGELOG.md",
   "unity": "2022.3",
   "author": {
     "name": "niriziki"

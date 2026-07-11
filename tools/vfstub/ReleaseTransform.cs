@@ -75,6 +75,15 @@ if (!File.Exists(packageJsonTemplate))
 File.Copy(packageJsonTemplate, Path.Combine(outputDir, "package.json"), overwrite: true);
 File.Copy(packageJsonTemplate + ".meta", Path.Combine(outputDir, "package.json.meta"), overwrite: true);
 
+// --- Step 4: Copy CHANGELOG.md template ---
+var changelogTemplate = Path.Combine(scriptDir, "CHANGELOG.md");
+if (File.Exists(changelogTemplate))
+{
+    Console.WriteLine("Copying CHANGELOG.md...");
+    File.Copy(changelogTemplate, Path.Combine(outputDir, "CHANGELOG.md"), overwrite: true);
+    File.Copy(changelogTemplate + ".meta", Path.Combine(outputDir, "CHANGELOG.md.meta"), overwrite: true);
+}
+
 Console.WriteLine();
 Console.WriteLine("Done.");
 return 0;

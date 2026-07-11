@@ -96,6 +96,15 @@ foreach (var filePath in Directory.EnumerateFiles(outputDir, "*", SearchOption.A
     }
 }
 
+// --- Step 4: Copy CHANGELOG.md template ---
+var changelogTemplate = Path.Combine(scriptDir, "CHANGELOG.md");
+if (File.Exists(changelogTemplate))
+{
+    File.Copy(changelogTemplate, Path.Combine(outputDir, "CHANGELOG.md"), overwrite: true);
+    File.Copy(changelogTemplate + ".meta", Path.Combine(outputDir, "CHANGELOG.md.meta"), overwrite: true);
+    Console.WriteLine("Copied CHANGELOG.md");
+}
+
 Console.WriteLine();
 Console.WriteLine($"Done! Processed {stats.FilesProcessed} files, {stats.ReplacedFiles} files modified");
 Console.WriteLine($"  .cs: {stats.CsFiles} ({stats.CsReplaced} modified)");
