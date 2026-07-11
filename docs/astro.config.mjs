@@ -22,7 +22,7 @@ export default defineConfig({
         { label: 'SPSNDMF の使い方', items: [{ autogenerate: { directory: 'spsndmf' } }] },
         { label: 'VRCFury Stub の使い方', items: [{ autogenerate: { directory: 'vfstub' } }] },
         { label: 'SPSNDMF Migrator の使い方', items: [{ autogenerate: { directory: 'migrator' } }] },
-        { label: 'リファレンス', items: [{ autogenerate: { directory: 'reference' } }] },
+        { label: '詳細', items: [{ autogenerate: { directory: 'details' } }] },
         { label: '更新履歴', items: [{ autogenerate: { directory: 'changelog' } }] },
       ],
     }),

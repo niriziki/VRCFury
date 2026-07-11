@@ -1,7 +1,7 @@
 ---
-title: SPS2 のしくみ
+title: SPS2 の詳細
 sidebar:
-  order: 6
+  order: 1
 ---
 
 これは **SPS2**（0.2.x 系、SPS for NDMF が実装している方式）のしくみです。SPS1（0.1.x 系）との違いは [SPS1 と SPS2](/spsndmf/versions/) を参照してください。実用的な設定項目だけを知りたい場合は、このページを読む必要はありません。

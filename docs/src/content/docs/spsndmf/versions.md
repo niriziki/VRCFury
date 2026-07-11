@@ -21,7 +21,7 @@ SPS には **SPS1** と **SPS2** という2つの世代があります。本プ�
 | 挿入経路 | Socket 1つへの直線的な変形のみ | Guided Path（中継地点）による複数段の経路指定に対応 |
 | Radius Offset | 無し | あり（Socket の太さ分だけ Plug の向かう先をオフセット） |
 
-それぞれの詳しい変形のしくみは [SPS1 のしくみ](/spsndmf/how-it-works-sps1/)・[SPS2 のしくみ](/spsndmf/how-it-works-sps2/) を参照してください。設定項目ごとの版差は [Plug](/spsndmf/plug/)・[Socket](/spsndmf/socket/) の各ページにも記載しています。
+それぞれの詳しい変形のしくみは [SPS1 のしくみ](/details/sps1/)・[SPS2 のしくみ](/details/sps2/) を参照してください。設定項目ごとの版差は [Plug](/spsndmf/plug/)・[Socket](/spsndmf/socket/) の各ページにも記載しています。
 
 ## どちらを使うか
 

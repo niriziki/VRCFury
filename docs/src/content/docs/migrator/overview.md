@@ -10,6 +10,10 @@ SPSNDMF Migrator（`net.nrzk.spsndmf-migrator`）は、SPS 関連コンポーネ
 
 VRCFury / VRCFury Stub / SPSNDMF / Modular Avatar / VRChat Contacts の間で、SPS 関連コンポーネントを相互変換するエディタ拡張です。VRCFury 本体は必須ではなく、[VRCFury Stub](/vfstub/overview/) が入っている環境でも動作します。
 
+:::caution
+VRCFury Stub は VRCFury 本体と同時にインストールすることはできません。VRCFuryをアンインストールしてから導入してください。
+:::
+
 ## 使い方
 
 1. Unity メニューから `Tools/SPSNDMF/Migrator` を開きます。
