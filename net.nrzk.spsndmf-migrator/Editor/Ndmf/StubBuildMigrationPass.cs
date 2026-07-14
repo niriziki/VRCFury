@@ -15,11 +15,13 @@ namespace Nrzk.SpsMigrator.Ndmf {
             var ops = new BuildConversionOps();
 
             PlugSocketConverter.Plan(root, vrcfToSpsNdmf: true, plan);
+            if (PackageBinding.SpsOptionsConvertible) SpsOptionsConverter.Plan(root, vrcfToSpsNdmf: true, plan);
             if (PackageBinding.GlobalColliderConvertible) GlobalColliderConverter.Plan(root, plan);
             if (PackageBinding.TouchReceiverConvertible) TouchConverter.PlanReceiver(root, plan);
             if (PackageBinding.TouchSenderConvertible) TouchConverter.PlanSender(root, plan);
 
             PlugSocketConverter.Execute(root, vrcfToSpsNdmf: true, plan, ops);
+            if (PackageBinding.SpsOptionsConvertible) SpsOptionsConverter.Execute(root, vrcfToSpsNdmf: true, plan, ops);
             if (PackageBinding.GlobalColliderConvertible) GlobalColliderConverter.Execute(root, plan, ops);
             if (PackageBinding.TouchReceiverConvertible) TouchConverter.ExecuteReceiver(root, plan, ops);
             if (PackageBinding.TouchSenderConvertible) TouchConverter.ExecuteSender(root, plan, ops);
