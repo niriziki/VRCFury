@@ -18,7 +18,7 @@ namespace VF.Menu {
 
         private static void Create() {
             var sel = Selection.activeTransform;
-            var avatar = sel != null ? sel.GetComponentInParent<VRCAvatarDescriptor>() : null;
+            var avatar = sel != null ? sel.GetComponentInParent<VRCAvatarDescriptor>(true) : null;
             if (avatar == null) {
                 throw new VRCFBuilderException(
                     "No avatar found. Please select your avatar (or any object inside it) first.");
