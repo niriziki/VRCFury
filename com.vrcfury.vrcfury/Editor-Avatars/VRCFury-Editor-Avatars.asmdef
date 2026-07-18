@@ -8,7 +8,8 @@
         "VRC.SDKBase.Editor",
         "VRC.SDK3A.Editor",
         "nadena.dev.ndmf",
-        "nadena.dev.modular-avatar.core"
+        "nadena.dev.modular-avatar.core",
+        "VRCFury-Runtime-SpsNdmf"
     ],
     "includePlatforms": [
         "Editor"
