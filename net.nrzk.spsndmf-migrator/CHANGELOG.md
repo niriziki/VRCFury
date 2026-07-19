@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [Unreleased]
+### Changed / 変更
+- Manual migration now converts VRCFury SPS Options to and from the new **SPS Menus** component (bidirectional). A menu parent path such as `Body/SPS` cannot be carried over automatically; a warning asks you to place the SPS Menus object under the desired MA Menu Item instead. Build-time automatic migration in VRCFury Stub environments is unchanged (menu path is preserved as before).
+
+  手動変換で、VRCFury の SPS Options を新しい **SPS Menus** コンポーネントと相互に変換するようになりました（双方向）。`身体/SPS` のような親パスは自動では引き継げないため、SPS Menus オブジェクトを目的の MA Menu Item の下に配置するよう警告でご案内します。VRCFury Stub 環境でのビルド時自動変換は従来どおりです（メニューパスは保持されます）。
+
 ## [0.2.0-beta.7] - 2026-07-11
 ### Added / 追加
 - Online documentation site published at https://spsndmf.nrzk.net (`documentationUrl`).

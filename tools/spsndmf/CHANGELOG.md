@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [Unreleased]
+### Added / 追加
+- **SPS Menus** component: place the SPS menu anywhere in your avatar's menu, working like a MA Menu Item — the menu position is where you put the object in the menu tree, and the submenu is named after the object. Turning off "Create Parent Menu" expands the SPS menu contents directly into the parent menu (like MA Menu Group). Create one via `GameObject > SPSNDMF > Create SPS Menus`. This solves duplicate parent folders that appeared when the legacy menu path setting (e.g. `Body/SPS`) named an existing Modular Avatar menu.
+
+  **SPS Menus** コンポーネント: MA Menu Item と同じ感覚で、SPS メニューをアバターメニューの好きな場所に配置できます。メニュー内の位置はオブジェクトを置いた場所、サブメニュー名はオブジェクト名で決まります。「Create Parent Menu」をオフにすると、SPS メニューの中身を親メニューに直接展開します（MA Menu Group 相当）。`GameObject > SPSNDMF > Create SPS Menus` から作成できます。従来のメニューパス設定（例 `身体/SPS`）が Modular Avatar の既存メニューと同名の場合に親フォルダが重複する問題の解決策です。
+
 ## [0.2.0-beta.7] - 2026-07-11
 ### Added / 追加
 - Online documentation site published at https://spsndmf.nrzk.net (`documentationUrl`).
