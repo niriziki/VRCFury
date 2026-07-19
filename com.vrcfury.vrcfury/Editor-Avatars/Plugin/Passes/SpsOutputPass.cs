@@ -42,12 +42,16 @@ namespace VF.Plugin.Passes {
                         c.type == VRCExpressionsMenu.Control.ControlType.SubMenu
                         && c.subMenu != null
                         && c.name == "SPS");
-                    if (spsControl != null) {
+                    if (spsControl != null && spsControl.subMenu.controls.Count > 0) {
                         spsMenus.builtMenu = spsControl.subMenu;
                         spsMenus.builtIcon = spsControl.icon;
-                    } else {
+                    } else if (spsControl == null && output.Menu.controls.Count > 0) {
                         // Unexpected menu shape: pass everything through unchanged.
                         spsMenus.builtMenu = output.Menu;
+                    } else {
+                        // Nothing to show (e.g. all menu toggles disabled):
+                        // remove the component so no empty folder is emitted.
+                        UnityEngine.Object.DestroyImmediate(spsMenus);
                     }
                 } else {
                     var installer = outputObj.AddComponent<ModularAvatarMenuInstaller>();
