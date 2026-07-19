@@ -40,15 +40,19 @@ namespace VF.Plugin.Passes {
                     "Multiple SPS Menus components were found on this avatar. Only one is allowed.");
             }
             if (spsMenusAll.Length == 1) {
-                // Carry the component's settings through the unmodified upstream
-                // pipeline by injecting a temporary SpsOptions feature into the
-                // build clone. menuPath stays default ("SPS"); SpsOutputPass
-                // extracts that folder's contents for the component afterwards.
+                // Remove legacy SpsOptions containers so their menuPath cannot
+                // move the menu away from the default "SPS" folder that
+                // SpsOutputPass extracts (the SPS Menus component wins).
                 foreach (var vf in avatarObj.GetComponentsInChildren<VF.Model.VRCFury>(true)) {
                     if (vf.content is VF.Model.Feature.SpsOptions) {
                         UnityEngine.Object.DestroyImmediate(vf);
                     }
                 }
+                // Carry saveSockets/legacyModeEnabledOnAvatarLoad through the
+                // unmodified upstream pipeline by injecting a temporary SpsOptions
+                // feature into the build clone. The menu itself is generated the
+                // same way with or without this injection (menuPath defaults to
+                // "SPS" either way); it only exists to deliver these two settings.
                 var tmp = avatarObj.AddComponent<VF.Model.VRCFury>();
                 tmp.content = new VF.Model.Feature.SpsOptions {
                     saveSockets = spsMenusAll[0].saveSockets,
