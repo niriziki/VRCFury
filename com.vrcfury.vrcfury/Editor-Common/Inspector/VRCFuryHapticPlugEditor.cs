@@ -196,6 +196,13 @@ namespace VF.Inspector {
             var container = new VisualElement();
             var configureTps = serializedObject.FindProperty("configureTps");
             var enableSps = serializedObject.FindProperty("enableSps");
+
+            if (DexProtectUtils.IsDexProtectPresent()) {
+                container.Add(VRCFuryEditorUtils.Warn("This avatar uses DexProtect. Plug may not scale properly when deforming. If affected, consider removing DexProtect."));
+            }
+            if (MaterialLocker.UsesD4rk(target.owner().uploadRoots.First(), false)) {
+                container.Add(VRCFuryEditorUtils.Warn("This avatar uses D4rk Optimizer. Plug may break unexpectedly when deforming. If affected, consider removing D4rk Optimizer."));
+            }
             
             container.Add(ConstraintWarning(target));
             
@@ -662,9 +669,11 @@ namespace VF.Inspector {
             var capsuleRotation = Quaternion.Euler(90,0,0);
 
             var localSpace = GameObjects.Create("BakedSpsPlug", transform);
-            localSpace.worldScale = Vector3.one;
             localSpace.localPosition = localPosition;
             localSpace.localRotation = localRotation;
+
+            var oneSpace = GameObjects.Create("OneSpace", localSpace);
+            oneSpace.worldScale = Vector3.one;
 
             var worldSpace = GameObjects.Create("WorldSpace", localSpace);
             ConstraintUtils.MakeWorldSpace(worldSpace);
@@ -803,7 +812,7 @@ namespace VF.Inspector {
                     worldLength
                 );
                 var metadataColor = SpsColorSampler.GetColor(rendererResults.Select(r => r.renderer));
-                var resolverObj = GameObjects.Create("SpsResolver", localSpace);
+                var resolverObj = GameObjects.Create("SpsResolver", oneSpace);
                 resolverObj.AddComponent<MeshFilter>();
                 var meshRenderer = resolverObj.AddComponent<MeshRenderer>();
                 spsMarkers.ConfigureResolverRenderer(meshRenderer);
@@ -817,6 +826,7 @@ namespace VF.Inspector {
                     plug
                 );
                 resolverObj.AddComponent<VRCFuryHideGizmoUnlessSelected>();
+                resolverObj.AddComponent<VRCFurySpsGreenScreenFix>();
                 resolverRenderer = meshRenderer;
             }
 
@@ -824,6 +834,7 @@ namespace VF.Inspector {
 
             return new BakeResult {
                 bakeRoot = localSpace,
+                oneSpace = oneSpace,
                 worldSpace = worldSpace,
                 renderers = rendererResults,
                 resolverRenderer = resolverRenderer,
@@ -836,6 +847,7 @@ namespace VF.Inspector {
 
         public class BakeResult {
             public VFGameObject bakeRoot;
+            public VFGameObject oneSpace;
             public VFGameObject worldSpace;
             public ICollection<RendererResult> renderers;
             public MeshRenderer resolverRenderer;

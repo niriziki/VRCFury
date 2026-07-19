@@ -30,7 +30,7 @@ namespace VF.Service {
         [VFAutowired] private readonly HapticContactsService hapticContacts;
         [VFAutowired] private readonly DbtLayerService directTreeService;
         [VFAutowired] private readonly ClipFactoryService clipFactory;
-        [VFAutowired] private readonly ScaleFactorService scaleFactorService;
+        [VFAutowired] private readonly WorldScaleDetectorService worldScaleService;
         [VFAutowired] private readonly VRCAvatarDescriptor avatar;
         [VFAutowired] private readonly ControllersService controllers;
         [VFAutowired] private readonly FrameTimeService frameTimeService;
@@ -168,7 +168,7 @@ namespace VF.Service {
 
                         // Receivers
                         var handTouchZoneSize = VRCFuryHapticSocketEditor.GetHandTouchZoneSize(socket);
-                        haptics = GameObjects.Create("Haptics", bakeResult.worldSpace);
+                        haptics = GameObjects.Create("Haptics", bakeResult.oneSpace);
 
                         var baseReq = new HapticContactsService.ReceiverRequest() {
                             obj = haptics,
@@ -260,7 +260,7 @@ namespace VF.Service {
                         ogbEnabledService.Register(haptics);
                     }
 
-                    var worldScale = new Lazy<VFAFloat>(() => scaleFactorService.GetWorldScale(bakeResult.bakeRoot));
+                    var worldScale = new Lazy<VFAFloat>(() => worldScaleService.GetWorldScale(bakeResult.bakeRoot));
                     var animObjects = new List<VFGameObject>();
                     var Contacts = new Lazy<SpsDepthContacts>(() => {
                         var animRoot = GameObjects.Create("Animations", bakeResult.worldSpace);
@@ -297,6 +297,7 @@ namespace VF.Service {
                             sourceParam = VRCFuryHapticPlugEditor.SpsPlugRadiusMeters
                         });
                     }
+                    var closestMath = new Lazy<BlendtreeMath>(() => directTreeService.GetMath(Contacts.Value.directTree));
 
                     foreach (var inject in injectRequests) {
                         VFAFloat value = null;
@@ -323,12 +324,9 @@ namespace VF.Service {
                                 value = Contacts.Value.closestLength.Value;
                                 break;
                             case VRCFuryHapticPlugEditor.SpsPlugLengthLocal:
-                                value = directTreeService.GetMath(Contacts.Value.directTree).Multiply(
+                                value = closestMath.Value.Multiply(
                                     $"{oscId}/Closest/LengthInSpsScale",
-                                    directTreeService.GetMath(Contacts.Value.directTree).Invert(
-                                        $"{oscId}/Closest/SpsScaleInvertedForLength",
-                                        worldScale.Value
-                                    ),
+                                    Contacts.Value.worldScaleInverted.Value,
                                     Contacts.Value.closestLength.Value
                                 );
                                 break;
@@ -339,30 +337,23 @@ namespace VF.Service {
                                 value = Contacts.Value.closestRadius.Value;
                                 break;
                             case VRCFuryHapticPlugEditor.SpsPlugRadiusLocal:
-                                value = directTreeService.GetMath(Contacts.Value.directTree).Multiply(
+                                value = closestMath.Value.Multiply(
                                     $"{oscId}/Closest/RadiusInSpsScale",
-                                    directTreeService.GetMath(Contacts.Value.directTree).Invert(
-                                        $"{oscId}/Closest/SpsScaleInvertedForRadius",
-                                        worldScale.Value
-                                    ),
+                                    Contacts.Value.worldScaleInverted.Value,
                                     Contacts.Value.closestRadius.Value
                                 );
                                 break;
                             case VRCFuryHapticPlugEditor.SpsPlugRadiusPlugLengths:
-                                value = directTreeService.GetMath(Contacts.Value.directTree).Multiply(
+                                value = closestMath.Value.Multiply(
                                     $"{oscId}/Closest/RadiusInPlugLengths",
-                                    directTreeService.GetMath(Contacts.Value.directTree).Invert(
-                                        $"{oscId}/Closest/LengthInvertedForRadius",
-                                        Contacts.Value.closestLength.Value
-                                    ),
+                                    Contacts.Value.closestLengthInverted.Value,
                                     Contacts.Value.closestRadius.Value
                                 );
                                 break;
                         }
                         if (value != null) {
                             fx.NewFloat(inject.resolvedParam, usePrefix: false);
-                            directTreeService.GetMath(Contacts.Value.directTree)
-                                .CopyInPlace(value, inject.resolvedParam);
+                            closestMath.Value.CopyInPlace(value, inject.resolvedParam);
                         }
                     }
 
