@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [0.2.0-beta.8] - 2026-07-19
+### Changed / 変更
+- Updated stub types to match upstream VRCFury 1.1369.0 (adds `VRCFurySpsGreenScreenFix`).
+
+  スタブ型を上流 VRCFury 1.1369.0 に追従しました（`VRCFurySpsGreenScreenFix` を追加）。
+
 ## [0.2.0-beta.7] - 2026-07-11
 ### Added / 追加
 - Online documentation site published at https://spsndmf.nrzk.net (`documentationUrl`).

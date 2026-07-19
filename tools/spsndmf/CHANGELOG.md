@@ -8,11 +8,15 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
-## [Unreleased]
+## [0.2.0-beta.8] - 2026-07-19
 ### Added / 追加
 - **SPS Menus** component: place the SPS menu anywhere in your avatar's menu, working like a MA Menu Item — the menu position is where you put the object in the menu tree, and the submenu is named after the object. Turning off "Create Parent Menu" expands the SPS menu contents directly into the parent menu (like MA Menu Group). Create one via `GameObject > SPSNDMF > Create SPS Menus`. This solves duplicate parent folders that appeared when the legacy menu path setting (e.g. `Body/SPS`) named an existing Modular Avatar menu.
 
   **SPS Menus** コンポーネント: MA Menu Item と同じ感覚で、SPS メニューをアバターメニューの好きな場所に配置できます。メニュー内の位置はオブジェクトを置いた場所、サブメニュー名はオブジェクト名で決まります。「Create Parent Menu」をオフにすると、SPS メニューの中身を親メニューに直接展開します（MA Menu Group 相当）。`GameObject > SPSNDMF > Create SPS Menus` から作成できます。従来のメニューパス設定（例 `身体/SPS`）が Modular Avatar の既存メニューと同名の場合に親フォルダが重複する問題の解決策です。
+### Changed / 変更
+- Updated the bundled VRCFury source to upstream 1.1369.0: build performance improvements and SPS fixes (mesh array indexing, local units for injected parameters, hilt allowance limited to the first socket in a chain, marker interference with camera-trick world systems), plus a new in-editor green screen fix method.
+
+  同梱の VRCFury ソースを上流 1.1369.0 に更新: ビルド性能改善と SPS の修正（メッシュ配列インデックス、注入パラメータのローカル単位、hilt allowance をチェーン先頭ソケットのみに制限、カメラトリック系ワールドギミックとのマーカー干渉）、およびエディタ内グリーンスクリーン修正の新方式を取り込みました。
 
 ## [0.2.0-beta.7] - 2026-07-11
 ### Added / 追加
