@@ -11,6 +11,9 @@ namespace VF {
 
         private static void SaveMaterials(MeshRenderer renderer) {
             if (renderer == null) return;
+            // SPS-NDMF: TmpDirPath is only set while an SPS NDMF build runs; without it GetPath() would throw
+            // (e.g. entering play mode with an already-baked avatar and no SPS build in this session)
+            if (TmpFilePackage.GetPathNullable() == null) return;
 
             var materials = renderer.sharedMaterials;
             if (materials == null || materials.Length == 0) return;
