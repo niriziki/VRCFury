@@ -191,8 +191,8 @@ namespace Nrzk.SpsMigrator {
         private ConversionPlan BuildPlan(GameObject target) {
             var plan = new ConversionPlan();
             PlugSocketConverter.Plan(target, _direction == Direction.VrcfToSpsNdmf, plan);
-            if (PackageBinding.SpsOptionsConvertible)
-                SpsOptionsConverter.Plan(target, _direction == Direction.VrcfToSpsNdmf, plan);
+            if (PackageBinding.SpsMenusConvertible)
+                SpsMenusConverter.Plan(target, _direction == Direction.VrcfToSpsNdmf, plan);
             if (_direction == Direction.VrcfToSpsNdmf) {
                 if (_convertGlobalCollider && PackageBinding.GlobalColliderConvertible)
                     GlobalColliderConverter.Plan(target, plan);
@@ -213,8 +213,8 @@ namespace Nrzk.SpsMigrator {
             var ops = new UndoConversionOps();
             try {
                 PlugSocketConverter.Execute(target, _direction == Direction.VrcfToSpsNdmf, plan, ops);
-                if (PackageBinding.SpsOptionsConvertible)
-                    SpsOptionsConverter.Execute(target, _direction == Direction.VrcfToSpsNdmf, plan, ops);
+                if (PackageBinding.SpsMenusConvertible)
+                    SpsMenusConverter.Execute(target, _direction == Direction.VrcfToSpsNdmf, plan, ops);
                 if (_direction == Direction.VrcfToSpsNdmf) {
                     if (_convertGlobalCollider && PackageBinding.GlobalColliderConvertible)
                         GlobalColliderConverter.Execute(target, plan, ops);
