@@ -26,7 +26,35 @@ namespace VF.Plugin.Passes {
             // Check if any SPS components exist
             var hasSps = avatarObj.GetComponentInChildren<VRCFuryHapticPlug>(true) != null
                       || avatarObj.GetComponentInChildren<VRCFuryHapticSocket>(true) != null;
-            if (!hasSps) return;
+            var spsMenusAll = avatarObj.GetComponentsInChildren<VRCFurySpsMenus>(true);
+            if (!hasSps) {
+                // Without any SPS content, the menu component must not leave an
+                // empty submenu behind when MA resolves the menu tree.
+                foreach (var spsMenus in spsMenusAll) {
+                    UnityEngine.Object.DestroyImmediate(spsMenus);
+                }
+                return;
+            }
+            if (spsMenusAll.Length > 1) {
+                throw new System.Exception(
+                    "Multiple SPS Menus components were found on this avatar. Only one is allowed.");
+            }
+            if (spsMenusAll.Length == 1) {
+                // Carry the component's settings through the unmodified upstream
+                // pipeline by injecting a temporary SpsOptions feature into the
+                // build clone. menuPath stays default ("SPS"); SpsOutputPass
+                // extracts that folder's contents for the component afterwards.
+                foreach (var vf in avatarObj.GetComponentsInChildren<VF.Model.VRCFury>(true)) {
+                    if (vf.content is VF.Model.Feature.SpsOptions) {
+                        UnityEngine.Object.DestroyImmediate(vf);
+                    }
+                }
+                var tmp = avatarObj.AddComponent<VF.Model.VRCFury>();
+                tmp.content = new VF.Model.Feature.SpsOptions {
+                    saveSockets = spsMenusAll[0].saveSockets,
+                    legacyModeEnabledOnAvatarLoad = spsMenusAll[0].legacyModeEnabledOnAvatarLoad,
+                };
+            }
 
             var containerPath = AssetDatabase.GetAssetPath(context.AssetContainer);
             if (string.IsNullOrEmpty(containerPath))
