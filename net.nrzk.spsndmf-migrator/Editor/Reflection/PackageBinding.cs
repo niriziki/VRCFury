@@ -34,11 +34,27 @@ namespace Nrzk.SpsMigrator.Reflection {
         public static Type SpsNdmfPlugType => FindType("SpsNdmf.Component.VRCFuryHapticPlug");
         public static Type SpsNdmfSocketType => FindType("SpsNdmf.Component.VRCFuryHapticSocket");
 
+        public static Type VrcfVrcFuryType => FindType("VF.Model.VRCFury");
+        public static Type VrcfSpsOptionsType => FindType("VF.Model.Feature.SpsOptions");
+        public static Type SpsNdmfVrcFuryType => FindType("SpsNdmf.Model.VRCFury");
+        public static Type SpsNdmfSpsOptionsType => FindType("SpsNdmf.Model.Feature.SpsOptions");
+        public static Type SpsNdmfSpsMenusType => FindType("SpsNdmf.Component.VRCFurySpsMenus");
+        public static Type MaMenuInstallerType => FindType("nadena.dev.modular_avatar.core.ModularAvatarMenuInstaller");
+        public static Type MaMenuSourceType => FindType("nadena.dev.modular_avatar.core.menu.MenuSource");
+
         public static bool VrcfAvailable => VrcfPlugType != null && VrcfSocketType != null;
         public static bool SpsNdmfAvailable => SpsNdmfPlugType != null && SpsNdmfSocketType != null;
 
         public static bool GlobalColliderConvertible => VrcfGlobalColliderType != null;
         public static bool TouchReceiverConvertible => VrcfTouchReceiverType != null;
         public static bool TouchSenderConvertible => VrcfTouchSenderType != null;
+
+        public static bool SpsOptionsConvertible =>
+            VrcfVrcFuryType != null && VrcfSpsOptionsType != null &&
+            SpsNdmfVrcFuryType != null && SpsNdmfSpsOptionsType != null;
+
+        public static bool SpsMenusConvertible =>
+            VrcfVrcFuryType != null && VrcfSpsOptionsType != null &&
+            SpsNdmfSpsMenusType != null && MaMenuInstallerType != null;
     }
 }

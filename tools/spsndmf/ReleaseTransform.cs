@@ -20,6 +20,7 @@ const string NewNamespace = "SpsNdmf";
 var asmdefNameMap = new Dictionary<string, string>
 {
     ["VRCFury"] = "SPSNDMF",
+    ["VRCFury-Runtime-SpsNdmf"] = "SPSNDMF-Runtime-SpsNdmf",
     ["VRCFury-Editor-Common"] = "SPSNDMF-Editor-Common",
     ["VRCFury-Editor-Avatars"] = "SPSNDMF-Editor-Avatars",
     ["VRCFury-Editor-Worlds"] = "SPSNDMF-Editor-Worlds",
