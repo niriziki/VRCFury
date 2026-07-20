@@ -14,10 +14,11 @@ namespace VF.Inspector {
         private static void Init() {
             VRCFurySocketGizmo.EnableSceneLighting = () => {
                 var sv = EditorWindowFinder.GetWindows<SceneView>().FirstOrDefault();
-                if (sv != null) {
-                    sv.sceneLighting = true;
-                    sv.drawGizmos = true;
-                }
+                if (sv == null || sv.sceneLighting) return;
+                Debug.LogWarning(
+                    "SPS: Scene view lighting is off, so legacy (DPS / TPS / SPS1) sockets will not" +
+                    " deform plugs in the scene view. Turn on Lighting in the scene view toolbar if" +
+                    " you need to preview them. SPS2 sockets are unaffected.");
             };
         }
 

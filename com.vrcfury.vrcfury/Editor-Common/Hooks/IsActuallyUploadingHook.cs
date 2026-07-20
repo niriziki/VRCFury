@@ -9,6 +9,8 @@ namespace VF.Hooks {
     internal static class IsActuallyUploadingHook {
 
         public static bool Get() {
+            // ActiveBuildType can stay set while no build is running, so trust play mode over it.
+            if (UnityEngine.Application.isPlaying) return false;
 #if VRCSDK_HAS_ACTIVE_BUILD_TYPE
             return VRC_SdkBuilder.ActiveBuildType != VRC_SdkBuilder.BuildType.None;
 #else
