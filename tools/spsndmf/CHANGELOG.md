@@ -8,6 +8,15 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [0.2.0-beta.9] - 2026-07-20
+### Fixed / 修正
+- Play mode: SPS's internal control texture no longer appears as an overlay in the Scene view, and socket gizmos are shown again. The SPS components responsible for cleaning up that texture were being removed from the avatar before they had a chance to run.
+
+  プレイモード: SPS が内部で使う制御用テクスチャが Scene ビューに重なって表示される問題を修正し、ソケットのギズモも再び表示されるようになりました。そのテクスチャを消す役目の SPS コンポーネントが、動作する前にアバターから削除されていたことが原因です。
+- Avatar Optimizer no longer warns that SPS-NDMF components are unknown. Components that the build has already finished with are now removed before Avatar Optimizer runs, and the ones that have to remain are registered with its API, so optimization quality is no longer reduced.
+
+  Avatar Optimizer が SPS-NDMF のコンポーネントを「未知のコンポーネント」として警告しなくなりました。ビルドで役目を終えたコンポーネントは Avatar Optimizer の実行前に削除し、残す必要があるものは Avatar Optimizer の API に登録するようにしたため、最適化の品質が落ちることもなくなります。
+
 ## [0.2.0-beta.8] - 2026-07-19
 ### Added / 追加
 - **SPS Menus** component: place the SPS menu anywhere in your avatar's menu, working like a MA Menu Item — the menu position is where you put the object in the menu tree, and the submenu is named after the object. Turning off "Create Parent Menu" expands the SPS menu contents directly into the parent menu (like MA Menu Group). Create one via `GameObject > SPSNDMF > Create SPS Menus`. This solves duplicate parent folders that appeared when the legacy menu path setting (e.g. `Body/SPS`) named an existing Modular Avatar menu.
