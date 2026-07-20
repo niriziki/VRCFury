@@ -4,5 +4,6 @@
 [assembly: InternalsVisibleTo("VRCFury-Editor-Common")]
 [assembly: InternalsVisibleTo("VRCFury-Editor-Avatars")]
 [assembly: InternalsVisibleTo("VRCFury-Editor-Worlds")]
+[assembly: InternalsVisibleTo("VRCFury-Editor-AvatarOptimizer")]
 [assembly: InternalsVisibleTo("com.vrcfury.api")]
 [assembly: InternalsVisibleTo("com.vrcfury.udon")]

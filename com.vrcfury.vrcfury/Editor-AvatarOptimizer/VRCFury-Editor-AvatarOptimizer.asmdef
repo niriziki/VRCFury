@@ -1,0 +1,25 @@
+{
+    "name": "VRCFury-Editor-AvatarOptimizer",
+    "rootNamespace": "VF",
+    "references": [
+        "VRCFury",
+        "com.anatawa12.avatar-optimizer.api.editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.anatawa12.avatar-optimizer",
+            "expression": "[1.6,2.0)",
+            "define": "SPSNDMF_HAS_AVATAR_OPTIMIZER"
+        }
+    ],
+    "noEngineReferences": false
+}

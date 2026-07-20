@@ -13,7 +13,10 @@ namespace VF.Plugin.Passes {
 
         protected override void Execute(BuildContext context) {
             var spsCtx = context.GetState<SpsContext>();
-            if (spsCtx.AvatarOutput == null) return;
+            if (spsCtx.AvatarOutput == null) {
+                RemoveConsumedComponents(context.AvatarRootObject);
+                return;
+            }
 
             var output = spsCtx.AvatarOutput;
             var avatarObj = context.AvatarRootObject;
@@ -71,6 +74,26 @@ namespace VF.Plugin.Passes {
                         localOnly = !param.networkSynced
                     });
                 }
+            }
+
+            RemoveConsumedComponents(avatarObj);
+        }
+
+        /**
+         * These have already been consumed by the build. Avatar Optimizer runs later in the Optimizing
+         * phase and assumes unknown components depend on everything they reference, so leaving them
+         * behind for the VRChat SDK's final IEditorOnly sweep degrades its optimization.
+         */
+        private static void RemoveConsumedComponents(GameObject avatarObj) {
+            if (avatarObj == null) return;
+            foreach (var c in avatarObj.GetComponentsInChildren<VRCFuryHapticPlug>(true)) {
+                UnityEngine.Object.DestroyImmediate(c);
+            }
+            foreach (var c in avatarObj.GetComponentsInChildren<VRCFuryHapticSocket>(true)) {
+                UnityEngine.Object.DestroyImmediate(c);
+            }
+            foreach (var c in avatarObj.GetComponentsInChildren<VF.Model.VRCFury>(true)) {
+                UnityEngine.Object.DestroyImmediate(c);
             }
         }
 
