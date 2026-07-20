@@ -8,6 +8,16 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [0.2.0-beta.10] - 2026-07-20
+### Changed / 変更
+- Enabling SPS in play mode no longer turns on Gizmos and Scene Lighting in the scene view. Your scene view settings are left alone. If Scene Lighting happens to be off, a warning is logged instead, because legacy (DPS / TPS / SPS1) sockets cannot deform plugs in the scene view without it. SPS2 sockets are unaffected.
+
+  プレイモードで SPS を有効にしたとき、Scene ビューの Gizmo と Scene Lighting を勝手に ON にしないようになりました。Scene ビューの設定はそのまま維持されます。Scene Lighting が OFF の場合は代わりに警告をログに出します。OFF のままだとレガシー（DPS / TPS / SPS1）ソケットが Scene ビュー上でプラグを変形できないためです。SPS2 のソケットには影響しません。
+### Fixed / 修正
+- Play mode components (socket gizmos, the scene view control texture cleanup) are no longer dropped when the VRChat SDK is left in a build state. The SDK's build type can stay set even when no build is running, which made SPS behave as if an upload were in progress.
+
+  VRChat SDK がビルド状態のまま残っているときに、プレイモード用のコンポーネント（ソケットのギズモ、Scene ビューの制御用テクスチャの後始末）が失われる問題を修正しました。SDK のビルド種別はビルドが走っていなくても設定されたままになることがあり、その場合 SPS がアップロード中と誤認していました。
+
 ## [0.2.0-beta.9] - 2026-07-20
 ### Fixed / 修正
 - Play mode: SPS's internal control texture no longer appears as an overlay in the Scene view, and socket gizmos are shown again. The SPS components responsible for cleaning up that texture were being removed from the avatar before they had a chance to run.
