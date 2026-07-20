@@ -173,10 +173,13 @@ namespace VF.Utils {
             return (method.MethodImplementationFlags & MethodImplAttributes.InternalCall) != 0;
         }
  
+        // SPS-NDMF: Harmony patches are opt-in. Only patch classes listed here are applied.
+        private static readonly ISet<Type> allowedPatchClasses = new HashSet<Type> {
+            typeof(VF.Hooks.PreventComponentDeletionHook),
+        };
+
         private static void Patch_Simple(MethodBase original, MethodInfo patch, PatchMode patchMode = PatchMode.Prefix) {
-            // SPS-NDMF: disable all Harmony patches (SPS core does not use Harmony)
-            return;
-            #pragma warning disable CS0162
+            if (patch.DeclaringType == null || !allowedPatchClasses.Contains(patch.DeclaringType)) return;
             var harmonyMethod = new HarmonyMethod(patch);
             //Debug.Log($"Patching {original.DeclaringType?.Name}.{original.Name}");
             if (patchMode == PatchMode.Prefix) {

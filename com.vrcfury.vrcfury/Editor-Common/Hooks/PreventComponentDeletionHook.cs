@@ -35,9 +35,6 @@ namespace VF.Hooks {
 
         [VFInit]
         private static void Init() {
-            // SPS-NDMF: disabled Harmony patches (intercepts DestroyImmediate and VRCSDK preprocessor globally)
-            return;
-            #pragma warning disable CS0162
             if (!ReflectionHelper.IsReady<Reflection>()) return;
             Reflection.DestroyImmediatePatch.apply();
             Reflection.PreprocessorPatch.apply();
