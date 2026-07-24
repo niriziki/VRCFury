@@ -1,34 +1,82 @@
+using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using VF.Component;
 using VF.Utils;
 
 namespace VF {
     internal static class VRCFurySpsGreenScreenFixEditor {
+        private const string RootObjectName = "_SpsGreenScreenFix";
+        private const string GrabShaderName = "Hidden/VRCFury/VFGridBakGrabPass";
+        private const string RestoreShaderName = "Hidden/VRCFury/VFGridBakRestore";
+
         [VFInit]
         private static void Init() {
-            VRCFurySpsGreenScreenFix.onCreated = SaveMaterials;
+            VRCFurySpsGreenScreenFix.onCreated = EnsureRootObject;
         }
 
-        private static void SaveMaterials(MeshRenderer renderer) {
-            if (renderer == null) return;
+        private static void EnsureRootObject() {
             // SPS-NDMF: TmpDirPath is only set while an SPS NDMF build runs; without it GetPath() would throw
             // (e.g. entering play mode with an already-baked avatar and no SPS build in this session)
             if (TmpFilePackage.GetPathNullable() == null) return;
 
-            var materials = renderer.sharedMaterials;
-            if (materials == null || materials.Length == 0) return;
+            using (new VRCFuryBuildContext()) {
+                var scene = SceneManager.GetActiveScene();
+                if (!scene.IsValid()) return;
 
-            var dir = VRCFuryAssetDatabase.GetUniquePath(
-                TmpFilePackage.GetPath() + "/Builds",
-                "SpsGreenScreenFix"
-            );
-            VRCFuryAssetDatabase.CreateFolder(dir);
+                foreach (var root in scene.GetRootGameObjects()) {
+                    if (root != null && root.name == RootObjectName) return;
+                }
 
-            for (var i = 0; i < materials.Length; i++) {
-                var mat = materials[i];
-                if (mat == null) continue;
-                VRCFuryAssetDatabase.SaveAsset(mat, dir, $"{i}_{mat.shader.name}");
+                var grabShader = Shader.Find(GrabShaderName);
+                var restoreShader = Shader.Find(RestoreShaderName);
+                if (grabShader == null || restoreShader == null) {
+                    throw new Exception("Failed to find SPS greenscreen fix shaders");
+                }
+
+                var obj = new GameObject(RootObjectName);
+                SceneManager.MoveGameObjectToScene(obj, scene);
+
+                var mesh = CreateTriangleMesh();
+                obj.AddComponent<MeshFilter>().sharedMesh = mesh;
+
+                var materials = new[] {
+                    VrcfObjectFactory.CreateMaterial(grabShader),
+                    VrcfObjectFactory.CreateMaterial(restoreShader)
+                };
+                obj.AddComponent<MeshRenderer>().sharedMaterials = materials;
+
+                var dir = VRCFuryAssetDatabase.GetUniquePath(
+                    TmpFilePackage.GetPath() + "/Builds",
+                    "SpsGreenScreenFix"
+                );
+                var parent = VrcfObjectFactory.Create<BinaryContainer>();
+                parent.name = "SpsGreenScreenFix";
+                new SaveAssetsSession().SaveAssetAndChildren(
+                    parent,
+                    new UnityEngine.Object[] { mesh, materials[0], materials[1] },
+                    "SpsGreenScreenFix",
+                    dir
+                );
             }
+        }
+
+        private static Mesh CreateTriangleMesh() {
+            var mesh = VrcfObjectFactory.Create<Mesh>();
+            mesh.name = "VRCFurySpsGreenScreenFix";
+            mesh.vertices = new[] {
+                new Vector3(-0.005f, -0.005f, 0),
+                new Vector3(-0.005f, 0.005f, 0),
+                new Vector3(0.005f, 0.005f, 0)
+            };
+            mesh.uv = new[] {
+                new Vector2(0, 0),
+                new Vector2(1, 0),
+                new Vector2(0, 1)
+            };
+            mesh.triangles = new[] { 0, 1, 2 };
+            mesh.bounds = new Bounds(Vector3.zero, Vector3.one * 2000);
+            return mesh;
         }
     }
 }

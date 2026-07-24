@@ -31,7 +31,7 @@ namespace VF.Service {
         [VFAutowired] private readonly VFGameObject avatarObject;
         [VFAutowired] private readonly TmpDirService tmpDirService;
         [VFAutowired] private readonly VRCAvatarDescriptor avatar;
-        [VFAutowired] private readonly ObjectPathsLookupService objectPaths;
+        [VFAutowired] private readonly VRCFObjectPathCache objectPaths;
 
         private class SavedAnimator {
             public RuntimeAnimatorController controller;
@@ -44,6 +44,8 @@ namespace VF.Service {
         }
 
         private readonly Dictionary<VFGameObject, SavedAnimator> savedAnimators = new Dictionary<VFGameObject, SavedAnimator>();
+        internal readonly Dictionary<VFGameObject, HashSet<VFGameObject>> animatedObjectsByRoot
+            = new Dictionary<VFGameObject, HashSet<VFGameObject>>();
 
         [FeatureBuilderAction(FeatureOrder.ResetAnimatorBefore)]
         public void ApplyBefore() {
@@ -119,9 +121,17 @@ namespace VF.Service {
                         new VFLoadContext {
                             OwnerObject = owner,
                             AnimatorObject = owner,
-                            ObjectPathLookups = objectPaths.GetLookups()
+                            ObjectPaths = objectPaths,
+                            ReverseObjectPaths = true
                         }
                     );
+                    animatedObjectsByRoot[owner] = saved.clone
+                        ?.GetClips()
+                        .SelectMany(clip => clip.GetAllBindings())
+                        .Select(binding => binding.target)
+                        .Where(target => target != null)
+                        .ToHashSet()
+                        ?? new HashSet<VFGameObject>();
                 }
                 if (saved.clone == null) continue;
                 output.Add((owner, saved.clone));

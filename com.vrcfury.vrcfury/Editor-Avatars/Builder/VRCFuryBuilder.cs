@@ -8,7 +8,6 @@ using UnityEngine;
 using VF.Component;
 using VF.Exceptions;
 using VF.Feature.Base;
-using VF.Hooks.UnityFixes;
 using VF.Injector;
 using VF.Inspector;
 using VF.Model;
@@ -23,17 +22,13 @@ namespace VF.Builder {
         internal static void RunMain(VFGameObject avatarObject) {
             Debug.Log("VRCFury invoked on " + avatarObject.name + " ...");
 
-            using (SuppressMaterialPropertyDrawersHook.Suppress()) {
-                using (SkipAssetPostprocessorsForVrcfAssetWritesHook.Suppress()) {
-                    VRCFuryAssetDatabase.WithAssetEditing(() => {
-                        try {
-                            MaterialLocker.injectedAvatarObject = avatarObject;
-                            Run(avatarObject);
-                        }
-                        finally {
-                            MaterialLocker.injectedAvatarObject = null;
-                        }
-                    });
+            using (new VRCFuryBuildContext()) {
+                try {
+                    MaterialLocker.injectedAvatarObject = avatarObject;
+                    Run(avatarObject);
+                }
+                finally {
+                    MaterialLocker.injectedAvatarObject = null;
                 }
             }
         }
@@ -57,10 +52,6 @@ namespace VF.Builder {
                 return;
             }
             
-            // If we don't do this, a unity issue in RepaintImmediately can randomly throw a segfault
-            RenderTexture.active = null;
-            Camera.SetupCurrent(null);
-
             /*
              * We call SaveAssets here for two reasons:
              * 1. If the build crashes unity for some reason, the user won't lose changes
@@ -124,7 +115,8 @@ namespace VF.Builder {
 
             var injector = externalInjector ?? VRCFuryInjectorBuilder.GetInjector(avatar);
             injector.Set("componentObject", new Func<VFGameObject>(() => currentServiceGameObject));
-            injector.GetService<ObjectPathsLookupService>().Capture(avatarObject);
+            injector.GetService<VRCFObjectPathCache>().Capture(avatarObject);
+            injector.GetService<VRCFArmatureCache>().Capture(avatarObject);
 
             var globals = injector.GetService<GlobalsService>();
             globals.addOtherFeature = (feature) => AddComponent(feature, currentServiceGameObject, currentServiceNumber);
@@ -178,15 +170,35 @@ namespace VF.Builder {
             foreach (var c in avatarObject.GetComponentsInSelfAndChildren<VRCFuryComponent>()) {
                 c.Upgrade();
             }
+            var externalReferences = new List<string>();
+            foreach (var component in avatarObject.GetComponentsInSelfAndChildren<VRCFuryComponent>()) {
+                MutableManager.ForEachChildObjectReference(component, (path, target, set) => {
+                    var targetObject = target switch {
+                        GameObject gameObject => gameObject.asVf(),
+                        UnityEngine.Component targetComponent => targetComponent.owner(),
+                        _ => null
+                    };
+                    if (targetObject == null || EditorUtility.IsPersistent(target)) return;
+                    if (targetObject.IsSameOrChildOf(avatarObject)) return;
+
+                    externalReferences.Add(
+                        $"{component.owner().GetPath()} -> {targetObject.GetPath()}"
+                    );
+                });
+            }
+            if (externalReferences.Count > 0) {
+                throw new Exception(
+                    "One of your VRCFury components is referencing an object outside of the avatar. This is a mistake, and can " +
+                    "happen if you incorrectly copied individual components between avatars. You need to fix these references, or just " +
+                    "delete the VRCFury component since it probably doesn't work anyways.\n\n"
+                    + externalReferences.JoinWithMore(10)
+                );
+            }
+
             foreach (var vrcFury in avatarObject.GetComponentsInSelfAndChildren<VRCFury>()) {
                 var configObject = vrcFury.owner();
                 if (VRCFuryEditorUtils.IsInRagdollSystem(configObject)) {
                     continue;
-                }
-
-                var loadFailure = vrcFury.GetBrokenMessage();
-                if (loadFailure != null) {
-                    throw new VRCFBuilderException($"VRCFury component is corrupted on {configObject.name} ({loadFailure})");
                 }
 
                 if (vrcFury.content == null) {
