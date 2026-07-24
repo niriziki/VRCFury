@@ -23,15 +23,18 @@ namespace VF.Builder {
         internal static void RunMain(VFGameObject avatarObject) {
             Debug.Log("VRCFury invoked on " + avatarObject.name + " ...");
 
-            using (SkipAssetPostprocessorsForVrcfAssetWritesHook.Suppress()) {
-                VRCFuryAssetDatabase.WithAssetEditing(() => {
-                    try {
-                        MaterialLocker.injectedAvatarObject = avatarObject;
-                        Run(avatarObject);
-                    } finally {
-                        MaterialLocker.injectedAvatarObject = null;
-                    }
-                });
+            using (SuppressMaterialPropertyDrawersHook.Suppress()) {
+                using (SkipAssetPostprocessorsForVrcfAssetWritesHook.Suppress()) {
+                    VRCFuryAssetDatabase.WithAssetEditing(() => {
+                        try {
+                            MaterialLocker.injectedAvatarObject = avatarObject;
+                            Run(avatarObject);
+                        }
+                        finally {
+                            MaterialLocker.injectedAvatarObject = null;
+                        }
+                    });
+                }
             }
         }
 
@@ -46,6 +49,7 @@ namespace VF.Builder {
         }
 
         private static void Run(VFGameObject avatarObject) {
+            SaveAssetsSession.ResetWorkLogManifest();
             EditorOnlyUtils.RemoveEditorOnlyObjects(avatarObject);
 
             if (!ShouldRun(avatarObject)) {
@@ -120,6 +124,7 @@ namespace VF.Builder {
 
             var injector = externalInjector ?? VRCFuryInjectorBuilder.GetInjector(avatar);
             injector.Set("componentObject", new Func<VFGameObject>(() => currentServiceGameObject));
+            injector.GetService<ObjectPathsLookupService>().Capture(avatarObject);
 
             var globals = injector.GetService<GlobalsService>();
             globals.addOtherFeature = (feature) => AddComponent(feature, currentServiceGameObject, currentServiceNumber);

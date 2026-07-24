@@ -13,6 +13,13 @@ namespace VF.Plugin {
     /// NdmfAvatarOutput: records in internal buffer for MA component generation (no Descriptor writes).
     /// </summary>
     internal interface IAvatarOutput {
+        /// <summary>
+        /// Whether the build result is applied to the avatar in the scene as it runs.
+        /// False for NDMF, where output is handed to MA components instead, so the
+        /// avatar's own Animator must not be repointed at SPS-only controllers.
+        /// </summary>
+        bool AppliesToAvatarInPlace { get; }
+
         void SetAvatarController(VRCAvatarDescriptor.AnimLayerType type, RuntimeAnimatorController controller);
         (bool isDefault, RuntimeAnimatorController controller) GetAvatarController(VRCAvatarDescriptor.AnimLayerType type);
         IList<AvatarOutputController> GetAllAvatarControllers();

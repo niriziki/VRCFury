@@ -18,6 +18,8 @@ namespace VF.Plugin {
             this.avatar = avatar;
         }
 
+        public bool AppliesToAvatarInPlace => true;
+
         public void SetAvatarController(VRCAvatarDescriptor.AnimLayerType type, RuntimeAnimatorController controller) {
             VRCAvatarUtils.SetAvatarController(avatar, type, controller);
         }

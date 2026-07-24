@@ -2,5 +2,6 @@
 node_modules/
 .idea/
 temp-compile/
+.pnpm-store/
 net.nrzk.spsndmf/
 net.nrzk.vfstub/
