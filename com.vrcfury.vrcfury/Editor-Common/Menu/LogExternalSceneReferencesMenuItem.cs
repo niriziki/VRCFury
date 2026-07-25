@@ -13,7 +13,7 @@ namespace VF.Menu {
         // SPS-NDMF: removed menu registration (non-SPS utility)
         // [MenuItem(MenuItems.logExternalSceneReferences, priority = MenuItems.logExternalSceneReferencesPriority)]
         private static void Run() {
-            VRCFExceptionUtils.ErrorDialogBoundary(() => {
+            VRCFuryBuildContext.Run(() => {
                 var roots = Selection.gameObjects.AsVf().ToList();
                 roots = roots.Where(go => !roots.Any(other => other != go && go.IsSameOrChildOf(other))).ToList();
                 if (roots.Count == 0) return;

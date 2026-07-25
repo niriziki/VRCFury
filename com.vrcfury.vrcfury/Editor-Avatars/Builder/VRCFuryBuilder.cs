@@ -22,14 +22,11 @@ namespace VF.Builder {
         internal static void RunMain(VFGameObject avatarObject) {
             Debug.Log("VRCFury invoked on " + avatarObject.name + " ...");
 
-            using (new VRCFuryBuildContext()) {
-                try {
-                    MaterialLocker.injectedAvatarObject = avatarObject;
-                    Run(avatarObject);
-                }
-                finally {
-                    MaterialLocker.injectedAvatarObject = null;
-                }
+            try {
+                MaterialLocker.injectedAvatarObject = avatarObject;
+                Run(avatarObject);
+            } finally {
+                MaterialLocker.injectedAvatarObject = null;
             }
         }
 
@@ -44,7 +41,6 @@ namespace VF.Builder {
         }
 
         private static void Run(VFGameObject avatarObject) {
-            SaveAssetsSession.ResetWorkLogManifest();
             EditorOnlyUtils.RemoveEditorOnlyObjects(avatarObject);
 
             if (!ShouldRun(avatarObject)) {

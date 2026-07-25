@@ -13,7 +13,7 @@ namespace VF.Menu {
         // SPS-NDMF: removed menu registration (non-SPS utility)
         // [MenuItem(MenuItems.detectDuplicatePhysbones, priority = MenuItems.detectDuplicatePhysbonesPriority)]
         private static void Run() {
-            VRCFExceptionUtils.ErrorDialogBoundary(RunUnsafe);
+            VRCFuryBuildContext.Run(RunUnsafe);
         }
         
         private static void RunUnsafe() {

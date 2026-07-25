@@ -109,7 +109,7 @@ namespace VF.Menu {
         // SPS-NDMF: removed menu registration (non-SPS utility)
         // [MenuItem(listComponents, priority = listComponentsPriority)]
         private static void ListChildComponents() {
-            VRCFExceptionUtils.ErrorDialogBoundary(() => {
+            VRCFuryBuildContext.Run(() => {
                 var obj = Selection.activeGameObject.asVf();
                 if (obj == null) return;
                 var list = new List<string>();
@@ -136,7 +136,7 @@ namespace VF.Menu {
         // SPS-NDMF: removed menu registration (non-SPS utility)
         // [MenuItem(reserialize, priority = reserializePriority)]
         private static void Reserialize() {
-            VRCFExceptionUtils.ErrorDialogBoundary(() => {
+            VRCFuryBuildContext.Run(() => {
                 var doIt = DialogUtils.DisplayDialog(
                     "VRCFury",
                     "This is intended for VRCFury developers only, in order to quickly" +

@@ -10,7 +10,7 @@ namespace VF.Menu {
         // SPS-NDMF: removed menu registration (non-SPS utility)
         // [MenuItem(MenuItems.uselessOverrides, priority = MenuItems.uselessOverridesPriority)]
         private static void Run() {
-            VRCFExceptionUtils.ErrorDialogBoundary(() => {
+            VRCFuryBuildContext.Run(() => {
                 Run(MenuUtils.GetSelectedAvatar());
             });
         }

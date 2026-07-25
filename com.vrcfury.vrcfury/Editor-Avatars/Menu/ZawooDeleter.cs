@@ -9,7 +9,7 @@ namespace VF.Menu {
         // SPS-NDMF: removed menu registration (non-SPS utility)
         // [MenuItem(MenuItems.nukeZawoo, priority = MenuItems.nukeZawooPriority)]
         private static void NukeZawooParts() {
-            VRCFExceptionUtils.ErrorDialogBoundary(() => {
+            VRCFuryBuildContext.Run(() => {
                 Run(MenuUtils.GetSelectedAvatar());
             });
         }
