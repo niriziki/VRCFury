@@ -8,6 +8,22 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [0.2.0-beta.11] - 2026-07-25
+### Changed / 変更
+- Updated the bundled VRCFury source to upstream 1.1384.0: faster builds (controller handling and path lookups were reworked upstream), a simplified asset-saving pipeline, and shorter SPS shader compile times when the mesh has no blendshapes.
+
+  同梱の VRCFury ソースを上流 1.1384.0 に更新: ビルドの高速化（コントローラー処理とパス検索が上流で刷新）、アセット保存処理の簡素化、ブレンドシェイプの無いメッシュでの SPS シェーダのコンパイル時間短縮が含まれます。
+### Fixed / 修正
+- SPS markers no longer lose their mesh during the build (upstream fix).
+
+  ビルド中に SPS マーカーがメッシュを失う問題を修正しました（上流修正）。
+- Baked normals and tangents are now scaled correctly with the object's scale (upstream fix).
+
+  ベイクされた法線・接線がオブジェクトのスケールを正しく反映するようになりました（上流修正）。
+- SPS options now appear in the root SPS menu even when some sockets are not added to the menu (upstream fix).
+
+  メニューに追加していないソケットがあるときでも、SPS オプションがルートの SPS メニューに入るようになりました（上流修正）。
+
 ## [0.2.0-beta.10] - 2026-07-20
 ### Changed / 変更
 - Enabling SPS in play mode no longer turns on Gizmos and Scene Lighting in the scene view. Your scene view settings are left alone. If Scene Lighting happens to be off, a warning is logged instead, because legacy (DPS / TPS / SPS1) sockets cannot deform plugs in the scene view without it. SPS2 sockets are unaffected.

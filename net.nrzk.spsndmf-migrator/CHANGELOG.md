@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [0.2.0-beta.11] - 2026-07-25
+### Changed / 変更
+- Version bump to keep the release line aligned with the other SPSNDMF packages (updated to the VRCFury 1.1384.0 based SPS for NDMF). No functional changes.
+
+  他の SPSNDMF パッケージ（VRCFury 1.1384.0 ベースの SPS for NDMF）とバージョンを揃えるためのリリースです。機能変更はありません。
+
 ## [0.2.0-beta.8] - 2026-07-19
 ### Changed / 変更
 - Manual migration now converts VRCFury SPS Options to and from the new **SPS Menus** component (bidirectional). A menu parent path such as `Body/SPS` cannot be carried over automatically; a warning asks you to place the SPS Menus object under the desired MA Menu Item instead. Build-time automatic migration in VRCFury Stub environments is unchanged (menu path is preserved as before).

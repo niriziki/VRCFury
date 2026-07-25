@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [0.2.0-beta.11] - 2026-07-25
+### Changed / 変更
+- Updated stub types to match upstream VRCFury 1.1384.0 (updates the internals of `VRCFurySpsGreenScreenFix`). Version bump to keep the release line aligned with the other SPSNDMF packages.
+
+  スタブ型を上流 VRCFury 1.1384.0 に追従しました（`VRCFurySpsGreenScreenFix` の内部を更新）。他の SPSNDMF パッケージとバージョンを揃えるためのリリースです。
+
 ## [0.2.0-beta.8] - 2026-07-19
 ### Changed / 変更
 - Updated stub types to match upstream VRCFury 1.1369.0 (adds `VRCFurySpsGreenScreenFix`).
