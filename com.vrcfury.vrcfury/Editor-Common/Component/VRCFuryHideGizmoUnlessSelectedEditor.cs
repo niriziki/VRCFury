@@ -13,9 +13,9 @@ namespace VF.Component {
         }
 
         private static void UpdateAll() {
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
             var objs = UnityEngine.Object.FindObjectsByType<VRCFuryHideGizmoUnlessSelected>(FindObjectsInactive.Exclude);
-#elif UNITY_2022_1_OR_NEWER
+#elif UNITY_2022_3_OR_NEWER
             var objs = UnityEngine.Object.FindObjectsByType<VRCFuryHideGizmoUnlessSelected>(
                 FindObjectsInactive.Exclude,
                 FindObjectsSortMode.None);

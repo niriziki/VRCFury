@@ -62,6 +62,8 @@ namespace VF.Menu {
         public const int sceneDirtyLoggerPriority = utilitiesPriority + 14;
         public const string logExternalSceneReferences = utilities + "Log External Scene References";
         public const int logExternalSceneReferencesPriority = utilitiesPriority + 15;
+        public const string logVfInitTimings = utilities + "Log VFInit Timings";
+        public const int logVfInitTimingsPriority = utilitiesPriority + 16;
 
         public const string settings = prefix + "Settings/";
         public const int settingsPriority = 1312;
@@ -98,7 +100,7 @@ namespace VF.Menu {
         public const string compressFail = settings + "Fail the build (Vanilla Behaviour)";
         public const int compressFailPriority = settingsPriority + 203;
         
-#if UNITY_2022_1_OR_NEWER
+#if UNITY_2021_1_OR_NEWER
         // SPS-NDMF: removed menu registration (non-SPS utility)
         // [MenuItem(recompileAll, priority = recompileAllPriority)]
         private static void RecompileAll() {

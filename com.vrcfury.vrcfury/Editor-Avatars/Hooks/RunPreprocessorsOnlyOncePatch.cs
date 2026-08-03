@@ -33,8 +33,9 @@ namespace VF.Hooks {
             // SPS-NDMF: disabled Harmony patch and playmode tracking (NDMF handles preprocessor ordering)
             return;
             #pragma warning disable CS0162
-            if (!ReflectionHelper.IsReady<Reflection>()) return;
-            Reflection.Patch.apply();
+            if (ReflectionHelper.IsReady<Reflection>()) {
+                Reflection.Patch.apply();
+            }
 
             EditorApplication.playModeStateChanged += state => {
                 if (state == PlayModeStateChange.ExitingPlayMode) {
