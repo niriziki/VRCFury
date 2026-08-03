@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [0.2.0-beta.13] - 2026-08-04
+### Changed / 変更
+- Version bump to keep the release line aligned with the other SPSNDMF packages. No functional changes.
+
+  他の SPSNDMF パッケージとバージョンを揃えるためのリリースです。機能変更はありません。
+
 ## [0.2.0-beta.12] - 2026-08-04
 ### Changed / 変更
 - Version bump to keep the release line aligned with the other SPSNDMF packages (updated to the VRCFury 1.1408.0 based SPS for NDMF). Upstream 1.1408.0 changed nothing in the runtime types, so the stub is unchanged.

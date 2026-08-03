@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [0.2.0-beta.13] - 2026-08-04
+### Changed / 変更
+- The published package no longer ships VRCFury's test assemblies or its public API assembly. Neither was ever compiled in this package, so nothing changes at runtime; the download is simply smaller.
+
+  配布パッケージに VRCFury のテスト用アセンブリと公開 API アセンブリを含めないようにしました。どちらも本パッケージではコンパイルされていなかったため動作に変化はなく、ダウンロードサイズが小さくなります。
+
 ## [0.2.0-beta.12] - 2026-08-04
 ### Changed / 変更
 - Updated the bundled VRCFury source to upstream 1.1408.0. SPS baking was reorganised upstream, VRChat's new global PhysBone colliders are used where available, and Unity 6 compatibility was improved.
