@@ -8,6 +8,31 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [0.2.0-beta.12] - 2026-08-04
+### Changed / 変更
+- Updated the bundled VRCFury source to upstream 1.1408.0. SPS baking was reorganised upstream, VRChat's new global PhysBone colliders are used where available, and Unity 6 compatibility was improved.
+
+  同梱の VRCFury ソースを上流 1.1408.0 に更新しました。SPS のベイク処理が上流で整理され、VRChat の新しいグローバル PhysBone コライダーが利用可能な場合は使われるようになり、Unity 6 との互換性が改善されています。
+### Fixed / 修正
+- Patched SPS shaders are no longer rebuilt on every build. They are now kept in `Assets/ZZZ_GeneratedAssets/spsndmf-shaders` and reused whenever the same shader is patched again, which made a repeat manual bake go from about 33 seconds to about 8 seconds in our test avatar. You can delete that folder at any time; it is recreated on the next build.
+
+  パッチ済みの SPS シェーダーが毎回のビルドで作り直されていた問題を修正しました。`Assets/ZZZ_GeneratedAssets/spsndmf-shaders` に保存され、同じシェーダーであれば再利用されます。検証アバターでは2回目以降の手動ビルドが約33秒から約8秒に短縮されました。このフォルダはいつ削除しても構いません（次のビルドで作り直されます）。
+- Fixed the weight of the animator layers that SPS adds to the Action playable layer being changed during the merge with Modular Avatar.
+
+  SPS が Action プレイアブルレイヤーに追加するアニメーターレイヤーの重みが、Modular Avatar との統合時に変わってしまう問題を修正しました。
+- lilToon materials no longer produce a shader error when SPS patches them (upstream fix).
+
+  lilToon のマテリアルに SPS のパッチを当てたときにシェーダーエラーが出る問題を修正しました（上流修正）。
+- SPS deformation is no longer injected into shadow caster and meta passes, so shadows and lightmap baking are unaffected by plug deformation (upstream fix).
+
+  影を落とすパスとメタパスに SPS の変形処理が入らなくなり、影やライトマップのベイクがプラグの変形の影響を受けなくなりました（上流修正）。
+- Material swaps now work correctly on plugs whose mesh was auto-rigged by SPS (upstream fix).
+
+  SPS による自動リグが行われたメッシュのプラグで、マテリアルの切り替えが正しく動作するようになりました（上流修正）。
+- Entering play mode no longer risks crashing Unity while SPS samples plug colors (upstream fix). Note that plug colors are not sampled in play mode as a result; they are still sampled for manual builds and uploads.
+
+  プレイモードに入るときに SPS がプラグの色を読み取ることで Unity がクラッシュしうる問題を修正しました（上流修正）。その代わりプレイモードではプラグの色が読み取られません（手動ビルドとアップロードでは従来どおり読み取られます）。
+
 ## [0.2.0-beta.11] - 2026-07-25
 ### Changed / 変更
 - Updated the bundled VRCFury source to upstream 1.1384.0: faster builds (controller handling and path lookups were reworked upstream), a simplified asset-saving pipeline, and shorter SPS shader compile times when the mesh has no blendshapes.

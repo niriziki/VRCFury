@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [0.2.0-beta.12] - 2026-08-04
+### Changed / 変更
+- Version bump to keep the release line aligned with the other SPSNDMF packages (updated to the VRCFury 1.1408.0 based SPS for NDMF). Upstream 1.1408.0 changed nothing in the runtime types, so the stub is unchanged.
+
+  他の SPSNDMF パッケージ（VRCFury 1.1408.0 ベースの SPS for NDMF）とバージョンを揃えるためのリリースです。上流 1.1408.0 ではランタイム型に変更が無かったため、スタブの内容は変わっていません。
+
 ## [0.2.0-beta.11] - 2026-07-25
 ### Changed / 変更
 - Updated stub types to match upstream VRCFury 1.1384.0 (updates the internals of `VRCFurySpsGreenScreenFix`). Version bump to keep the release line aligned with the other SPSNDMF packages.
