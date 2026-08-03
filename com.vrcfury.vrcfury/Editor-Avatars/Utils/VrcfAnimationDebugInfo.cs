@@ -17,7 +17,8 @@ using VRC.SDK3.Dynamics.PhysBone.Components;
 namespace VF.Utils {
     internal static class VrcfAnimationDebugInfo {
         private class ControllerDebugInfo {
-            public HashSet<EditorCurveBinding> bindings;
+            public ISet<AnimationClip> clips;
+            public ISet<EditorCurveBinding> bindings;
             public bool usesWdOff;
         }
 
@@ -37,6 +38,7 @@ namespace VF.Utils {
             Action<string> addPathRewrite = null
         ) {
             var usesWdOff = false;
+            var clips = new HashSet<AnimationClip>();
             var bindings = new HashSet<VFBinding>();
             var avatarObject = componentObject.GetAvatarRoot();
             var objectPaths = VRCFObjectPathCache.GetPerFrame(avatarObject);
@@ -55,9 +57,10 @@ namespace VF.Utils {
                     if (!resolved.HasValue) continue;
                     bindings.Add(VFBinding.From(resolved.Value, binding));
                 }
+                clips.UnionWith(debugInfo.clips);
             }
 
-            var warnings = BuildDebugInfo(bindings, componentObject, true, addPathRewrite);
+            var warnings = BuildDebugInfo(clips, bindings, componentObject, true, addPathRewrite);
 
             if (usesWdOff) {
                 warnings.Add(VRCFuryEditorUtils.Warn(
@@ -127,13 +130,14 @@ namespace VF.Utils {
                 }
             }
 
-            var clips = new Stack<AnimationClip>(source.animationClips ?? Array.Empty<AnimationClip>());
+            var clips = new HashSet<AnimationClip>(source.animationClips ?? Array.Empty<AnimationClip>());
+            var clipStack = new Stack<AnimationClip>(clips);
             var seenClips = new HashSet<AnimationClip>();
-            while (clips.Count > 0) {
-                var clip = clips.Pop();
+            while (clipStack.Count > 0) {
+                var clip = clipStack.Pop();
                 if (clip == null || !seenClips.Add(clip)) continue;
                 var additiveClip = AnimationUtility.GetAnimationClipSettings(clip).additiveReferencePoseClip;
-                if (additiveClip != null) clips.Push(additiveClip);
+                if (additiveClip != null) clipStack.Push(additiveClip);
                 foreach (var binding in AnimationUtility.GetCurveBindings(clip)
                              .Concat(AnimationUtility.GetObjectReferenceCurveBindings(clip))) {
                     if (binding.path == null || binding.propertyName == null || binding.type == null) continue;
@@ -143,12 +147,14 @@ namespace VF.Utils {
             }
 
             return new ControllerDebugInfo {
+                clips = clips,
                 bindings = bindings,
                 usesWdOff = usesWdOff
             };
         }
         
         public static List<VisualElement> BuildDebugInfo(
+            IEnumerable<AnimationClip> clips,
             IEnumerable<VFBinding> bindings,
             VFGameObject componentObject,
             bool isController = false,
@@ -222,7 +228,7 @@ namespace VF.Utils {
             if (badPhysboneTransforms.Any()) {
                 warnings.Add(VRCFuryEditorUtils.Warn(
                     $"You're animating these transforms, but they are within physbones that are not marked as Is Animated.\n" +
-                    badPhysboneTransforms.OrderBy(a => a).Join('\n')
+                    badPhysboneTransforms.OrderBy(a => a).JoinWithMore(20)
                 ));
             }
 
@@ -255,7 +261,7 @@ namespace VF.Utils {
                 warnings.Add(VRCFuryEditorUtils.Warn(
                     $"You're animating these properties on materials using Poiyomi, but the materials don't have the property set as Animated. " +
                     $"Check the right click menu of the property on the material:\n" +
-                    lines.Join('\n')
+                    lines.JoinWithMore(20)
                 ));
             }
 
@@ -265,7 +271,7 @@ namespace VF.Utils {
                 var msg = $"Paths are animated in {thisName}, but not found in your avatar, thus, they won't do anything! If you are not the creator of this asset, this may be on purpose.";
                 if (addPathRewrite != null) msg += " You may need to use 'Path Rewrite Rules' in the Advanced Settings to fix them if your avatar's objects are in a different location.";
                 msg += "\n";
-                msg += missingBindings.OrderBy(path => path).Join('\n');
+                msg += missingBindings.OrderBy(path => path).JoinWithMore(20);
                 warnings.Add(VRCFuryEditorUtils.Warn(msg));
             }
             if (isController && nonRewriteSafeBindings.Any()) {
@@ -298,20 +304,57 @@ namespace VF.Utils {
             if (isController && outsidePrefabBindings.Any()) {
                 var msg = $"This prefab is not self-contained! It animates things outside of this object.";
                 msg += "\n";
-                msg += outsidePrefabBindings.OrderBy(path => path).Join('\n');
+                msg += outsidePrefabBindings.OrderBy(path => path).JoinWithMore(20);
                 warnings.Add(VRCFuryEditorUtils.Warn(msg));
             }
 
             var overLimitConstraints = new HashSet<string>();
             foreach (var binding in usedBindings) {
                 if (binding.IsOverLimitConstraint(out var slotNum)) {
-                    overLimitConstraints.Add($"Source {slotNum} on {binding.GetDebugPath(avatarObject)}");
+                    overLimitConstraints.Add($"Source {slotNum} on {binding.GetPath()}");
                 }
             }
             if (overLimitConstraints.Any()) {
                 warnings.Add(VRCFuryEditorUtils.Warn(
                     "VRC Constraints can only have the first 16 source animated, but you are animating a constraint source above this limit!" +
-                    " This will break these animations if this avatar is upgraded to VRC Constraints.\n" + overLimitConstraints.Join('\n')));
+                    " This will break these animations if this avatar is upgraded to VRC Constraints.\n" + overLimitConstraints.JoinWithMore(20)));
+            }
+
+            var clipsWithMissingCurves = new HashSet<AnimationClip>();
+            var clipsWithInvalidBindings = new HashSet<AnimationClip>();
+            var clipsWithEvents = new HashSet<AnimationClip>();
+            foreach (var clip in clips) {
+                if (clip.events.Length > 0) {
+                    clipsWithEvents.Add(clip);
+                }
+                foreach (var (binding, curve) in VFClip.GetRawCurves(clip)) {
+                    if (curve.FloatCurve == null && curve.ObjectCurve == null) {
+                        clipsWithMissingCurves.Add(clip);
+                        continue;
+                    }
+                    if (binding.path == null || binding.propertyName == null || binding.type == null) {
+                        clipsWithInvalidBindings.Add(clip);
+                    }
+                }
+            }
+
+            if (clipsWithEvents.Any()) {
+                warnings.Add(VRCFuryEditorUtils.Warn(
+                    $"These animation clips contain AnimationEvents, which are not supported in VRChat.\n" +
+                    clipsWithEvents.Select(c => c.GetPathAndName()).OrderBy(a => a).JoinWithMore(20)
+                ));
+            }
+            if (clipsWithMissingCurves.Any()) {
+                warnings.Add(VRCFuryEditorUtils.Warn(
+                    "These animation clips contain bindings that are missing curves. These bindings will be ignored.\n" +
+                    clipsWithMissingCurves.Select(c => c.GetPathAndName()).OrderBy(a => a).JoinWithMore(20)
+                ));
+            }
+            if (clipsWithInvalidBindings.Any()) {
+                warnings.Add(VRCFuryEditorUtils.Warn(
+                    "These animation clips contain invalid bindings. These bindings will be ignored.\n" +
+                    clipsWithInvalidBindings.Select(c => c.GetPathAndName()).OrderBy(a => a).JoinWithMore(20)
+                ));
             }
 
             return warnings;

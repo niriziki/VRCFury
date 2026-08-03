@@ -26,6 +26,7 @@ var asmdefNameMap = new Dictionary<string, string>
     ["VRCFury-Editor-Worlds"] = "SPSNDMF-Editor-Worlds",
     ["VRCFury-Editor-AvatarOptimizer"] = "SPSNDMF-Editor-AvatarOptimizer",
     ["VRCFury-Tests"] = "SPSNDMF-Tests",
+    ["VRCFury-Avatar-Tests"] = "SPSNDMF-Avatar-Tests",
     ["com.vrcfury.api"] = "net.nrzk.spsndmf.api",
 };
 

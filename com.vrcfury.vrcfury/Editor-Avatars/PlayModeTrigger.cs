@@ -28,7 +28,7 @@ namespace VF {
         private static void OnPlayModeStateChanged(PlayModeStateChange state) {
             if (state == PlayModeStateChange.ExitingEditMode) {
                 VRCFuryBuildContext.Run(() => {
-                    TmpDirService.Cleanup();
+                    CleanTmpDirService.Cleanup();
                 });
             }
         }
@@ -107,7 +107,7 @@ namespace VF {
             IList<VRCFuryHapticPlug> plugs
         ) {
             VRCFuryBuildContext.Run(() => {
-                SpsBakeAndSave.Run(sockets, plugs);
+                SpsDetachedBakeAndSave.Run(sockets, plugs);
             });
         }
 

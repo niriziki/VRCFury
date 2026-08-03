@@ -36,7 +36,7 @@ namespace VF.Service {
         [VFAutowired] private readonly FrameTimeService frameTimeService;
         [VFAutowired] private readonly OgbEnabledService ogbEnabledService;
         [VFAutowired] private readonly SpsPlayerIdService spsPlayerIdService;
-        [VFAutowired] private readonly SpsMarkersService spsMarkersService;
+        [VFAutowired] private readonly VRCFuryHapticPlugBaker plugBaker;
         [VFAutowired] private readonly ParameterInjectService parameterInjectService;
         private ControllerManager fx => controllers.GetFx();
         [VFAutowired] private readonly MenuService menuService;
@@ -69,12 +69,7 @@ namespace VF.Service {
                 try {
                     PhysboneUtils.RemoveFromPhysbones(plug.owner());
                     if (!BuildTargetUtils.IsDesktop()) continue;
-                    var bakeInfo = VRCFuryHapticPlugEditor.Bake(
-                        plug,
-                        spsMarkersService,
-                        usedRenderers,
-                        deferMaterialConfig: true
-                    );
+                    var bakeInfo = plugBaker.Bake(plug, usedRenderers, deferMaterialConfig: true);
                     if (bakeInfo == null) continue;
                     bakeResults[plug] = bakeInfo;
 
@@ -418,6 +413,7 @@ namespace VF.Service {
                         var curve = pair.Item2;
                         var isRendererBinding = binding.Targets(rewrite.skin.owner());
                         var isPlugBinding = binding.Targets(rewrite.plugObject);
+                        var finalBinding = binding;
 
                         if (curve.IsFloat) {
                             if (isRendererBinding) {
@@ -444,11 +440,12 @@ namespace VF.Service {
                         if (isRendererBinding
                             && binding.type == typeof(MeshRenderer)
                             && rewrite.skin is SkinnedMeshRenderer) {
+                            finalBinding = binding.WithType(typeof(SkinnedMeshRenderer));
                             clip.SetCurve(binding, null);
-                            clip.SetCurve(binding.WithType(typeof(SkinnedMeshRenderer)), curve);
+                            clip.SetCurve(finalBinding, curve);
                         }
 
-                        if (curve.IsFloat && isRendererBinding && binding.type == typeof(SkinnedMeshRenderer) && binding.propertyName.StartsWith("blendShape.")) {
+                        if (curve.IsFloat && isRendererBinding && finalBinding.type == typeof(SkinnedMeshRenderer) && finalBinding.propertyName.StartsWith("blendShape.")) {
                             var blendshapeName = binding.propertyName.Substring(11);
                             var blendshapeMeshIndex = rewrite.spsBlendshapes.IndexOf(blendshapeName);
                             if (blendshapeMeshIndex >= 0) {
@@ -460,12 +457,12 @@ namespace VF.Service {
                             }
                         }
 
-                        if (!curve.IsFloat && isRendererBinding && avatarBindingStateService.TryParseMaterialSlot(binding, out _, out var slotNum)) {
+                        if (!curve.IsFloat && isRendererBinding && avatarBindingStateService.TryParseMaterialSlot(finalBinding, out _, out var slotNum)) {
                             var newKeys = curve.ObjectCurve.Select(frame => {
                                 if (frame.value is Material m) frame.value = rewrite.configureMaterial(slotNum, m);
                                 return frame;
                             }).ToArray();
-                            clip.SetCurve(binding, newKeys);
+                            clip.SetCurve(finalBinding, newKeys);
                         }
                     }
                 }

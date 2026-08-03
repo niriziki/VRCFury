@@ -21,9 +21,11 @@ namespace VF.Plugin {
             typeof(BakeHapticSocketsService),
             typeof(BakeHapticVersionsService),
             typeof(OverlappingContactsFixService),
-            typeof(ForceStateInAnimatorService),
 
             // ---- SPS infrastructure ----
+            // CleanTmpDirService: upstream moved this from a constructor to a
+            // FeatureBuilderAction, so it must be allowed to keep cleaning the temp package.
+            typeof(CleanTmpDirService),
             typeof(IsObjectEnabledService),
             typeof(NdmfAnimatorSafetyService),
             typeof(RestingStateService),

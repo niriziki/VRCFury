@@ -141,9 +141,7 @@ namespace VF.Utils.Controller {
                 if (wrappedState == null) continue;
 
                 var overrideMotion = rawLayer.GetOverrideMotion(rawState);
-                if (overrideMotion != null) {
-                    wrappedState.motion = VFMotion.Load(overrideMotion, context);
-                }
+                wrappedState.motion = VFMotion.Load(overrideMotion, context);
 
                 var overrideBehaviours = rawLayer.GetOverrideBehaviours(rawState);
                 if (overrideBehaviours != null) {
@@ -285,6 +283,19 @@ namespace VF.Utils.Controller {
         public VFAInteger _NewInt(string name, int def = 0) {
             var p = _NewParam(name, AnimatorControllerParameterType.Int, param => param.defaultInt = def);
             return new VFAInteger(p.name, p.defaultInt);
+        }
+        public VFAParam AddParam(VFAParam param) {
+            if (param == null) return null;
+
+            if (param is VFABool boolParam) {
+                return _NewBool(boolParam.Name(), boolParam.GetDefault());
+            } else if (param is VFAInteger intParam) {
+                return _NewInt(intParam.Name(), intParam.GetDefault());
+            } else if (param is VFAFloat floatParam) {
+                return _NewFloat(floatParam.Name(), floatParam.GetDefault());
+            } else {
+                throw new ArgumentException("Unknown parameter type");
+            }
         }
         public AnimatorControllerParameter _NewParam(string name, AnimatorControllerParameterType type, Action<AnimatorControllerParameter> with = null) {
             var exists = GetParam(name);

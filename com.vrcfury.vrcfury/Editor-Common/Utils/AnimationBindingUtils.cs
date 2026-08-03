@@ -29,7 +29,7 @@ namespace VF.Utils {
             }
             if (path.StartsWith("/")) {
                 var target = objectPaths.Find(animatorObject, path.TrimStart('/'), reverseObjectPaths);
-                return IsValidResolvedTarget(target, type) ? target : null;
+                return IsValidResolvedTarget(target, type, animatorObject) ? target : null;
             }
 
             var ancestor = ownerObject;
@@ -41,7 +41,7 @@ namespace VF.Utils {
             VFGameObject current = ownerObject;
             while (current != null) {
                 var target = objectPaths.Find(current, path, reverseObjectPaths);
-                if (IsValidResolvedTarget(target, type)) {
+                if (IsValidResolvedTarget(target, type, animatorObject)) {
                     return target;
                 }
 
@@ -83,8 +83,9 @@ namespace VF.Utils {
             return path;
         }
 
-        internal static bool IsValidResolvedTarget(VFGameObject target, Type type) {
+        internal static bool IsValidResolvedTarget(VFGameObject target, Type type, VFGameObject bindingRoot) {
             if (target == null) return false;
+            if (!target.IsSameOrChildOf(bindingRoot)) return false;
             if (type == null) return false;
             if (type == typeof(GameObject)) return true;
             if (type == typeof(Animator)) return true;
@@ -104,20 +105,18 @@ namespace VF.Utils {
         }
 
         internal static string ResolveRelativePath(string a, string b) {
+            if (string.IsNullOrEmpty(b)) return a;
             var output = new List<string>();
-            foreach (var path in new[] { a, b }) {
-                if (string.IsNullOrEmpty(path)) continue;
-                if (path.StartsWith("/")) {
-                    output.Clear();
-                }
-                foreach (var part in path.Split('/')) {
-                    if (part == "..") {
-                        if (output.Count == 0) return null;
-                        output.RemoveAt(output.Count - 1);
-                    } else if (part == ".") {
-                    } else if (part != "") {
-                        output.Add(part);
-                    }
+            if (!b.StartsWith("/") && !string.IsNullOrEmpty(a)) {
+                output.AddRange(a.Split('/'));
+            }
+            foreach (var part in b.Split('/')) {
+                if (part == "..") {
+                    if (output.Count == 0) return null;
+                    output.RemoveAt(output.Count - 1);
+                } else if (part == ".") {
+                } else if (part != "") {
+                    output.Add(part);
                 }
             }
             return string.Join("/", output);

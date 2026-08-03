@@ -56,24 +56,21 @@ namespace VF.Utils.Controller {
                 output.originalSourceIsProxyClip = true;
             }
 
-            var rawPairs =
-                AnimationUtility.GetObjectReferenceCurveBindings(raw)
-                    .Select(b => (b, (FloatOrObjectCurve)AnimationUtility.GetObjectReferenceCurve(raw, b)))
-                .Concat(AnimationUtility.GetCurveBindings(raw)
-                    .Select(b => (b, (FloatOrObjectCurve)AnimationUtility.GetEditorCurve(raw, b))))
-                .ToList();
+            var rawPairs = GetRawCurves(raw).ToList();
+
+            if (raw.events.Length > 0) {
+                output.changedFromOriginalSourceClip = true;
+            }
 
             foreach (var rawPair in rawPairs) {
                 var rawBinding = rawPair.Item1;
                 var curve = rawPair.Item2;
                 if (curve.FloatCurve == null && curve.ObjectCurve == null) {
-                    Debug.LogWarning($"Clip {raw.GetPathAndName()} contains a binding that is missing a curve");
                     output.changedFromOriginalSourceClip = true;
                     continue;
                 }
                 output.lengthInSeconds = Math.Max(output.lengthInSeconds, curve.lengthInSeconds);
                 if (rawBinding.path == null || rawBinding.propertyName == null || rawBinding.type == null) {
-                    Debug.LogWarning($"Clip {raw.GetPathAndName()} contains an invalid binding");
                     output.changedFromOriginalSourceClip = true;
                     continue;
                 }
@@ -103,6 +100,13 @@ namespace VF.Utils.Controller {
             return output;
         }
 
+        internal static IEnumerable<(EditorCurveBinding binding, FloatOrObjectCurve curve)> GetRawCurves(AnimationClip clip) {
+            return AnimationUtility.GetObjectReferenceCurveBindings(clip)
+                .Select(binding => (binding, (FloatOrObjectCurve)AnimationUtility.GetObjectReferenceCurve(clip, binding)))
+                .Concat(AnimationUtility.GetCurveBindings(clip)
+                    .Select(binding => (binding, (FloatOrObjectCurve)AnimationUtility.GetEditorCurve(clip, binding))));
+        }
+
         internal override Motion Save(VFSaveContext context) {
             if (context.Motions.TryGetValue(this, out var existing)) {
                 return existing;
@@ -125,11 +129,11 @@ namespace VF.Utils.Controller {
             var savableCurves = curves
                 .Where(pair => !pair.Key.ShouldDropOnSave())
                 .ToArray();
-            if (savableCurves.Length != curves.Count) {
-                changedFromOriginalSourceClip = true;
-            }
             clip.name = clipName ?? clip.name;
             clip.frameRate = frameRate;
+            if (clip.events.Length > 0) {
+                AnimationUtility.SetAnimationEvents(clip, new AnimationEvent[] { });
+            }
 
             ClearRawCurves(clip);
 
@@ -138,7 +142,7 @@ namespace VF.Utils.Controller {
                 .DefaultIfEmpty(0)
                 .Max();
             var addLengthBinding = lengthInSeconds > curveLength;
-#if UNITY_2022_1_OR_NEWER
+#if UNITY_2018_1_OR_NEWER
             var floatCurves = savableCurves
                 .Where(pair => pair.Value.IsFloat)
                 .Select(pair => (pair.Key.ToEditorCurveBinding(saveBindingRoot), pair.Value.FloatCurve))
@@ -254,9 +258,6 @@ namespace VF.Utils.Controller {
                 return null;
             }
             foreach (var binding in curves.Keys) {
-                if (binding.ShouldDropOnSave()) {
-                    return null;
-                }
                 if (binding.GetPath(bindingRoot) != binding.GetStoredPath()) {
                     return null;
                 }
@@ -605,7 +606,7 @@ namespace VF.Utils.Controller {
         private static void ClearRawCurves(AnimationClip clip) {
             var floatBindings = AnimationUtility.GetCurveBindings(clip);
             var objectBindings = AnimationUtility.GetObjectReferenceCurveBindings(clip);
-#if UNITY_2022_1_OR_NEWER
+#if UNITY_2018_1_OR_NEWER
             if (floatBindings.Any()) {
                 AnimationUtility.SetEditorCurves(clip,
                     floatBindings,

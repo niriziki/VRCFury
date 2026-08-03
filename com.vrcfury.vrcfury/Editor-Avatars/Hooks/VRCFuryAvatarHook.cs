@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
@@ -58,23 +59,6 @@ namespace VF.Hooks {
         private static void Init() {
             VRCFuryHapticPlugEditor.getHapticsEnabled = HapticsToggleMenuItem.Get;
 
-            VRCFuryHapticSocketEditor.getAvatarViewPos = obj => {
-                var avatar = obj.GetAvatarRoot().GetComponent<VRCAvatarDescriptor>();
-                if (avatar == null) return Vector3.zero;
-                return avatar.ViewPosition;
-            };
-
-            VRCFuryHapticSocketEditor.getClosestBone = obj => {
-                var avatarObject = obj.GetAvatarRoot();
-                return ClosestBoneUtils.GetClosestHumanoidBone(
-                    obj,
-                    VRCFObjectPathCache.GetPerFrame(avatarObject),
-                    VRCFArmatureCache.GetPerFrame(avatarObject)
-                );
-            };
-            VRCFuryHapticSocketEditor.getBoneOnArmature = (avatarObject, bone) =>
-                VRCFArmatureCache.GetPerFrame(avatarObject).FindBoneOnArmatureOrNull(bone);
-
             VFGameObject.getUploadRoots = obj => {
                 return new[] { obj.GetAvatarRoot() };
             };
@@ -118,15 +102,22 @@ namespace VF.Hooks {
                 injector.ImportScan(typeof(ActionBuilder));
                 injector.Set("avatarObject", avatarObject);
                 injector.Set("componentObject", new Func<VFGameObject>(() => avatarObject));
-                injector.GetService<VRCFObjectPathCache>().Capture(avatarObject);
-                injector.GetService<VRCFArmatureCache>().Capture(avatarObject);
+                injector.GetService<VRCFObjectPathCache>().Capture();
+                injector.GetService<VRCFArmatureCache>().Capture();
                 var mainBuilder = injector.GetService<ActionClipService>();
                 var test = mainBuilder.LoadStateAdv("test", actionSet, gameObject, debugMode: true);
                 var bindings = new AnimatorIterator.Clips().From(test.onClip)
                     .SelectMany(clip => clip.GetAllBindings())
                     .ToImmutableHashSet();
+                var clips = new HashSet<AnimationClip>();
+                UnitySerializationUtils.Iterate(actionSet, visit => {
+                    if (visit.value is AnimationClip clip && clip != null) {
+                        clips.Add(clip);
+                    }
+                    return UnitySerializationUtils.IterateResult.Continue;
+                });
                 var warnings =
-                    VrcfAnimationDebugInfo.BuildDebugInfo(bindings, gameObject);
+                    VrcfAnimationDebugInfo.BuildDebugInfo(clips, bindings, gameObject);
 
                 foreach (var warning in warnings) {
                     debugInfo.Add(warning);
