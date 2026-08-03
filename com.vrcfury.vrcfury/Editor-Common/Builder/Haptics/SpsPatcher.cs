@@ -184,7 +184,7 @@ namespace VF.Builder.Haptics {
                 throw new Exception($"No programs found");
             }
 
-            var newPathDir = $"{TmpFilePackage.GetPath()}/SPS";
+            var newPathDir = SpsShaderCache.Dir;
             var newPath = $"{newPathDir}/{hash}.shader";
             VRCFuryAssetDatabase.WithAssetEditing(() => {
                 VRCFuryAssetDatabase.CreateFolder(newPathDir);
