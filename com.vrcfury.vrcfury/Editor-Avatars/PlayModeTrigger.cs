@@ -107,7 +107,7 @@ namespace VF {
             IList<VRCFuryHapticPlug> plugs
         ) {
             VRCFuryBuildContext.Run(() => {
-                SpsBakeAndSave.Run(sockets, plugs);
+                SpsDetachedBakeAndSave.Run(sockets, plugs);
             });
         }
 

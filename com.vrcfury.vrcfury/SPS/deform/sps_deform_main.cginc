@@ -58,9 +58,8 @@ void sps_apply_real(
 		float socketDist = 0;
 		float3 stop1Forward = sps_read_resolver_chain_forward(resolvedCell, 1);
 		if (!sps_is_zero(stop1Forward)) {
-			float3 rootPos = sps_read_resolver_chain_world(resolvedCell, 0);
 			float3 stop1Pos = sps_read_resolver_chain_world(resolvedCell, 1);
-			socketDist = length(stop1Pos - rootPos);
+			socketDist = length(stop1Pos - bakedWorldOrigin);
 		}
 
 		#ifdef SPS_VANILLA_STRUCT_POSITION_NAME
@@ -78,7 +77,22 @@ void sps_apply_real(
 			bakedWorldTangent = sps_direction_toLocal(bakedWorldTangent);
 			input.SPS_VANILLA_STRUCT_TANGENT_NAME.xyz = bakedWorldTangent;
 		#endif
-		SPS_MODIFY_BAKE(input, socketDist, worldLength);
+
+		SPS_MODIFY_BAKE(
+			input,
+			socketDist,
+			worldLength
+#ifdef SPS_MODIFY_BAKE_INCLUDE_SOCKET_WORLD
+			,stop1Pos
+#endif
+#ifdef SPS_MODIFY_BAKE_INCLUDE_SOCKET_FORWARD
+			,stop1Forward
+#endif
+#ifdef SPS_MODIFY_BAKE_INCLUDE_SOCKET_UP
+			,sps_read_resolver_chain_up(resolvedCell, 1)
+#endif
+		);
+
 		#ifdef SPS_VANILLA_STRUCT_POSITION_NAME
 			bakedWorldVertex = input.SPS_VANILLA_STRUCT_POSITION_NAME.xyz;
 			bakedWorldVertex = sps_toWorld(bakedWorldVertex);
@@ -142,9 +156,6 @@ void sps_apply_real(
 
 void sps_apply(inout SpsInputs o) {
 
-	// When VERTEXLIGHT_ON is missing, there are no lights nearby, and the 4light arrays will be full of junk
-	// Temporarily disable this check since apparently it causes some passes to not apply SPS
-	//#ifdef VERTEXLIGHT_ON
 	#if defined(UNITY_PASS_SHADOWCASTER)
 		float spsNan = asfloat(0x7fc00000);
 		if (all(unity_LightShadowBias == 0)) {
@@ -158,16 +169,16 @@ void sps_apply(inout SpsInputs o) {
 				return;
 			}
 		}
+	#else
+		SPS_VANILLA_VERT_PARAM_TYPE input = (SPS_VANILLA_VERT_PARAM_TYPE)o;
+		sps_apply_real(
+			input,
+			o.SPS_STRUCT_POSITION_NAME,
+			o.SPS_STRUCT_NORMAL_NAME,
+			o.SPS_STRUCT_TANGENT_NAME,
+			o.SPS_STRUCT_SV_VertexID_NAME
+		);
 	#endif
-	SPS_VANILLA_VERT_PARAM_TYPE input = (SPS_VANILLA_VERT_PARAM_TYPE)o;
-	sps_apply_real(
-		input,
-		o.SPS_STRUCT_POSITION_NAME,
-		o.SPS_STRUCT_NORMAL_NAME,
-		o.SPS_STRUCT_TANGENT_NAME,
-		o.SPS_STRUCT_SV_VertexID_NAME
-	);
-	//#endif
 
 }
 

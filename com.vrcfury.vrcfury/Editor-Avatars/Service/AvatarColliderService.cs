@@ -25,6 +25,8 @@ namespace VF.Service {
         [VFAutowired] private readonly VRCAvatarDescriptor avatar;
         [VFAutowired] private readonly VFGameObject avatarObject;
         [VFAutowired] private readonly GlobalsService globals;
+        [VFAutowired] private readonly VRCFArmatureCache armatureCache;
+        [VFAutowired] private readonly VrcsdkGlobalColliders vrcsdkGlobalColliders;
 
         private readonly Lazy<IDictionary<String, FoundCollider>> all;
 
@@ -122,6 +124,10 @@ namespace VF.Service {
             }
             found.customizedByVrcf = true;
 
+            if (found.isFinger && vrcsdkGlobalColliders.Create(transform, radius, height, IsOnHead(transform))) {
+                return;
+            }
+
             // Disable mirroring, we don't need to do any mirror math, since OriginalContactsHook would have ensured that that already happened
             // Note, this doesn't actually impact in-game, it just keeps the gui editor from trying to mirror the values
             if (colliderName.EndsWith("L") || colliderName.EndsWith("R")) {
@@ -188,6 +194,11 @@ namespace VF.Service {
 
                 return collider;
             });
+        }
+
+        private bool IsOnHead(VFGameObject transform) {
+            var head = armatureCache.FindBoneOnArmatureOrNull(HumanBodyBones.Head);
+            return head != null && transform.IsSameOrChildOf(head);
         }
         
         private static void RemoveFromContactList(List<string> collisionTags, string fingerColliderName) {
