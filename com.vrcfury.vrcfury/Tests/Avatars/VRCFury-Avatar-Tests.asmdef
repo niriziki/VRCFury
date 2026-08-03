@@ -22,7 +22,8 @@
     "autoReferenced": false,
     "defineConstraints": [
         "UNITY_TEST_FRAMEWORK_PRESENT",
-        "VRCF_AVATARS"
+        "VRCF_AVATARS",
+        "SPS_NDMF_DISABLED"
     ],
     "versionDefines": [
         {
