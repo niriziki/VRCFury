@@ -27,6 +27,7 @@ namespace VF.Plugin.Passes {
             // Controllers → MA Merge Animator
             foreach (var kvp in output.Controllers) {
                 if (kvp.Value is AnimatorController ac) {
+                    PreserveFirstLayerWeight(ac);
                     var merge = outputObj.AddComponent<ModularAvatarMergeAnimator>();
                     merge.animator = ac;
                     merge.layerType = kvp.Key;
@@ -77,6 +78,34 @@ namespace VF.Plugin.Passes {
             }
 
             RemoveConsumedComponents(avatarObj);
+        }
+
+        /**
+         * Modular Avatar forces the weight of the merged controller's first layer to 1, because in a
+         * standalone controller unity ignores layer 0's serialized weight. VRCFury builds controllers
+         * that are merged into an existing one, so it can legitimately give its first layer a weight of
+         * 0 (which CleanupEmptyLayersService does for any layer without a real clip). Prepend an empty
+         * layer so the weights VRCFury chose survive the merge.
+         */
+        private static void PreserveFirstLayerWeight(AnimatorController controller) {
+            var layers = controller.layers;
+            if (layers.Length == 0 || layers[0].defaultWeight == 1) return;
+
+            var stateMachine = new AnimatorStateMachine {
+                name = "SPS Base",
+                hideFlags = HideFlags.HideInHierarchy
+            };
+            if (UnityEditor.AssetDatabase.Contains(controller)) {
+                UnityEditor.AssetDatabase.AddObjectToAsset(stateMachine, controller);
+            }
+
+            controller.layers = new[] {
+                new AnimatorControllerLayer {
+                    name = "SPS Base",
+                    defaultWeight = 1,
+                    stateMachine = stateMachine
+                }
+            }.Concat(layers).ToArray();
         }
 
         /**
