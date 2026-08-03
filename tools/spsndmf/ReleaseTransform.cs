@@ -34,6 +34,8 @@ var excludedRootDirs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 {
     "Editor-Worlds",
     "UdonApi",
+    "PublicApi",
+    "Tests",
 };
 
 
