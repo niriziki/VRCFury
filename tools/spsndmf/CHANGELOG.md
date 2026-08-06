@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1408.0] - 2026-08-06
+### Changed / 変更
+- First stable release. The beta suffix is gone, and the version number now matches the bundled upstream VRCFury release (1.1408.0). Fixes made only in this package raise the patch number (1.1408.1, 1.1408.2, …); picking up a newer upstream moves to that upstream's number. Nothing changed since 0.2.0-beta.13.
+
+  最初の安定版リリースです。beta が外れ、バージョン番号は同梱している上流 VRCFury のバージョン（1.1408.0）と一致するようになりました。本パッケージ独自の修正ではパッチ番号が上がり（1.1408.1、1.1408.2 …）、新しい上流を取り込んだときはその上流のバージョン番号になります。0.2.0-beta.13 からの変更はありません。
+
 ## [0.2.0-beta.13] - 2026-08-04
 ### Changed / 変更
 - The published package no longer ships VRCFury's test assemblies or its public API assembly. Neither was ever compiled in this package, so nothing changes at runtime; the download is simply smaller.

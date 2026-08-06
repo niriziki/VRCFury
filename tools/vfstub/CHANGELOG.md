@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1408.0] - 2026-08-06
+### Changed / 変更
+- First stable release. The beta suffix is gone, and the version number now matches the VRCFury release whose runtime types this stub mirrors (1.1408.0). Nothing changed since 0.2.0-beta.13.
+
+  最初の安定版リリースです。beta が外れ、バージョン番号はこのスタブが写し取っている VRCFury のバージョン（1.1408.0）と一致するようになりました。0.2.0-beta.13 からの変更はありません。
+
 ## [0.2.0-beta.13] - 2026-08-04
 ### Changed / 変更
 - Version bump to keep the release line aligned with the other SPSNDMF packages. No functional changes.

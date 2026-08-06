@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.0.0] - 2026-08-06
+### Changed / 変更
+- First stable release. This package keeps its own version numbering, while SPS for NDMF and VRCFury Stub now follow the version of the VRCFury release they are built from. Nothing changed since 0.2.0-beta.13.
+
+  最初の安定版リリースです。本パッケージは独自のバージョン番号を継続します（SPS for NDMF と VRCFury Stub は、もとにした VRCFury のバージョンに合わせる方式に変わりました）。0.2.0-beta.13 からの変更はありません。
+
 ## [0.2.0-beta.13] - 2026-08-04
 ### Changed / 変更
 - Version bump to keep the release line aligned with the other SPSNDMF packages. No functional changes.
