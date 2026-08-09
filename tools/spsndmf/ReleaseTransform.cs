@@ -9,6 +9,7 @@ var scriptDir = GetScriptDir();
 var repoRoot = Path.GetFullPath(Path.Combine(scriptDir, "..", ".."));
 
 var generateNewGuids = args.Contains("--generate-guids");
+var includeTests = args.Contains("--include-tests");
 
 var sourcePackageDir = Path.Combine(repoRoot, "com.vrcfury.vrcfury");
 var guidMapPath = Path.Combine(scriptDir, "guid-map.json");
@@ -35,8 +36,8 @@ var excludedRootDirs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     "Editor-Worlds",
     "UdonApi",
     "PublicApi",
-    "Tests",
 };
+if (!includeTests) excludedRootDirs.Add("Tests");
 
 
 // --- Validate ---
