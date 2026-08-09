@@ -97,6 +97,12 @@ namespace VF.Utils {
                     }
                 }
                 
+                var maParent = MaHierarchyResolver.GetProbableParent(current);
+                if (maParent != null && !alreadyChecked.Contains(maParent)) {
+                    current = maParent;
+                    continue;
+                }
+
                 if (followConstraints) {
                     var positionTo = current.GetConstraints()
                         .Where(c => c.IsParent() || c.IsPosition())
