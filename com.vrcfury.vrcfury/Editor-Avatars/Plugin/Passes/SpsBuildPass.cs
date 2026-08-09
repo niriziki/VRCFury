@@ -23,6 +23,8 @@ namespace VF.Plugin.Passes {
             var avatar = avatarObj.GetComponent<VRCAvatarDescriptor>();
             if (avatar == null) return;
 
+            if (!SpsErrors.CheckDuplicateComponents(avatarObj)) return;
+
             // Check if any SPS components exist
             var hasSps = avatarObj.GetComponentInChildren<VRCFuryHapticPlug>(true) != null
                       || avatarObj.GetComponentInChildren<VRCFuryHapticSocket>(true) != null;
