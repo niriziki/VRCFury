@@ -8,6 +8,17 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1408.1] - 2026-08-09
+### Fixed / 修正
+- SPS Socket's automatic type detection (hole or ring, and where the hand touch zone goes) now looks at where the socket ends up after Modular Avatar moves it. Sockets placed with MA Bone Proxy, Merge Armature or Replace Object were previously judged from their original position in the scene and were often treated as a ring by mistake.
+
+  SPS Socket の自動判定（穴かリングか、手の接触ゾーンの位置）が、Modular Avatar による移動後の位置を見るようになりました。MA Bone Proxy・Merge Armature・Replace Object で配置したソケットは、これまでシーン上の元の位置で判定されてしまい、リングと誤判定されることがありました。
+
+### Added / 追加
+- If the same GameObject has more than one SPS Plug or more than one SPS Socket, the build now stops and points at that object in the NDMF Console. Until now duplicated sockets silently produced doubled contacts and duplicated menu entries.
+
+  1つの GameObject に SPS Plug や SPS Socket が2つ以上付いている場合、ビルドを止めて NDMF コンソールから該当オブジェクトを指し示すようにしました。これまで、ソケットの重複はコンタクトやメニュー項目が二重に作られたまま気付けませんでした。
+
 ## [1.1408.0] - 2026-08-06
 ### Changed / 変更
 - First stable release. The beta suffix is gone, and the version number now matches the bundled upstream VRCFury release (1.1408.0). Fixes made only in this package raise the patch number (1.1408.1, 1.1408.2, …); picking up a newer upstream moves to that upstream's number. Nothing changed since 0.2.0-beta.13.
