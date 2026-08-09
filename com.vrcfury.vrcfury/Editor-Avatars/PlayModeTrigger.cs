@@ -7,29 +7,27 @@ using UnityEngine;
 using VF.Builder;
 using VF.Builder.Haptics;
 using VF.Component;
-using VF.Hooks;
 using VF.Menu;
-using VF.Service;
 using VF.Utils;
 using VRC.SDK3.Avatars.Components;
-using VRC.SDKBase.Editor.BuildPipeline;
 using UnityEngine.SceneManagement;
 
 namespace VF {
     internal static class PlayModeTrigger {
+        /**
+         * SPS-NDMF: bakes outside of an avatar run without an NDMF build, so they have no asset
+         * container to write to. They get this directory instead, next to NDMF's own bake output.
+         */
+        private const string DetachedTempDir = "Assets/ZZZ_GeneratedAssets/spsndmf-playmode";
+
         [VFInit]
         private static void Init() {
-            // SPS-NDMF: disabled, playmode triggers unused (NDMF handles SPS processing)
-            return;
-            #pragma warning disable CS0162
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
         }
 
         private static void OnPlayModeStateChanged(PlayModeStateChange state) {
             if (state == PlayModeStateChange.ExitingEditMode) {
-                VRCFuryBuildContext.Run(() => {
-                    CleanTmpDirService.Cleanup();
-                });
+                AssetDatabase.DeleteAsset(DetachedTempDir);
             }
         }
 
@@ -44,9 +42,6 @@ namespace VF {
         }
 
         private static void ProcessScene(Scene scene) {
-            // SPS-NDMF: PlayMode processing disabled, NDMF handles SPS
-            return;
-            #pragma warning disable CS0162
             var activeSockets = new List<VRCFuryHapticSocket>();
             var activePlugs = new List<VRCFuryHapticPlug>();
             foreach (var rootObj in scene.GetRootGameObjects()) {
@@ -63,11 +58,9 @@ namespace VF {
             if (obj == null) return;
             if (IsAv3EmulatorClone(obj)) return;
 
+            // SPS-NDMF: avatars are handled by NDMF, only the rest of the scene is baked here
             var avatar = obj.GetComponent<VRCAvatarDescriptor>();
-            if (avatar != null) {
-                ProcessOnStartComponent.Process(obj, () => ProcessAvatar(obj));
-                return;
-            }
+            if (avatar != null) return;
 
             var socket = obj.GetComponent<VRCFuryHapticSocket>();
             if (socket != null) {
@@ -107,20 +100,9 @@ namespace VF {
             IList<VRCFuryHapticPlug> plugs
         ) {
             VRCFuryBuildContext.Run(() => {
+                TmpFilePackage.TmpDirPath = DetachedTempDir;
                 SpsDetachedBakeAndSave.Run(sockets, plugs);
             });
-        }
-
-        private static void ProcessAvatar(VFGameObject obj) {
-            if (!RunPreprocessorsOnlyOncePatch.ShouldStartPreprocessors(obj)) return;
-            if (!VRCFuryBuilder.ShouldRun(obj)) return;
-
-            var orig = obj.Clone();
-            orig.name = obj.name;
-            obj.name += "(Clone)";
-            VRCBuildPipelineCallbacks.OnPreprocessAvatar(obj);
-            obj.name = orig.name;
-            orig.Destroy();
         }
 
         public static bool IsAv3EmulatorClone(VFGameObject obj) {

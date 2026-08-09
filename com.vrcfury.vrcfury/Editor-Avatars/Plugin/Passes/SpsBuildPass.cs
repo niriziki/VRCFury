@@ -3,6 +3,7 @@ using nadena.dev.ndmf;
 using UnityEditor;
 using VF.Builder;
 using VF.Component;
+using VF.Hooks.VrcsdkFixes;
 using VF.Utils;
 using VRC.SDK3.Avatars.Components;
 
@@ -36,6 +37,9 @@ namespace VF.Plugin.Passes {
                     UnityEngine.Object.DestroyImmediate(spsMenus);
                 }
                 return;
+            }
+            if (UnityEngine.Application.isPlaying && PlayModeContactFixHook.Applied) {
+                SpsErrors.ReportPlayModeContacts();
             }
             if (spsMenusAll.Length > 1) {
                 throw new System.Exception(
