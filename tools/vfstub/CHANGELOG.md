@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1416.0] - 2026-08-10
+### Changed / 変更
+- Mirrored the runtime types of VRCFury 1.1416.0. VRCFury Socket gained fields for the new local-unit light offsets and guided path tangents, so scenes and prefabs saved with that VRCFury keep those values while the stub is installed.
+
+  VRCFury 1.1416.0 のランタイム型に追随しました。VRCFury Socket にローカル単位のライト位置とガイドパス制御点のフィールドが追加されたため、そのバージョンで保存したシーンやプレハブの値が、スタブを入れた状態でも保持されます。
+
 ## [1.1408.0] - 2026-08-06
 ### Changed / 変更
 - First stable release. The beta suffix is gone, and the version number now matches the VRCFury release whose runtime types this stub mirrors (1.1408.0). Nothing changed since 0.2.0-beta.13.

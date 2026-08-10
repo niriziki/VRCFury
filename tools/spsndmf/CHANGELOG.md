@@ -8,6 +8,23 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1416.0] - 2026-08-10
+### Changed / 変更
+- Updated the bundled VRCFury source to upstream 1.1416.0.
+
+  同梱の VRCFury ソースを上流 1.1416.0 に更新しました。
+- Removed the "Enable SPS contacts in play mode" setting added in 1.1408.2. It was based on a wrong assumption: VRChat contacts do interact in play mode without it, so the setting never did anything. Nothing changes for you, and SPS keeps reacting in play mode.
+
+  1.1408.2 で追加した「Enable SPS contacts in play mode」の設定を削除しました。VRChat のコンタクトはこの設定が無くてもプレイモードで反応するため、この設定は何もしていませんでした（追加時の前提が誤っていました）。動作に変化はなく、プレイモードでも SPS はこれまでどおり反応します。
+
+### Fixed / 修正
+- SPS Socket markers no longer inherit the object's scale, so sockets on models built at unusual scales (100x and the like) no longer produce enormous bounding boxes (upstream fix).
+
+  SPS Socket のマーカーがオブジェクトのスケールを引き継がなくなり、100倍などの特殊なスケールで作られたモデルでも巨大なバウンディングボックスにならなくなりました（上流修正）。
+- Legacy socket light offsets and guided path tangents are now stored in local units instead of world units, so they no longer shift when the object is scaled (upstream fix). Existing sockets are converted automatically the first time they are loaded.
+
+  ソケットの旧形式のライト位置とガイドパスの制御点が、ワールド単位ではなくローカル単位で保存されるようになり、オブジェクトのスケールでずれなくなりました（上流修正）。既存のソケットは最初に読み込まれたときに自動で変換されます。
+
 ## [1.1408.2] - 2026-08-10
 ### Added / 追加
 - SPS Plugs and Sockets placed outside an avatar (directly in the scene) now build in play mode too, so a single prop or gadget can be tested on its own. Everything is discarded when you leave play mode.
