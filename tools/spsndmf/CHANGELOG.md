@@ -8,6 +8,15 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1408.2] - 2026-08-10
+### Added / 追加
+- SPS Plugs and Sockets placed outside an avatar (directly in the scene) now build in play mode too, so a single prop or gadget can be tested on its own. Everything is discarded when you leave play mode.
+
+  アバターの外（シーンに直接置いたオブジェクトなど）に付けた SPS Plug / Socket も、プレイモードで組み立てられるようになりました。小物やギミック単体で動作を確認できます。プレイモードを抜けると元の状態に戻ります。
+- VRChat contacts do not interact with each other in play mode, which kept SPS from reacting. All contacts are now made to interact while in play mode. This affects every contact in the editor, not just the ones SPS creates, so it can be turned off from **Tools → SPSNDMF → Settings → Enable SPS contacts in play mode**, and a build in play mode reports it to the NDMF Console.
+
+  VRChat のコンタクトはプレイモードでは互いに反応せず、SPS も動きませんでした。プレイモード中はすべてのコンタクトが互いに反応するようにしました。エディタ全体のコンタクトに影響するため、**Tools → SPSNDMF → Settings → Enable SPS contacts in play mode** でオフにでき、プレイモード中のビルドでは NDMF Console に通知が出ます。
+
 ## [1.1408.1] - 2026-08-09
 ### Fixed / 修正
 - SPS Socket's automatic type detection (hole or ring, and where the hand touch zone goes) now looks at where the socket ends up after Modular Avatar moves it. Sockets placed with MA Bone Proxy, Merge Armature or Replace Object were previously judged from their original position in the scene and were often treated as a ring by mistake.
