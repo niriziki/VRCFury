@@ -26,6 +26,9 @@ namespace VF.Plugin {
             // CleanTmpDirService: upstream moved this from a constructor to a
             // FeatureBuilderAction, so it must be allowed to keep cleaning the temp package.
             typeof(CleanTmpDirService),
+            // ObjectCacheService: upstream moved the object path / armature capture out of
+            // ApplyFuryConfigs into a FeatureBuilderAction, so it must be allowed to keep running.
+            typeof(ObjectCacheService),
             typeof(IsObjectEnabledService),
             typeof(NdmfAnimatorSafetyService),
             typeof(RestingStateService),
