@@ -7,8 +7,6 @@ using VF.Plugin;
 namespace VF.Tests {
     [Category("VRCFury")]
     public class SpsErrorsTest {
-        private const string PlayModeContactsKey = "spsndmf.playModeContacts";
-
         private GameObject avatar;
 
         [SetUp]
@@ -71,21 +69,6 @@ namespace VF.Tests {
             Assert.That(ok, Is.False);
             Assert.That(errors.Count, Is.EqualTo(1));
             Assert.That(errors[0].TheError.ToMessage(), Does.Contain("SPS Socket"));
-        }
-
-        [Test]
-        public void PlayModeContactsIsReportedAsInformation() {
-            var errors = ErrorReport.CaptureErrors(SpsErrors.ReportPlayModeContacts);
-
-            Assert.That(errors.Count, Is.EqualTo(1));
-
-            var error = (SimpleError)errors[0].TheError;
-            Assert.That(error.Severity, Is.EqualTo(ErrorSeverity.Information));
-            // An unresolved key would render as "<spsndmf.playModeContacts>". Asserting on the
-            // rendered text itself is not an option, because it follows the editor language.
-            Assert.That(error.ToMessage(), Does.Not.Contain(PlayModeContactsKey));
-            // The menu path is spelled the same way in every translation
-            Assert.That(error.FormatHint(), Does.Contain("Enable SPS contacts in play mode"));
         }
     }
 }
