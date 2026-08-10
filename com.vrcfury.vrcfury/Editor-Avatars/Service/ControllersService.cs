@@ -70,6 +70,10 @@ namespace VF.Service {
             _controllers.Clear();
         }
 
+        public void LoadAllControllers() {
+            GetAllUsedControllers();
+        }
+
         public ControllerManager GetFx() {
             return GetController(VRCAvatarDescriptor.AnimLayerType.FX);
         }
