@@ -17,6 +17,10 @@ Only versions that have a published release are listed.
 
   1.1408.2 で追加した「Enable SPS contacts in play mode」の設定を削除しました。VRChat のコンタクトはこの設定が無くてもプレイモードで反応するため、この設定は何もしていませんでした（追加時の前提が誤っていました）。動作に変化はなく、プレイモードでも SPS はこれまでどおり反応します。
 
+- A build now stops with an error if an SPS component points at an object outside the avatar, including a reference into a prefab asset (upstream change). Such references used to be ignored silently, so a build that used to succeed may now fail. This usually means the component was copied between avatars and needs its reference fixed, or the component removed.
+
+  SPS コンポーネントがアバターの外のオブジェクトを参照している場合、ビルドがエラーで止まるようになりました（上流の変更）。プレハブアセットへの参照も対象です。これまで黙って無視されていたため、通っていたビルドが失敗するようになる場合があります。多くはアバター間でコンポーネントをコピーしたときに起きるもので、参照を直すかコンポーネントを削除してください。
+
 ### Fixed / 修正
 - SPS Socket markers no longer inherit the object's scale, so sockets on models built at unusual scales (100x and the like) no longer produce enormous bounding boxes (upstream fix).
 
