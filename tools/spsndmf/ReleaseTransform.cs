@@ -35,6 +35,7 @@ var excludedRootDirs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 {
     "Editor-Worlds",
     "UdonApi",
+    "UdonBehaviours",
     "PublicApi",
 };
 if (!includeTests) excludedRootDirs.Add("Tests");

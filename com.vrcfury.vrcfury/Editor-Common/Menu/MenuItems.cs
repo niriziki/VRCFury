@@ -124,7 +124,7 @@ namespace VF.Menu {
                     list.Add(type  + " in " + c.owner().GetPath(obj));
                 }
 
-                var output = $"List of components on {obj}:\n" + list.Join('\n');
+                var output = $"List of components on {obj.GetDebugPath()}:\n" + list.Join('\n');
                 GUIUtility.systemCopyBuffer = output;
 
                 DialogUtils.DisplayDialog(
