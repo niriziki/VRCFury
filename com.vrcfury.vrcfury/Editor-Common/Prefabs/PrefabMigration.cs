@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 using VF.Component;
 using VF.Inspector;
 using VF.Upgradeable;
@@ -44,6 +45,11 @@ namespace VF.Prefabs {
             return true;
         }
 
+        [MenuItem(runMenu, true)]
+        private static bool ValidateRun() {
+            return PrefabInstanceMode.Unlocked;
+        }
+
         [MenuItem(runMenu, priority = 1331)]
         public static void Run() {
             var ok = DialogUtils.DisplayDialog(
@@ -59,6 +65,20 @@ namespace VF.Prefabs {
                 WithProjectScenesOpen(Migrate),
                 SpsLocalization.Get("prefabMigration.ok")
             );
+        }
+
+        /**
+         * Without this the migration is only reachable from a menu, so a locked component gives no hint that anything
+         * can be done about it.
+         */
+        public static VisualElement CreateInspectorNotice(VRCFuryComponent c) {
+            var container = new VisualElement();
+            if (!PrefabInstanceMode.Unlocked) return container;
+            if (PrefabInstanceMode.IsUpToDate(c)) return container;
+
+            container.Add(VRCFuryEditorUtils.Info(SpsLocalization.Get("prefabMigration.notice")));
+            container.Add(new Button(Run) { text = SpsLocalization.Get("prefabMigration.notice.button") });
+            return container;
         }
 
         /**

@@ -109,7 +109,8 @@ namespace VF.Inspector {
 
             container.Add(versionLabel);
 
-            container.Add(CreateOverrideLabel());
+            container.Add(VF.Prefabs.PrefabMigration.CreateInspectorNotice(v));
+            if (!VF.Prefabs.PrefabInstanceMode.AllowInstanceEditing(v)) container.Add(CreateOverrideLabel());
 
             VisualElement body;
             if (readOnlyPreview) {
