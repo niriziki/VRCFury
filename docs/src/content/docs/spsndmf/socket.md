@@ -6,6 +6,10 @@ sidebar:
 
 Socket は、SPS の中で Plug を受け入れる側のコンポーネントです。[SPS for NDMF が実際にビルド処理の対象とする](/spsndmf/overview/)2つのコンポーネントのうちの1つです。
 
+:::note
+アバターや衣装のプレハブに付いている Socket は、既定ではシーン上で編集できません。編集できるようにする方法は [プレハブの中の Socket / Plug を編集する](/spsndmf/prefab-instances/) を参照してください。
+:::
+
 ## これは何か
 
 Socket（旧称 Orifice）は、挿入される側の部位に取り付けて使うコンポーネントです。Socket 自身が Plug のように変形するわけではなく、Plug が向かって曲がってくるための「受け入れ側の目印」として機能します。

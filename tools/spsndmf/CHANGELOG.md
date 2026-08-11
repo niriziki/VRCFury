@@ -8,6 +8,20 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1416.1] - 2026-08-11
+### Added / 追加
+- SPS Sockets and Plugs can now be edited directly on a prefab instance, instead of only inside the original prefab. This is off by default and is turned on from **Tools > SPSNDMF > SPS > Allow Editing on Prefab Instances**. See the documentation for what it costs.
+
+  SPS Socket / Plug を、元のプレハブを開かずにプレハブインスタンス上で直接編集できるようになりました。既定ではオフで、**Tools > SPSNDMF > SPS > Allow Editing on Prefab Instances** から有効にします。引き換えになるものはドキュメントを参照してください。
+- **Tools > SPSNDMF > SPS > Migrate Project Data** migrates every prefab and every instance in the project to the current data format in one pass, keeping the settings each instance overrides. It is only needed while the above setting is on.
+
+  **Tools > SPSNDMF > SPS > Migrate Project Data** は、プロジェクト内のすべてのプレハブとインスタンスを現在のデータ形式へ一度に移行します。各インスタンスが上書きしている設定は保持されます。上記の設定がオンのときにのみ必要です。
+
+### Changed / 変更
+- Nothing changes unless you turn the new setting on. With it off, SPS behaves exactly as before; only the two menu items above are added.
+
+  新しい設定をオンにしない限り、動作は一切変わりません。オフのままなら SPS はこれまでどおりで、増えるのは上記のメニュー項目2つだけです。
+
 ## [1.1416.0] - 2026-08-10
 ### Changed / 変更
 - Updated the bundled VRCFury source to upstream 1.1416.0.
