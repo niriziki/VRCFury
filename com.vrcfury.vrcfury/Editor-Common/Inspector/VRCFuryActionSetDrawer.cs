@@ -98,7 +98,7 @@ namespace VF.Inspector {
                 }));
             }
 
-            return container;
+            return VF.Prefabs.PrefabInstanceMode.LockActionsOnPrefabInstance(prop, container);
         }
     }
 
