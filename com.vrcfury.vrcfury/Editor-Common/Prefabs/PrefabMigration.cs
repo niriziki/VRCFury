@@ -120,10 +120,17 @@ namespace VF.Prefabs {
 
             var plans = new List<Plan>();
             var blocked = new List<string>();
+            var skipped = new List<string>();
             try {
                 foreach (var target in targets) {
-                    if (PrefabUtility.IsPartOfImmutablePrefab(target)) {
-                        blocked.Add($"{Describe(target)}: lives in a prefab that cannot be written to");
+                    /*
+                     * Nothing can be written to a read-only package, but its instances still can be, and they are
+                     * what the user actually works with. Leaving the source behind means an instance ends up holding
+                     * the whole migration as overrides, which is worse than inheriting it but better than a project
+                     * that can never be migrated at all.
+                     */
+                    if (PrefabUtility.IsPartOfPrefabAsset(target) && PrefabUtility.IsPartOfImmutablePrefab(target)) {
+                        skipped.Add(Describe(target));
                         continue;
                     }
                     GameObject scratch = null;
@@ -178,7 +185,16 @@ namespace VF.Prefabs {
                     if (plan.target != null) plan.target.Dirty();
                 }
 
-                return $"Migrated {plans.Count} component(s).";
+                var done = $"Migrated {plans.Count} component(s).";
+                if (skipped.Count > 0) {
+                    Debug.LogWarning("SPS could not migrate these components, because they live in read-only" +
+                                     " packages:\n" + string.Join("\n", skipped));
+                    done += $"\n\n{skipped.Count} component(s) could not be migrated, because they live in read-only" +
+                            " packages (listed in the console). Their instances in this project were migrated and now" +
+                            " carry the result as prefab overrides, so they work, but they no longer follow those" +
+                            " fields if the package is updated. This will be reported again every time you run this.";
+                }
+                return done;
             } finally {
                 foreach (var plan in plans) {
                     if (plan.scratch != null) Object.DestroyImmediate(plan.scratch);
