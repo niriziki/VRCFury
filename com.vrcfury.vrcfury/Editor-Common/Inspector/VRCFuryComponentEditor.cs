@@ -96,10 +96,11 @@ namespace VF.Inspector {
             }
             
             var isInstance = PrefabUtility.IsPartOfPrefabInstance(v);
+            var readOnlyPreview = VF.Prefabs.PrefabInstanceMode.ShouldRenderReadOnlyPreview(v);
 
             var container = new VisualElement();
 
-            if (isInstance) {
+            if (isInstance && readOnlyPreview) {
                 // We prevent users from adding overrides on prefabs, because it does weird things (at least in unity 2019)
                 // when you apply modifications to an object that lives within a SerializedReference. Some properties not overridden
                 // will just be thrown out randomly, and unity will dump a bunch of errors.
@@ -111,7 +112,7 @@ namespace VF.Inspector {
             container.Add(CreateOverrideLabel());
 
             VisualElement body;
-            if (isInstance) {
+            if (readOnlyPreview) {
                 OnDestroy();
                 VRCFuryComponentEditor.CreateUpgradedClone(v, out dummyObject);
                 var copyGameObject = dummyObject.asVf();

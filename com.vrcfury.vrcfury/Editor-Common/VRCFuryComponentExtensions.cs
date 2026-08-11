@@ -41,6 +41,7 @@ namespace VF {
             var brokenMessage = c.GetBrokenMessage();
             if (brokenMessage != null) throw new VRCFBuilderException(brokenMessage);
             if (PrefabUtility.IsPartOfPrefabInstance(c)) return;
+            if (VF.Prefabs.PrefabInstanceMode.ShouldSkipAutoUpgrade(c)) return;
             if (IUpgradeableUtility.UpgradeRecursive(c)) {
                 if (c != null) c.Dirty();
             }
