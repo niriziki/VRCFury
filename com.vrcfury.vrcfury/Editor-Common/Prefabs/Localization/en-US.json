@@ -17,5 +17,13 @@
   "prefabMigration.log.skipped": "SPS could not migrate these components, because they live in read-only packages:",
   "prefabMigration.blocked.componentCount": "migrating this component adds or removes components, which cannot be expressed as a prefab override",
   "prefabMigration.blocked.managedReference": "this instance would need to override an animation action list, which unity cannot store on a prefab instance",
-  "prefabMigration.blocked.failed": "migration failed ({0})"
+  "prefabMigration.blocked.failed": "migration failed ({0})",
+  "prefabMigration.progress.title": "SPS: migrating project data",
+  "prefabMigration.progress.openingScenes": "Opening {0}",
+  "prefabMigration.progress.scanning": "Scanning the project (this is the slow part)",
+  "prefabMigration.progress.planning": "Working out what each component migrates to",
+  "prefabMigration.progress.writing": "Writing prefabs and overrides",
+  "prefabMigration.progress.saving": "Saving",
+  "prefabMigration.result.broken": "{0} component(s) failed to load and were left alone (listed in the console). They were created by a newer version, or their data is damaged.",
+  "prefabMigration.log.broken": "SPS left these components alone, because they failed to load:"
 }

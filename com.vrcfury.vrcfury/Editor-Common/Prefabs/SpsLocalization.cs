@@ -26,8 +26,18 @@ namespace VF.Prefabs {
             return localizer.Value.GetLocalizedString(key);
         }
 
+        /**
+         * A translation is data, so a broken placeholder in one must not take down the dialog that was about to
+         * explain what happened to the user's project.
+         */
         public static string Get(string key, params object[] args) {
-            return string.Format(Get(key), args);
+            var format = Get(key);
+            try {
+                return string.Format(format, args);
+            } catch (FormatException) {
+                Debug.LogWarning($"SPS translation '{key}' has a malformed placeholder");
+                return format;
+            }
         }
 
         private static Func<string, string> Load(string language) {

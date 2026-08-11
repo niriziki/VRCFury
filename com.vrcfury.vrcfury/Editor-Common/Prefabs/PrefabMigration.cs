@@ -98,22 +98,27 @@ namespace VF.Prefabs {
             var alreadyOpen = new HashSet<string>(openScenes.Select(s => s.path));
             var opened = new List<Scene>();
             try {
-                foreach (var path in AssetDatabase.FindAssets("t:SceneAsset")
-                             .Select(AssetDatabase.GUIDToAssetPath)
-                             .Where(p => p.StartsWith("Assets/"))
-                             .Distinct()) {
-                    if (alreadyOpen.Contains(path)) continue;
-                    opened.Add(EditorSceneManager.OpenScene(path, OpenSceneMode.Additive));
+                var toOpen = AssetDatabase.FindAssets("t:SceneAsset")
+                    .Select(AssetDatabase.GUIDToAssetPath)
+                    .Where(p => p.StartsWith("Assets/"))
+                    .Distinct()
+                    .Where(p => !alreadyOpen.Contains(p))
+                    .ToList();
+                for (var i = 0; i < toOpen.Count; i++) {
+                    Progress(i / (float)toOpen.Count * 0.3f, "progress.openingScenes", toOpen[i]);
+                    opened.Add(EditorSceneManager.OpenScene(toOpen[i], OpenSceneMode.Additive));
                 }
 
                 var result = fn();
 
+                Progress(1, "progress.saving");
                 EditorSceneManager.SaveOpenScenes();
                 AssetDatabase.SaveAssets();
                 return result;
             } finally {
                 foreach (var scene in opened) EditorSceneManager.CloseScene(scene, true);
                 EditorUtility.UnloadUnusedAssetsImmediate();
+                EditorUtility.ClearProgressBar();
             }
         }
 
@@ -124,17 +129,29 @@ namespace VF.Prefabs {
             public bool isInstance;
         }
 
+        private static void Progress(float fraction, string key, params object[] args) {
+            EditorUtility.DisplayProgressBar(
+                SpsLocalization.Get("prefabMigration.progress.title"),
+                SpsLocalization.Get("prefabMigration." + key, args),
+                fraction
+            );
+        }
+
         private static string Migrate() {
-            var targets = BulkUpgradeUtils.FindAll<VRCFuryComponent>()
-                .Where(c => c != null && !c.IsBroken() && !PrefabInstanceMode.IsUpToDate(c))
-                .ToList();
-            if (targets.Count == 0) return SpsLocalization.Get("prefabMigration.result.upToDate");
+            Progress(0.3f, "progress.scanning");
+            var all = BulkUpgradeUtils.FindAll<VRCFuryComponent>().Where(c => c != null).ToList();
+            var broken = all.Where(c => c.IsBroken()).Select(Describe).ToList();
+            var targets = all.Where(c => !c.IsBroken() && !PrefabInstanceMode.IsUpToDate(c)).ToList();
+            if (targets.Count == 0) {
+                return SpsLocalization.Get("prefabMigration.result.upToDate") + BrokenNote(broken);
+            }
 
             var plans = new List<Plan>();
             var blocked = new List<string>();
             var skipped = new List<string>();
             try {
                 foreach (var target in targets) {
+                    Progress(0.4f + plans.Count / (float)targets.Count * 0.3f, "progress.planning");
                     /*
                      * Nothing can be written to a read-only package, but its instances still can be, and they are
                      * what the user actually works with. Leaving the source behind means an instance ends up holding
@@ -188,7 +205,9 @@ namespace VF.Prefabs {
                     return SpsLocalization.Get("prefabMigration.result.aborted", blocked.Count);
                 }
 
+                var written = 0;
                 foreach (var plan in plans.OrderBy(p => SourceDepth(p.target))) {
+                    Progress(0.7f + written++ / (float)plans.Count * 0.3f, "progress.writing");
                     if (plan.isInstance) {
                         UnitySerializationUtils.CloneSerializable(plan.upgraded, plan.target);
                     } else {
@@ -203,12 +222,23 @@ namespace VF.Prefabs {
                                      + "\n" + string.Join("\n", skipped));
                     done += "\n\n" + SpsLocalization.Get("prefabMigration.result.skipped", skipped.Count);
                 }
-                return done;
+                return done + BrokenNote(broken);
             } finally {
                 foreach (var plan in plans) {
                     if (plan.scratch != null) Object.DestroyImmediate(plan.scratch);
                 }
+                EditorUtility.ClearProgressBar();
             }
+        }
+
+        /**
+         * A component that failed to load cannot be migrated and cannot be repaired from here either, but it would
+         * otherwise vanish from the report as if it had been handled.
+         */
+        private static string BrokenNote(List<string> broken) {
+            if (broken.Count == 0) return "";
+            Debug.LogWarning(SpsLocalization.Get("prefabMigration.log.broken") + "\n" + string.Join("\n", broken));
+            return "\n\n" + SpsLocalization.Get("prefabMigration.result.broken", broken.Count);
         }
 
         /**
