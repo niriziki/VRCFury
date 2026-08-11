@@ -4,7 +4,8 @@
   "references": [
     "VRCFury",
     "VRC.SDKBase.Editor.BuildPipeline",
-    "VRC.SDKBase.Editor"
+    "VRC.SDKBase.Editor",
+    "nadena.dev.ndmf"
   ],
   "includePlatforms": [
     "Editor"
@@ -21,7 +22,8 @@
     "VRC.SDK3.Dynamics.Constraint.dll",
     "VRCSDKBase-Editor.dll",
     "VRCCore-Editor.dll",
-    "0Harmony.dll"
+    "0Harmony.dll",
+    "Newtonsoft.Json.dll"
   ],
   "autoReferenced": false,
   "defineConstraints": [],

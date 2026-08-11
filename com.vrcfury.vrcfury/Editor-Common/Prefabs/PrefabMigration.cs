@@ -28,18 +28,10 @@ namespace VF.Prefabs {
         private static void ToggleMode() {
             if (!PrefabInstanceMode.Unlocked) {
                 var ok = DialogUtils.DisplayDialog(
-                    "SPS",
-                    "This lets you edit SPS Sockets and Plugs directly on a prefab instance, rather than only inside" +
-                    " the original prefab.\n\n" +
-                    "In exchange, data can no longer be migrated to a newer format automatically, because migrating one" +
-                    " prefab at a time would discard the settings its instances override. You will need to run" +
-                    " 'Migrate Project Data' instead, which rewrites every prefab and every instance together. That" +
-                    " opens every scene in the project and takes a long time.\n\n" +
-                    "You will also need to re-run it after each update that changes the data format, and components" +
-                    " stay locked until you do.\n\n" +
-                    "Continue?",
-                    "Enable",
-                    "Cancel"
+                    SpsLocalization.Get("prefabMigration.title"),
+                    SpsLocalization.Get("prefabMigration.mode.confirm"),
+                    SpsLocalization.Get("prefabMigration.mode.enable"),
+                    SpsLocalization.Get("prefabMigration.cancel")
                 );
                 if (!ok) return;
             }
@@ -55,18 +47,18 @@ namespace VF.Prefabs {
         [MenuItem(runMenu, priority = 1331)]
         public static void Run() {
             var ok = DialogUtils.DisplayDialog(
-                "SPS",
-                "This migrates all VRCFury data in the project to the current format, rewriting prefabs and the" +
-                " overrides on their instances together.\n\n" +
-                "It opens and saves every scene in the project, and takes a long time. It cannot be undone, so make" +
-                " sure the project is in version control or backed up first.\n\n" +
-                "Continue?",
-                "Migrate",
-                "Cancel"
+                SpsLocalization.Get("prefabMigration.title"),
+                SpsLocalization.Get("prefabMigration.run.confirm"),
+                SpsLocalization.Get("prefabMigration.run.ok"),
+                SpsLocalization.Get("prefabMigration.cancel")
             );
             if (!ok) return;
 
-            DialogUtils.DisplayDialog("SPS", WithProjectScenesOpen(Migrate), "Ok");
+            DialogUtils.DisplayDialog(
+                SpsLocalization.Get("prefabMigration.title"),
+                WithProjectScenesOpen(Migrate),
+                SpsLocalization.Get("prefabMigration.ok")
+            );
         }
 
         /**
@@ -77,7 +69,7 @@ namespace VF.Prefabs {
         private static string WithProjectScenesOpen(Func<string> fn) {
             var openScenes = Enumerable.Range(0, SceneManager.sceneCount).Select(SceneManager.GetSceneAt).ToList();
             if (openScenes.Any(s => string.IsNullOrEmpty(s.path))) {
-                return "There is an unsaved scene open. Save or close it first, then run this again.";
+                return SpsLocalization.Get("prefabMigration.result.unsavedScene");
             }
 
             EditorSceneManager.SaveOpenScenes();
@@ -116,7 +108,7 @@ namespace VF.Prefabs {
             var targets = BulkUpgradeUtils.FindAll<VRCFuryComponent>()
                 .Where(c => c != null && !c.IsBroken() && !PrefabInstanceMode.IsUpToDate(c))
                 .ToList();
-            if (targets.Count == 0) return "Everything is already up to date.";
+            if (targets.Count == 0) return SpsLocalization.Get("prefabMigration.result.upToDate");
 
             var plans = new List<Plan>();
             var blocked = new List<string>();
@@ -138,7 +130,7 @@ namespace VF.Prefabs {
                     try {
                         upgraded = VRCFuryComponentEditor.CreateUpgradedClone(target, out scratch);
                     } catch (Exception e) {
-                        blocked.Add($"{Describe(target)}: migration failed ({e.Message})");
+                        blocked.Add($"{Describe(target)}: " + SpsLocalization.Get("prefabMigration.blocked.failed", e.Message));
                         continue;
                     }
                     plans.Add(new Plan {
@@ -154,8 +146,8 @@ namespace VF.Prefabs {
 
                 foreach (var plan in plans.Where(p => p.isInstance)) {
                     if (plan.upgraded == null || plan.scratch.GetComponents<VRCFuryComponent>().Length != 1) {
-                        blocked.Add($"{Describe(plan.target)}: migrating this component adds or removes components," +
-                                    " which cannot be expressed as a prefab override");
+                        blocked.Add($"{Describe(plan.target)}: "
+                                    + SpsLocalization.Get("prefabMigration.blocked.componentCount"));
                         continue;
                     }
                     var source = GetSource(plan.target);
@@ -165,15 +157,15 @@ namespace VF.Prefabs {
                         : source;
                     if (sourceState == null) continue;
                     if (ManagedReferencesDiffer(plan.upgraded, sourceState)) {
-                        blocked.Add($"{Describe(plan.target)}: this instance would need to override an animation" +
-                                    " action list, which unity cannot store on a prefab instance");
+                        blocked.Add($"{Describe(plan.target)}: "
+                                    + SpsLocalization.Get("prefabMigration.blocked.managedReference"));
                     }
                 }
 
                 if (blocked.Count > 0) {
-                    Debug.LogError("SPS project migration aborted:\n" + string.Join("\n", blocked));
-                    return $"Migration aborted. Nothing was changed.\n\n{blocked.Count} component(s) need to be" +
-                           " handled by hand first, listed in the console. Open the original prefab to edit them.";
+                    Debug.LogError(SpsLocalization.Get("prefabMigration.log.aborted")
+                                   + "\n" + string.Join("\n", blocked));
+                    return SpsLocalization.Get("prefabMigration.result.aborted", blocked.Count);
                 }
 
                 foreach (var plan in plans.OrderBy(p => SourceDepth(p.target))) {
@@ -185,14 +177,11 @@ namespace VF.Prefabs {
                     if (plan.target != null) plan.target.Dirty();
                 }
 
-                var done = $"Migrated {plans.Count} component(s).";
+                var done = SpsLocalization.Get("prefabMigration.result.done", plans.Count);
                 if (skipped.Count > 0) {
-                    Debug.LogWarning("SPS could not migrate these components, because they live in read-only" +
-                                     " packages:\n" + string.Join("\n", skipped));
-                    done += $"\n\n{skipped.Count} component(s) could not be migrated, because they live in read-only" +
-                            " packages (listed in the console). Their instances in this project were migrated and now" +
-                            " carry the result as prefab overrides, so they work, but they no longer follow those" +
-                            " fields if the package is updated. This will be reported again every time you run this.";
+                    Debug.LogWarning(SpsLocalization.Get("prefabMigration.log.skipped")
+                                     + "\n" + string.Join("\n", skipped));
+                    done += "\n\n" + SpsLocalization.Get("prefabMigration.result.skipped", skipped.Count);
                 }
                 return done;
             } finally {
