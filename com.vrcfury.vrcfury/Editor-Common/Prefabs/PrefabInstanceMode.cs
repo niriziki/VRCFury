@@ -1,6 +1,8 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 using VF.Component;
+using VF.Inspector;
 using VF.Model;
 using VF.Upgradeable;
 
@@ -51,6 +53,22 @@ namespace VF.Prefabs {
          */
         public static bool AllowInstanceEditing(VRCFuryComponent c) {
             return Unlocked && !(c is VRCFury) && IsUpToDate(c);
+        }
+
+        /**
+         * An action list is the one part of a socket or plug that lives in a [SerializeReference] field, which unity
+         * cannot store as a prefab override. Everything else about a depth animation -- its range, units, even adding
+         * and removing entries -- is an ordinary field and stays editable.
+         */
+        public static VisualElement LockActionsOnPrefabInstance(SerializedProperty prop, VisualElement actions) {
+            var target = prop.serializedObject.targetObject;
+            if (!(target is VRCFuryComponent) || !PrefabUtility.IsPartOfPrefabInstance(target)) return actions;
+
+            actions.SetEnabled(false);
+            var container = new VisualElement();
+            container.Add(VRCFuryEditorUtils.Info(SpsLocalization.Get("prefabMigration.actionsLocked")));
+            container.Add(actions);
+            return container;
         }
 
         public static bool ShouldRenderReadOnlyPreview(VRCFuryComponent c) {

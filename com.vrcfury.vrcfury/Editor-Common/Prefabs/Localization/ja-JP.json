@@ -25,5 +25,6 @@
   "prefabMigration.progress.writing": "プレハブとオーバーライドを書き込んでいます",
   "prefabMigration.progress.saving": "保存しています",
   "prefabMigration.result.broken": "{0} 個のコンポーネントは読み込みに失敗したため、手を付けていません（コンソールに一覧を出力しました）。より新しいバージョンで作られたか、データが壊れています。",
-  "prefabMigration.log.broken": "以下のコンポーネントは読み込みに失敗したため、手を付けていません:"
+  "prefabMigration.log.broken": "以下のコンポーネントは読み込みに失敗したため、手を付けていません:",
+  "prefabMigration.actionsLocked": "アクションは元のプレハブでのみ編集できます。Unity はこれをインスタンスのオーバーライドとして保存できません。Depth Animation の追加・削除を含め、それ以外の項目は通常どおり編集できます。"
 }

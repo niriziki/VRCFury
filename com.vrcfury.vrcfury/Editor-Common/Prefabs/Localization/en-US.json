@@ -25,5 +25,6 @@
   "prefabMigration.progress.writing": "Writing prefabs and overrides",
   "prefabMigration.progress.saving": "Saving",
   "prefabMigration.result.broken": "{0} component(s) failed to load and were left alone (listed in the console). They were created by a newer version, or their data is damaged.",
-  "prefabMigration.log.broken": "SPS left these components alone, because they failed to load:"
+  "prefabMigration.log.broken": "SPS left these components alone, because they failed to load:",
+  "prefabMigration.actionsLocked": "Actions can only be edited in the original prefab. Unity cannot store them as an override on an instance. Everything else here, including adding and removing depth animations, can be edited normally."
 }
