@@ -264,23 +264,31 @@ namespace VF.Prefabs {
          * source do not agree on one after migrating, the instance's version cannot be stored anywhere.
          */
         private static bool ManagedReferencesDiffer(Object a, Object b) {
-            var ia = new SerializedObject(a).GetIterator();
-            var ib = new SerializedObject(b).GetIterator();
-            var managedRefDepth = -1;
-            while (true) {
-                var moreA = ia.NextVisible(true);
-                var moreB = ib.NextVisible(true);
-                if (moreA != moreB) return true;
-                if (!moreA) return false;
-                if (ia.propertyPath != ib.propertyPath) return true;
+            var soA = new SerializedObject(a);
+            var soB = new SerializedObject(b);
+            var pathsA = ManagedReferencePaths(soA);
+            var pathsB = ManagedReferencePaths(soB);
+            if (!pathsA.SetEquals(pathsB)) return true;
+            return pathsA.Any(path => !SerializedProperty.DataEquals(soA.FindProperty(path), soB.FindProperty(path)));
+        }
 
-                if (managedRefDepth >= 0 && ia.depth <= managedRefDepth) managedRefDepth = -1;
-                if (ia.propertyType == SerializedPropertyType.ManagedReference) {
-                    if (ia.managedReferenceFullTypename != ib.managedReferenceFullTypename) return true;
-                    if (managedRefDepth < 0) managedRefDepth = ia.depth;
+        /**
+         * Collected per object rather than compared side by side, because the two differ freely outside the managed
+         * references -- an instance is allowed to override the length of an ordinary list, and walking both in
+         * lockstep would read that as a mismatch.
+         */
+        private static HashSet<string> ManagedReferencePaths(SerializedObject so) {
+            var paths = new HashSet<string>();
+            var it = so.GetIterator();
+            var managedRefDepth = -1;
+            while (it.NextVisible(true)) {
+                if (managedRefDepth >= 0 && it.depth <= managedRefDepth) managedRefDepth = -1;
+                if (it.propertyType == SerializedPropertyType.ManagedReference && managedRefDepth < 0) {
+                    managedRefDepth = it.depth;
                 }
-                if (managedRefDepth >= 0 && !SerializedProperty.DataEquals(ia, ib)) return true;
+                if (managedRefDepth >= 0) paths.Add(it.propertyPath);
             }
+            return paths;
         }
 
         private static string Describe(VRCFuryComponent c) {
