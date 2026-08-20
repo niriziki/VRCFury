@@ -154,7 +154,7 @@ namespace VF.Service {
             // descriptor controllers (and offering to fix them) is the user's decision, not SPS's.
             _buildSettings = new BuildSettings {
                 applyToUnmanagedLayers = false,
-                useWriteDefaults = true,
+                useWriteDefaults = false,
                 ignoredBroken = false
             };
             return;
