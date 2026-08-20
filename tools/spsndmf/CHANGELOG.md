@@ -16,9 +16,6 @@ Only versions that have a published release are listed.
 - When an SPS component sits under an object with non-uniform scale, the build error now lists every offending object and its scale at once, instead of only the first one (upstream change).
 
   SPS コンポーネントが不均一なスケール（X・Y・Z が一致しない）のオブジェクトの下にある場合、ビルドエラーに該当するオブジェクトとスケールがまとめて一覧表示されるようになりました。これまでは最初の1件だけでした（上流の変更）。
-- SPS never inspects or offers to fix the Write Defaults setting of your own animator layers. Upstream VRCFury 1.1419.0 started checking the avatar's controllers for mixed Write Defaults and showing a repair dialog during the build; that check is disabled here, so whether to fix Write Defaults stays your decision. The layers SPS generates keep being built the same way as before.
-
-  SPS は、あなたのアニメーターレイヤーの Write Defaults 設定を確認したり修正を提案したりしません。上流 VRCFury 1.1419.0 はビルド中にアバターのコントローラーの Write Defaults 混在を検出して修復ダイアログを出すようになりましたが、本パッケージではこの動作を無効にしています。Write Defaults を直すかどうかはあなたの判断のままです。SPS が生成するレイヤーはこれまでと同じ方法で作られます。
 
 ## [1.1416.1] - 2026-08-11
 ### Added / 追加
