@@ -150,6 +150,15 @@ namespace VF.Service {
 
         [FeatureBuilderAction(FeatureOrder.DetermineWriteDefaultsStrategy)]
         public void DetermineWriteDefaultsStrategy() {
+            // SPS-NDMF only normalizes its own managed layers. Inspecting the avatar's
+            // descriptor controllers (and offering to fix them) is the user's decision, not SPS's.
+            _buildSettings = new BuildSettings {
+                applyToUnmanagedLayers = false,
+                useWriteDefaults = true,
+                ignoredBroken = false
+            };
+            return;
+#pragma warning disable CS0162
             var analysis = DetectExistingWriteDefaults(avatar);
             var fixSetting = globals.allFeaturesInRun.OfType<FixWriteDefaults>().FirstOrDefault();
             var mode = FixWriteDefaults.FixWriteDefaultsMode.Disabled;
