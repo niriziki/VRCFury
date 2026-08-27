@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1426.2] - 2026-08-28
+### Changed / 変更
+- Mirrored the runtime types of VRCFury 1.1426.0. The VRCFury Socket legacy type list gained the One-Way Ring option, so scenes and prefabs saved with that VRCFury keep the value while the stub is installed.
+
+  VRCFury 1.1426.0 のランタイム型に追随しました。VRCFury Socket のレガシータイプに One-Way Ring が追加されたため、そのバージョンで保存したシーンやプレハブの値が、スタブを入れた状態でも保持されます。
+
 ## [1.1416.0] - 2026-08-10
 ### Changed / 変更
 - Mirrored the runtime types of VRCFury 1.1416.0. VRCFury Socket gained fields for the new local-unit light offsets and guided path tangents, so scenes and prefabs saved with that VRCFury keep those values while the stub is installed.
