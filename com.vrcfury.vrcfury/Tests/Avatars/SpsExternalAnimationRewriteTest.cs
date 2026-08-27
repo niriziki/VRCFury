@@ -126,6 +126,50 @@ namespace VF.Tests {
         }
 
         [Test]
+        public void PreservesDiscreteCurveFlagsOnRoundTrip() {
+            var clip = VirtualClip.Create("test");
+            var discrete = EditorCurveBinding.DiscreteCurve(
+                PlugVirtualPath, typeof(SkinnedMeshRenderer), "m_UpdateWhenOffscreen");
+            clip.SetFloatCurve(discrete, OnOffCurve());
+            clip.SetFloatCurve(PlugEnabledBinding(), OnOffCurve());
+
+            SpsExternalAnimationRewritePass.RewriteVirtualClip(clip, targets, bridge => { }, GetVirtualPath);
+
+            var roundTripped = clip.GetFloatCurveBindings()
+                .Single(b => b.propertyName == "m_UpdateWhenOffscreen");
+            Assert.That(roundTripped.isDiscreteCurve, Is.True,
+                "discrete curve flag was lost by the bridge round-trip");
+        }
+
+        [Test]
+        public void LeavesCoexistingFlagVariantCurvesIntact() {
+            // NDMF allows a float curve and an object-reference curve on the same
+            // (path, type, property); only the first import wins, the other must
+            // survive untouched and the build must not throw.
+            var mat = new Material(Shader.Find("Standard"));
+            try {
+                var clip = VirtualClip.Create("test");
+                var floatBinding = EditorCurveBinding.FloatCurve(
+                    PlugVirtualPath, typeof(SkinnedMeshRenderer), "m_Materials.Array.data[0]");
+                var objectBinding = EditorCurveBinding.PPtrCurve(
+                    PlugVirtualPath, typeof(SkinnedMeshRenderer), "m_Materials.Array.data[0]");
+                clip.SetFloatCurve(floatBinding, OnOffCurve());
+                clip.SetObjectCurve(objectBinding, new[] {
+                    new ObjectReferenceKeyframe { time = 0, value = mat },
+                });
+
+                SpsExternalAnimationRewritePass.RewriteVirtualClip(clip, targets, bridge => { }, GetVirtualPath);
+
+                Assert.That(clip.GetFloatCurve(floatBinding), Is.Not.Null);
+                var objectCurve = clip.GetObjectCurve(objectBinding);
+                Assert.That(objectCurve, Is.Not.Null, "the skipped variant curve was lost");
+                Assert.That(objectCurve[0].value, Is.EqualTo(mat));
+            } finally {
+                Object.DestroyImmediate(mat);
+            }
+        }
+
+        [Test]
         public void SkipsRewriterWhenNothingMatches() {
             var clip = VirtualClip.Create("test");
             clip.SetFloatCurve(
