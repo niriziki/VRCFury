@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using VF.Component;
+using VF.Hooks.UnityFixes;
 using VF.Utils;
 
 namespace VF {
@@ -51,6 +52,8 @@ namespace VF {
                 session.SaveAssetAndChildren(materials[0]);
                 session.SaveAssetAndChildren(materials[1]);
                 session.Finish();
+
+                Unity6RendererFixHook.Register(obj);
             });
         }
 
