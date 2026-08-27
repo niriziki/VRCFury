@@ -98,7 +98,7 @@ namespace VF.Tests {
             return go;
         }
 
-        private static GameObject BuildMinimalHumanoidAvatar() {
+        internal static GameObject BuildMinimalHumanoidAvatar() {
             var root = new GameObject("MaHierarchyResolverTestAvatar");
             var armature = NewChild(root.transform, "Armature");
             var bones = new Dictionary<string, Transform>();

@@ -74,7 +74,7 @@ namespace VF.Tests {
                     Assert.That(binding.Targets(plug), Is.True);
                     Assert.That(binding.propertyName, Is.EqualTo("spsAnimatedEnabled"));
                     // Same call shapes as upstream RewriteClip
-                    bridge.SetCurve((Component)((GameObject)resolver).transform, "material._SPS_Enabled", curve);
+                    bridge.SetCurve(((GameObject)resolver).transform, "material._SPS_Enabled", curve);
                     bridge.SetEnabled((GameObject)bakeRoot, curve);
                 }
             }, GetVirtualPath);
