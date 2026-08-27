@@ -404,9 +404,24 @@ namespace VF.Service {
         }
         private readonly List<SpsRewriteToDo> spsRewritesToDo = new List<SpsRewriteToDo>();
 
+        public IList<SpsRewriteToDo> GetSpsRewrites() => spsRewritesToDo;
+
         [FeatureBuilderAction(FeatureOrder.HapticsAnimationRewrites)]
         public void ApplySpsRewrites() {
             foreach (var rewrite in spsRewritesToDo) {
+                allClipsService.GetAllClips().ForEach(clip => RewriteClipForSps(clip, rewrite));
+
+                rewrite.skin.sharedMaterials = rewrite.skin.sharedMaterials
+                    .Select((mat,slotNum) => rewrite.configureMaterial(slotNum, mat))
+                    .ToArray();
+            }
+        }
+
+        // Wrapper so SpsExternalAnimationRewritePass can run the same rewrite on
+        // clips merged by Modular Avatar. The inner local function is upstream's
+        // RewriteClip, kept verbatim for mergeability.
+        internal void RewriteClipForSps(VFClip clipToRewrite, SpsRewriteToDo rewrite) {
+            {
                 void RewriteClip(VFClip clip) {
                     foreach (var pair in clip.GetAllCurves()) {
                         var binding = pair.Item1;
@@ -466,11 +481,7 @@ namespace VF.Service {
                         }
                     }
                 }
-                allClipsService.GetAllClips().ForEach(RewriteClip);
-
-                rewrite.skin.sharedMaterials = rewrite.skin.sharedMaterials
-                    .Select((mat,slotNum) => rewrite.configureMaterial(slotNum, mat))
-                    .ToArray();
+                RewriteClip(clipToRewrite);
             }
         }
     }
