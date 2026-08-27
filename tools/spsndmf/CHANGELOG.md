@@ -15,21 +15,19 @@ Only versions that have a published release are listed.
   - Animating SPS material properties (such as `material._SPS_Enabled`) on the plug mesh.
   - **Animated blendshapes to keep while deforming**: registered blendshapes stay animatable during deformation.
   - Material-swap animations on the plug mesh: the swapped-in material is now SPS-enabled too, so deformation survives the swap.
+  - Animating the legacy TPS toggle (`material._TPS_AnimatedToggle`) on the plug mesh.
 
   自作のアニメーション（アバター自身の FX レイヤーや MA Merge Animator で持ち込んだもの）から SPS Plug の機能を操作できるようになりました。これまでこれらのアニメーションは黙って無視されており、たとえば Ex メニューから **Animated Toggle** をオフにしても変形が止まりませんでした。以下が動作するようになります：
   - **Animated Toggle**：チェックボックスのアニメーションで SPS の変形を一時停止・再開できます。
   - Plug メッシュの SPS マテリアルプロパティ（`material._SPS_Enabled` など）の直接アニメーション。
   - **Animated blendshapes to keep while deforming**：登録したブレンドシェイプが変形中もアニメーションで動かせます。
   - Plug メッシュのマテリアル差し替えアニメーション：差し替え先のマテリアルにも SPS が適用され、差し替え後も変形が維持されます。
+  - Plug メッシュの旧 TPS トグル（`material._TPS_AnimatedToggle`）のアニメーション。
 
 ### Known limitations / 既知の制限
 - If the plug's GameObject starts hidden (inactive) and is only shown by an animation, the automatic scale detection may not run and the deformation depth can be wrong. Keep the plug object active and use **Animated Toggle** to pause deformation instead.
 
   Plug の GameObject を最初から非表示（非アクティブ）にしておき、アニメーションで表示に切り替える構成では、スケール自動検出が働かず変形の深さが正しくならないことがあります。Plug オブジェクトはアクティブのままにし、変形を止めたい場合は **Animated Toggle** を使ってください。
-- Animations targeting the legacy TPS toggle (`material._TPS_AnimatedToggle`) are not converted.
-
-  旧 TPS のトグル（`material._TPS_AnimatedToggle`）を対象にしたアニメーションは変換されません。
-
 ## [1.1419.0] - 2026-08-21
 ### Changed / 変更
 - Updated the bundled VRCFury source to upstream 1.1419.0.

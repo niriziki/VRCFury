@@ -118,6 +118,20 @@ namespace VF.Tests {
         }
 
         [Test]
+        public void ConvertsLegacyTpsToggleToResolverAndBakeRoot() {
+            var clip = VirtualClip.Create("test");
+            clip.SetFloatCurve(
+                EditorCurveBinding.FloatCurve("Plug", typeof(SkinnedMeshRenderer), "material._TPS_AnimatedToggle"),
+                AnimationCurve.Constant(0, 1, 0));
+
+            Run(clip);
+
+            var bindings = FloatBindings(clip);
+            Assert.That(bindings, Does.Contain(("Plug/Resolver", typeof(MeshRenderer), "material._SPS_Enabled")));
+            Assert.That(bindings, Does.Contain(("Plug/BakeRoot", typeof(GameObject), "m_IsActive")));
+        }
+
+        [Test]
         public void RetargetsMeshRendererBindingsToSkinnedMeshRenderer() {
             var clip = VirtualClip.Create("test");
             clip.SetFloatCurve(
