@@ -9,6 +9,11 @@ using Debug = UnityEngine.Debug;
 
 namespace VF.Exceptions {
     internal static class VRCFExceptionUtils {
+        // SPS-NDMF: the release transform rewrites namespaces but not string literals, so the
+        // root has to come from a type in this assembly rather than a hardcoded "VF".
+        private static readonly string OwnNamespaceRoot =
+            typeof(VRCFExceptionUtils).Namespace.Split('.')[0];
+
         public static Exception GetGoodCause(Exception e) {
             while (e is TargetInvocationException && e.InnerException != null) {
                 e = e.InnerException;
@@ -76,7 +81,7 @@ namespace VF.Exceptions {
                 var frames = stack.GetFrames();
                 if (frames == null) continue;
                 foreach (var frame in frames) {
-                    if (frame.GetMethod()?.DeclaringType?.FullName?.StartsWith("VF") ?? false) {
+                    if (frame.GetMethod()?.DeclaringType?.FullName?.StartsWith(OwnNamespaceRoot) ?? false) {
                         var filename = Path.GetFileName(frame.GetFileName());
                         return
                             frame.GetMethod().Name +
