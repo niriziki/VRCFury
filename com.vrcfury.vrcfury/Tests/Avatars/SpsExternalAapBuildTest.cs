@@ -155,6 +155,11 @@ namespace VF.Tests {
                     name = ActionParam,
                     valueType = VRCExpressionParameters.ValueType.Float,
                     networkSynced = true
+                },
+                new VRCExpressionParameters.Parameter {
+                    name = ClipParam,
+                    valueType = VRCExpressionParameters.ValueType.Float,
+                    networkSynced = false
                 }
             };
             avatar.GetComponent<VRCAvatarDescriptor>().expressionParameters = expressionParams;
@@ -162,14 +167,19 @@ namespace VF.Tests {
             BuildSocketWithAapActions();
             var errors = ErrorReport.CaptureErrors(ProcessThroughTransforming);
 
+            // CaptureErrors swallows exceptions thrown by the build into the report, so the
+            // build has to be checked explicitly or a crashed pass leaves this test green.
+            Assert.That(errors.Where(e => e.TheError.Severity >= ErrorSeverity.Error), Is.Empty,
+                "the build reported an error");
+
             var simple = errors.Select(e => e.TheError).OfType<SimpleError>().ToArray();
             var reported = simple.Where(e => e.ToMessage().Contains(ActionParam)).ToArray();
             Assert.That(reported.Length, Is.EqualTo(1),
                 "expected exactly one report for the synced AAP, got: "
                 + string.Join(" / ", simple.Select(e => e.ToMessage())));
             Assert.That(reported[0].Severity, Is.EqualTo(ErrorSeverity.NonFatal));
-            // ClipParam is not an expression parameter, so it must not be reported.
-            Assert.That(simple.Any(e => e.ToMessage().Contains(ClipParam)), Is.False);
+            Assert.That(simple.Any(e => e.ToMessage().Contains(ClipParam)), Is.False,
+                "an AAP that is already unsynced must not be reported");
         }
     }
 }
