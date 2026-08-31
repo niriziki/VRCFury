@@ -37,6 +37,7 @@ namespace VF.Plugin {
             typeof(NoBadControllerParamsService),
             typeof(FixPartiallyWeightedAapsService),
             typeof(DisableSyncForAapsService),
+            typeof(SpsDeclareExternalAapsService),
 
             // ---- SPS menu ----
             typeof(SpsOptionsService),

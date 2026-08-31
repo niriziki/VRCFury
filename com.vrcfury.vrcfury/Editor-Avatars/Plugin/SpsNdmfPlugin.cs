@@ -20,6 +20,7 @@ namespace VF.Plugin {
                 .AfterPlugin("nadena.dev.modular-avatar")
                 .WithRequiredExtension(typeof(AnimatorServicesContext), seq => {
                     seq.Run(SpsExternalAnimationRewritePass.Instance);
+                    seq.Run(SpsSyncedAapWarningPass.Instance);
                 });
         }
     }
