@@ -89,7 +89,7 @@ namespace VF.Feature {
             }
         }
 
-        private static Dictionary<string, float> GetScaledProps(IEnumerable<Material> materials) {
+        internal static Dictionary<string, float> GetScaledProps(IEnumerable<Material> materials) {
             var scaledProps = new Dictionary<string, float>();
             foreach (var mat in materials) {
                 void Add(string propName, float val) {

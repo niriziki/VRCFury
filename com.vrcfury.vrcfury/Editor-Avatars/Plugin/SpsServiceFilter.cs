@@ -38,6 +38,7 @@ namespace VF.Plugin {
             typeof(FixPartiallyWeightedAapsService),
             typeof(DisableSyncForAapsService),
             typeof(SpsDeclareExternalAapsService),
+            typeof(SpsSelfRequestedFeaturesService),
 
             // ---- SPS menu ----
             typeof(SpsOptionsService),
