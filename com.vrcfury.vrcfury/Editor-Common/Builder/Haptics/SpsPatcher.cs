@@ -1015,12 +1015,22 @@ namespace VF.Builder.Haptics {
                     hashContent.Append('\n');
                 }
 
+                // SPS-NDMF: patched shaders are cached project-wide instead of in the per-build
+                // temp package, so a stale entry survives until that folder is deleted by hand.
+                // Identify the inputs by content, not by length, or an edit that happens to keep
+                // the file the same size is never picked up.
                 void AddFile(string path) {
                     if (string.IsNullOrWhiteSpace(path)) return;
                     Add(path.Replace('\\', '/'));
-                    if (File.Exists(path)) {
-                        var info = new FileInfo(path);
-                        Add(info.Length.ToString());
+                    if (!File.Exists(path)) return;
+                    var assetHash = AssetDatabase.GetAssetDependencyHash(path);
+                    if (assetHash.isValid) {
+                        Add(assetHash.ToString());
+                        return;
+                    }
+                    // Not imported by unity (the vanilla~ shader copies), so hash it directly.
+                    using (var fileMd5 = MD5.Create()) {
+                        Add(BitConverter.ToString(fileMd5.ComputeHash(File.ReadAllBytes(path))));
                     }
                 }
 
