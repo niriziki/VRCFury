@@ -12,17 +12,24 @@ namespace VF.Plugin {
     /// </summary>
     internal static class SpsErrors {
         private const string DuplicateComponent = "spsndmf.duplicateComponent";
+        private const string SyncedAap = "spsndmf.syncedAap";
 
         private static readonly Dictionary<string, string> English = new Dictionary<string, string> {
             { DuplicateComponent, "A GameObject has {2} \"{0}\" components" },
             { DuplicateComponent + ":description", "Only one \"{0}\" is allowed per GameObject." },
             { DuplicateComponent + ":hint", "Remove the extra components from the object below." },
+            { SyncedAap, "Parameter \"{0}\" is driven by SPS but is network synced" },
+            { SyncedAap + ":description", "An animated (AAP) parameter is overwritten locally on every client, so syncing it only wastes parameter space." },
+            { SyncedAap + ":hint", "Uncheck \"Synced\" for this parameter in the avatar's Expression Parameters." },
         };
 
         private static readonly Dictionary<string, string> Japanese = new Dictionary<string, string> {
             { DuplicateComponent, "1つの GameObject に「{0}」が {2} 個付いています" },
             { DuplicateComponent + ":description", "「{0}」は1つの GameObject に1つしか付けられません。" },
             { DuplicateComponent + ":hint", "下のオブジェクトから余分なコンポーネントを削除してください。" },
+            { SyncedAap, "パラメータ「{0}」は SPS が駆動していますが同期が有効です" },
+            { SyncedAap + ":description", "アニメーションで書き込まれる(AAP)パラメータは各クライアントでローカルに上書きされるため、同期してもパラメータ容量を消費するだけです。" },
+            { SyncedAap + ":hint", "アバターの Expression Parameters でこのパラメータの Synced を外してください。" },
         };
 
         private static readonly Localizer localizer = new Localizer(
@@ -32,6 +39,10 @@ namespace VF.Plugin {
                 ("ja", key => Japanese.TryGetValue(key, out var v) ? v : null),
             }
         );
+
+        public static void ReportSyncedAap(string paramName) {
+            ErrorReport.ReportError(localizer, ErrorSeverity.NonFatal, SyncedAap, paramName);
+        }
 
         /// <returns>false if the avatar must not be built</returns>
         public static bool CheckDuplicateComponents(GameObject avatarObject) {

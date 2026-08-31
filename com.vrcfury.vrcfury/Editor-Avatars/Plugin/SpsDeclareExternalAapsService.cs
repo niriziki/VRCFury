@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using VF.Feature.Base;
 using VF.Injector;
@@ -22,6 +23,11 @@ namespace VF.Plugin {
         [VFAutowired] private readonly ControllersService controllers;
         private ControllerManager fx => controllers.GetFx();
 
+        private readonly List<string> declared = new List<string>();
+
+        /** Parameters SPS drives but does not own, for passes running after the build. */
+        public IReadOnlyList<string> Declared => declared;
+
         [FeatureBuilderAction(FeatureOrder.DeclareExternalAaps)]
         public void Apply() {
             var aaps = new AnimatorIterator.Clips().From(fx)
@@ -32,6 +38,7 @@ namespace VF.Plugin {
             foreach (var aap in aaps) {
                 if (fx.GetParam(aap) != null) continue;
                 fx.NewFloat(aap, usePrefix: false);
+                declared.Add(aap);
             }
         }
     }
