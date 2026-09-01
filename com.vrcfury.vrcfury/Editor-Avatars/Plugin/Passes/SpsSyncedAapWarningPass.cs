@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using nadena.dev.ndmf;
 using VRC.SDK3.Avatars.Components;
@@ -22,9 +23,17 @@ namespace VF.Plugin.Passes {
             var prms = descriptor == null ? null : descriptor.expressionParameters;
             if (prms == null || prms.parameters == null) return;
 
+            // The expression parameters are the ones MA produced, so the SPS names have to be
+            // taken through the renames MA applied to reach them.
+            var renames = spsCtx.ParameterRenames;
+            var finalNames = new HashSet<string>(driven.Select(name =>
+                renames != null && renames.TryGetValue(name, out var renamed) ? renamed : name));
+
+            var reported = new HashSet<string>();
             foreach (var param in prms.parameters) {
                 if (param == null || !param.networkSynced) continue;
-                if (!driven.Contains(param.name)) continue;
+                if (!finalNames.Contains(param.name)) continue;
+                if (!reported.Add(param.name)) continue;
                 SpsErrors.ReportSyncedAap(param.name);
             }
         }

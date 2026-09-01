@@ -8,6 +8,7 @@
         "VRC.SDKBase.Editor",
         "VRC.SDK3A.Editor",
         "nadena.dev.ndmf",
+        "nadena.dev.ndmf.vrchat",
         "nadena.dev.modular-avatar.core",
         "VRCFury-Runtime-SpsNdmf"
     ],

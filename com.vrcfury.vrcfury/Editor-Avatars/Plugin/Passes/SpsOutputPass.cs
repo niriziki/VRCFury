@@ -24,6 +24,14 @@ namespace VF.Plugin.Passes {
             var outputObj = new GameObject("SPS-NDMF Output");
             outputObj.transform.SetParent(avatarObj.transform, false);
 
+            // Modular Avatar renames the parameters of everything it merges, animator parameter
+            // curves included, and then destroys the components describing those renames. Record
+            // them here so passes running after MA can still reach the final names.
+            spsCtx.ParameterRenames = ParameterInfo.ForContext(context)
+                .GetParameterRemappingsAt(outputObj)
+                .Where(pair => pair.Key.Item1 == ParameterNamespace.Animator)
+                .ToDictionary(pair => pair.Key.Item2, pair => pair.Value.ParameterName);
+
             // Controllers → MA Merge Animator
             foreach (var kvp in output.Controllers) {
                 if (kvp.Value is AnimatorController ac) {

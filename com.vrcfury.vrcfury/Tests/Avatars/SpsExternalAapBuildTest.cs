@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using nadena.dev.modular_avatar.core;
 using nadena.dev.ndmf;
 using NUnit.Framework;
 using UnityEditor;
@@ -22,6 +23,9 @@ namespace VF.Tests {
     public class SpsExternalAapBuildTest {
         private const string ActionParam = "SpsTestFxFloat";
         private const string ClipParam = "SpsTestClipAap";
+        // The socket declares this one itself before writing to it, so it never reaches the
+        // "declare the parameters SPS does not own" path and only the full driven-AAP set sees it.
+        private const string InjectedParam = "SpsTestPlugLength";
 
         private GameObject avatar;
         private Mesh bodyMesh;
@@ -74,6 +78,8 @@ namespace VF.Tests {
             socketObj.transform.SetParent(avatar.transform, false);
             socketObj.transform.localPosition = new Vector3(0, 1f, 0.1f);
             var socket = socketObj.AddComponent<VRCFuryHapticSocket>();
+            socket.enablePlugLengthParameter = true;
+            socket.plugLengthParameterName = InjectedParam;
 
             // "Set an FX Float" alongside a blendshape, in one action set: the user-visible
             // report was that the blendshape survived in the built clip but the AAP did not.
@@ -167,6 +173,11 @@ namespace VF.Tests {
                     name = ClipParam,
                     valueType = VRCExpressionParameters.ValueType.Float,
                     networkSynced = false
+                },
+                new VRCExpressionParameters.Parameter {
+                    name = InjectedParam,
+                    valueType = VRCExpressionParameters.ValueType.Float,
+                    networkSynced = true
                 }
             };
             avatar.GetComponent<VRCAvatarDescriptor>().expressionParameters = expressionParams;
@@ -175,13 +186,47 @@ namespace VF.Tests {
             var errors = ProcessThroughTransforming();
 
             var simple = errors.Select(e => e.TheError).OfType<SimpleError>().ToArray();
-            var reported = simple.Where(e => e.ToMessage().Contains(ActionParam)).ToArray();
-            Assert.That(reported.Length, Is.EqualTo(1),
-                "expected exactly one report for the synced AAP, got: "
-                + string.Join(" / ", simple.Select(e => e.ToMessage())));
-            Assert.That(reported[0].Severity, Is.EqualTo(ErrorSeverity.NonFatal));
+            var dump = string.Join(" / ", simple.Select(e => e.ToMessage()));
+            foreach (var param in new[] { ActionParam, InjectedParam }) {
+                var reported = simple.Where(e => e.ToMessage().Contains(param)).ToArray();
+                Assert.That(reported.Length, Is.EqualTo(1),
+                    $"expected exactly one report for synced AAP {param}, got: {dump}");
+                Assert.That(reported[0].Severity, Is.EqualTo(ErrorSeverity.NonFatal));
+            }
             Assert.That(simple.Any(e => e.ToMessage().Contains(ClipParam)), Is.False,
                 "an AAP that is already unsynced must not be reported");
+        }
+
+        [Test]
+        public void ReportsRenamedAapUnderItsFinalName() {
+            const string renamedTo = "SpsTestFxFloatRenamed";
+
+            expressionParams = ScriptableObject.CreateInstance<VRCExpressionParameters>();
+            expressionParams.parameters = new[] {
+                new VRCExpressionParameters.Parameter {
+                    name = renamedTo,
+                    valueType = VRCExpressionParameters.ValueType.Float,
+                    networkSynced = true
+                }
+            };
+            avatar.GetComponent<VRCAvatarDescriptor>().expressionParameters = expressionParams;
+
+            // Modular Avatar renames animator parameters of everything it merges, the SPS output
+            // included, so the warning has to look for the name the parameter ends up with.
+            var maParams = avatar.AddComponent<ModularAvatarParameters>();
+            maParams.parameters.Add(new ParameterConfig {
+                nameOrPrefix = ActionParam,
+                remapTo = renamedTo,
+                syncType = ParameterSyncType.Float
+            });
+
+            BuildSocketWithAapActions();
+            var errors = ProcessThroughTransforming();
+
+            var simple = errors.Select(e => e.TheError).OfType<SimpleError>().ToArray();
+            var dump = string.Join(" / ", simple.Select(e => e.ToMessage()));
+            Assert.That(simple.Count(e => e.ToMessage().Contains(renamedTo)), Is.EqualTo(1),
+                $"the renamed AAP was not reported under its final name. Reports: {dump}");
         }
     }
 }
