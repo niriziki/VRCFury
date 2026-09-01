@@ -13,7 +13,9 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "SPSNDMF_HAS_AVATAR_OPTIMIZER"
+    ],
     "versionDefines": [
         {
             "name": "com.anatawa12.avatar-optimizer",
