@@ -36,6 +36,11 @@
     ],
     "versionDefines": [
         {
+            "name": "nadena.dev.modular-avatar",
+            "expression": "1.18.0",
+            "define": "MA_HAS_RAYCAST_PHYSBONE_PARAMS"
+        },
+        {
             "name": "com.vrchat.base",
             "expression": "3.1.12",
             "define": "VRC_NEW_HOOK_API"

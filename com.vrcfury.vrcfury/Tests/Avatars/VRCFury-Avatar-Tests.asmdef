@@ -29,6 +29,11 @@
     ],
     "versionDefines": [
         {
+            "name": "nadena.dev.modular-avatar",
+            "expression": "1.18.0",
+            "define": "MA_HAS_RAYCAST_PHYSBONE_PARAMS"
+        },
+        {
             "name": "com.vrchat.avatars",
             "expression": "",
             "define": "VRCF_AVATARS"

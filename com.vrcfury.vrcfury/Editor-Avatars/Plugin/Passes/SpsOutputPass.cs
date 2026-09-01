@@ -15,12 +15,16 @@ namespace VF.Plugin.Passes {
         /**
          * The animator parameters Modular Avatar derives from a physbone prefix remap. MA keeps
          * this list internal, so it has to be repeated here to expand prefix remaps the same way.
-         * The last three arrived in MA 1.18 for raycast physbones; listing them on an older MA
-         * costs nothing, because an entry MA never produces simply matches no parameter.
+         *
+         * The raycast ones arrived in MA 1.18 and have to follow the installed version rather than
+         * being listed unconditionally: on an older MA, claiming a rename it does not perform sends
+         * the warning looking for a name that never appears, and past a name that does.
          */
         private static readonly string[] PhysBoneSuffixes = {
             "_IsGrabbed", "_IsPosed", "_Angle", "_Stretch", "_Squish",
-            "_Hit", "_Ratio", "_Distance"
+#if MA_HAS_RAYCAST_PHYSBONE_PARAMS
+            "_Hit", "_Ratio", "_Distance",
+#endif
         };
 
         /**

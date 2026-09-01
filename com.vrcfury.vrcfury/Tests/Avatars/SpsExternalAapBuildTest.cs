@@ -229,17 +229,19 @@ namespace VF.Tests {
                 $"the renamed AAP was not reported under its final name. Reports: {dump}");
         }
 
-        [Test]
-        public void ReportsAapRenamedByAPhysbonePrefix() {
-            // Only a suffix the pinned Modular Avatar knows can be exercised here; the ones it
-            // gained in 1.18 are covered by the list in SpsOutputPass, not by this test.
-            const string suffix = "_Angle";
+        [TestCase("_Angle")]
+#if MA_HAS_RAYCAST_PHYSBONE_PARAMS
+        // Only renamed by Modular Avatar 1.18 and up, which is also where we start
+        // claiming to follow it, so the case runs exactly where the claim applies.
+        [TestCase("_Hit")]
+#endif
+        public void ReportsAapRenamedByAPhysbonePrefix(string suffix) {
             // A physbone prefix remap of "SpsTest" renames the animator parameters MA derives from
             // it, so an AAP named after one of those suffixes ends up renamed as well.
             const string prefix = "SpsTest";
             const string renamedPrefix = "SpsTestRenamed";
-            const string drivenParam = prefix + suffix;
-            const string renamedParam = renamedPrefix + suffix;
+            var drivenParam = prefix + suffix;
+            var renamedParam = renamedPrefix + suffix;
 
             expressionParams = ScriptableObject.CreateInstance<VRCExpressionParameters>();
             expressionParams.parameters = new[] {
