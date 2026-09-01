@@ -113,7 +113,6 @@ namespace VF.Feature.Base {
         TreeFlattening,
         AdjustWriteDefaults, // Needs to be after TreeFlattening, since it can change whether or not a layer has a DBT
         FixEmptyMotions, // Needs to be after AdjustWriteDefaults, since it changes behaviour if a state is WD on or off
-        DeclareExternalAaps, // Needs to run after everything setting AAPs and after FixPartiallyWeightedAaps, before UpgradeWrongParamTypes strips AAPs for undeclared params
         UpgradeWrongParamTypes,
         MakeControllerNamesUnique,
 

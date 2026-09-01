@@ -23,12 +23,17 @@ namespace VF.Plugin {
         [VFAutowired] private readonly ControllersService controllers;
         private ControllerManager fx => controllers.GetFx();
 
-        private readonly List<string> declared = new List<string>();
+        private readonly HashSet<string> drivenAaps = new HashSet<string>();
 
-        /** Parameters SPS drives but does not own, for passes running after the build. */
-        public IReadOnlyList<string> Declared => declared;
+        /**
+         * Every parameter SPS drives with an AAP, for passes running after the build. This is not
+         * limited to the ones declared below: services like the socket's parameter injection
+         * declare a user-named parameter themselves before writing to it, and those need the same
+         * post-build treatment.
+         */
+        public IReadOnlyCollection<string> DrivenAaps => drivenAaps;
 
-        [FeatureBuilderAction(FeatureOrder.DeclareExternalAaps)]
+        [FeatureBuilderAction(FeatureOrder.UpgradeWrongParamTypes, -1)]
         public void Apply() {
             var aaps = new AnimatorIterator.Clips().From(fx)
                 .SelectMany(clip => clip.GetFloatBindings())
@@ -36,9 +41,9 @@ namespace VF.Plugin {
                 .Select(binding => binding.propertyName)
                 .Distinct();
             foreach (var aap in aaps) {
+                drivenAaps.Add(aap);
                 if (fx.GetParam(aap) != null) continue;
                 fx.NewFloat(aap, usePrefix: false);
-                declared.Add(aap);
             }
         }
     }

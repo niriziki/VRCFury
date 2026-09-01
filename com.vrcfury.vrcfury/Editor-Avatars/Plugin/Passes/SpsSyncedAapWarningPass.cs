@@ -15,8 +15,8 @@ namespace VF.Plugin.Passes {
 
         protected override void Execute(BuildContext context) {
             var spsCtx = context.GetState<SpsContext>();
-            var declared = spsCtx?.Injector?.GetService<SpsDeclareExternalAapsService>()?.Declared;
-            if (declared == null || declared.Count == 0) return;
+            var driven = spsCtx?.Injector?.GetService<SpsDeclareExternalAapsService>()?.DrivenAaps;
+            if (driven == null || driven.Count == 0) return;
 
             var descriptor = context.AvatarRootObject.GetComponent<VRCAvatarDescriptor>();
             var prms = descriptor == null ? null : descriptor.expressionParameters;
@@ -24,7 +24,7 @@ namespace VF.Plugin.Passes {
 
             foreach (var param in prms.parameters) {
                 if (param == null || !param.networkSynced) continue;
-                if (!declared.Contains(param.name)) continue;
+                if (!driven.Contains(param.name)) continue;
                 SpsErrors.ReportSyncedAap(param.name);
             }
         }
