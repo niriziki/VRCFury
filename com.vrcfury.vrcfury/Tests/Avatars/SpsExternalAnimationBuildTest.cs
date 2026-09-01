@@ -96,7 +96,13 @@ namespace VF.Tests {
                     return m.Name == "ProcessAvatar" && ps.Length == 2
                         && ps[0].ParameterType == typeof(GameObject) && ps[1].ParameterType == typeof(BuildPhase);
                 });
-            process.Invoke(null, new object[] { avatar, BuildPhase.Transforming });
+            // NDMF catches whatever a pass throws and files it in the error report rather than
+            // rethrowing, so the report has to be checked or a crashed pass leaves this test green
+            // on artifacts that were produced before it.
+            var errors = ErrorReport.CaptureErrors(
+                () => process.Invoke(null, new object[] { avatar, BuildPhase.Transforming }));
+            Assert.That(errors.Where(e => e.TheError.Severity >= ErrorSeverity.Error), Is.Empty,
+                "the build reported an error");
 
             var fx = avatar.GetComponent<VRCAvatarDescriptor>().baseAnimationLayers
                 .Where(l => l.type == VRCAvatarDescriptor.AnimLayerType.FX)
