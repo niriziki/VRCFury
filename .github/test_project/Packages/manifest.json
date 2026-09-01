@@ -4,7 +4,7 @@
     "com.unity.test-framework": "1.3.7",
     "com.unity.timeline": "1.8.4",
     "com.unity.ugui": "1.0.0",
-    "com.vrcfury.vrcfury": "file:../../../com.vrcfury.vrcfury",
+    "net.nrzk.spsndmf": "file:../../../com.vrcfury.vrcfury",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
@@ -38,6 +38,6 @@
     "com.unity.modules.xr": "1.0.0"
   },
   "testables": [
-    "com.vrcfury.vrcfury"
+    "net.nrzk.spsndmf"
   ]
 }
