@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using nadena.dev.ndmf;
@@ -93,9 +94,11 @@ namespace VF.Tests {
             });
         }
 
-        // Internal AvatarProcessor.ProcessAvatar(GameObject, BuildPhase): run
-        // in place through Transforming (includes MA and the SPS late passes).
-        private void ProcessThroughTransforming() {
+        // Internal AvatarProcessor.ProcessAvatar(GameObject, BuildPhase): run in place through
+        // Transforming (includes MA and the SPS late passes). NDMF catches whatever a pass throws
+        // and files it in the report instead of rethrowing, so the report has to be checked or a
+        // crashed pass leaves the test green on artifacts that were produced before it.
+        private List<ErrorContext> ProcessThroughTransforming() {
             var processorType = typeof(BuildContext).Assembly.GetType("nadena.dev.ndmf.AvatarProcessor");
             var process = processorType
                 .GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
@@ -104,7 +107,11 @@ namespace VF.Tests {
                     return m.Name == "ProcessAvatar" && ps.Length == 2
                         && ps[0].ParameterType == typeof(GameObject) && ps[1].ParameterType == typeof(BuildPhase);
                 });
-            process.Invoke(null, new object[] { avatar, BuildPhase.Transforming });
+            var errors = ErrorReport.CaptureErrors(
+                () => process.Invoke(null, new object[] { avatar, BuildPhase.Transforming }));
+            Assert.That(errors.Where(e => e.TheError.Severity >= ErrorSeverity.Error), Is.Empty,
+                "the build reported an error");
+            return errors;
         }
 
         [Test]
@@ -165,12 +172,7 @@ namespace VF.Tests {
             avatar.GetComponent<VRCAvatarDescriptor>().expressionParameters = expressionParams;
 
             BuildSocketWithAapActions();
-            var errors = ErrorReport.CaptureErrors(ProcessThroughTransforming);
-
-            // CaptureErrors swallows exceptions thrown by the build into the report, so the
-            // build has to be checked explicitly or a crashed pass leaves this test green.
-            Assert.That(errors.Where(e => e.TheError.Severity >= ErrorSeverity.Error), Is.Empty,
-                "the build reported an error");
+            var errors = ProcessThroughTransforming();
 
             var simple = errors.Select(e => e.TheError).OfType<SimpleError>().ToArray();
             var reported = simple.Where(e => e.ToMessage().Contains(ActionParam)).ToArray();
