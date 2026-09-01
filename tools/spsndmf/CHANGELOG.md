@@ -8,6 +8,29 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1426.3] - 2026-09-01
+### Fixed / 修正
+- Fixed **Set an FX Float** doing nothing. Depth Animations, Active Animations and Post-Bake Actions all accepted the action, and the parameter simply never moved. The same fix covers an **Animation Clip** action whose clip animates an animator parameter directly.
+
+  **Set an FX Float** が何も起きなかった問題を修正しました。Depth Animations・Active Animations・Post-Bake Actions のいずれでもアクションは設定できるのに、パラメータがまったく動かない状態でした。アニメーターのパラメータを直接動かすクリップを **Animation Clip** アクションに指定していた場合も、同じ理由で効かなかったのが直ります。
+- Fixed plugs and sockets placed under the head bone (a mouth socket, for example) having the objects SPS bakes for them shrink along with the head in your own first-person view. They are now excluded from first-person head hiding, as they are in VRCFury.
+
+  Plug や Socket を頭ボーンの下に置いている場合（口の Socket など）、SPS が生成するオブジェクトが一人称視点で頭と一緒に縮んでしまう問題を修正しました。VRCFury と同様に、一人称の頭部非表示の対象から外れます。
+- Fixed the scale compensation for the deprecated **(Deprecated) Auto-configure Poiyomi TPS** option on plugs, which did not run at all and, once running, did not follow the avatar's scale while in-game.
+
+  Plug の **(Deprecated) Auto-configure Poiyomi TPS** に対するスケール補正を修正しました。これまでまったく実行されておらず、実行されるようにした後もゲーム中のアバターのスケール変更に追従しない状態でした。
+- Fixed an edited shader not taking effect when the edit left the file exactly the same size. The previously patched shader was reused, and the only way out was deleting the generated shader folder by hand.
+
+  シェーダーを編集してもファイルサイズが変わらなかった場合に、編集が反映されない問題を修正しました。以前パッチしたシェーダーが使い回され、生成先のフォルダを手で消すまで直りませんでした。
+- Fixed error dialogs no longer naming the method and line inside SPS for NDMF where the error came from.
+
+  エラーダイアログに、SPS for NDMF 側のどのメソッド・行で起きたのかが出なくなっていた問題を修正しました。
+
+### Added / 追加
+- The build now warns in the NDMF Console when a parameter SPS drives with an animation is still marked **Synced** in the avatar's Expression Parameters. Such a parameter is overwritten locally on every client, so syncing it only spends parameter budget.
+
+  SPS がアニメーションで動かしているパラメータが、アバターの Expression Parameters で **Synced** のままになっている場合に、NDMF Console へ警告を出すようになりました。この種のパラメータは各クライアントでローカルに上書きされるため、同期してもパラメータ容量を消費するだけです。
+
 ## [1.1426.2] - 2026-08-28
 ### Fixed / 修正
 - Fixed a build error when MA Replace Object replaces an SPS plug or its mesh: the build now skips converting that plug's external animations (with a console warning) instead of failing.
