@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using nadena.dev.ndmf;
 using nadena.dev.modular_avatar.core;
@@ -10,6 +11,39 @@ using VRC.SDK3.Avatars.ScriptableObjects;
 namespace VF.Plugin.Passes {
     internal class SpsOutputPass : Pass<SpsOutputPass> {
         public override string DisplayName => "SPS Output (MA Components)";
+
+        /**
+         * The animator parameters Modular Avatar derives from a physbone prefix remap. MA keeps
+         * this list privately, so it has to be repeated here to expand prefix remaps the same way.
+         */
+        private static readonly string[] PhysBoneSuffixes =
+            { "_IsGrabbed", "_IsPosed", "_Angle", "_Stretch", "_Squish" };
+
+        /**
+         * Modular Avatar renames the parameters of everything it merges, animator parameter curves
+         * included, and then destroys the components describing those renames. Record them while
+         * they still exist so passes running after MA can reach the final names.
+         *
+         * This is a snapshot: a plugin that adds a rename between here and MA is not reflected.
+         * Only ordering relative to MA is guaranteed, not that nothing runs in between, so there is
+         * no later point that still sees the components and no earlier one that sees more of them.
+         */
+        private static Dictionary<string, string> CaptureParameterRenames(
+            BuildContext context, GameObject outputObj) {
+            var renames = new Dictionary<string, string>();
+            var remaps = ParameterInfo.ForContext(context).GetParameterRemappingsAt(outputObj);
+            foreach (var pair in remaps.Where(p => p.Key.Item1 == ParameterNamespace.PhysBonesPrefix)) {
+                foreach (var suffix in PhysBoneSuffixes) {
+                    renames[pair.Key.Item2 + suffix] = pair.Value.ParameterName + suffix;
+                }
+            }
+            // Applied second so a direct remap wins if a prefix expansion produced the same name.
+            // MA collects both into one dictionary and so assumes that never happens.
+            foreach (var pair in remaps.Where(p => p.Key.Item1 == ParameterNamespace.Animator)) {
+                renames[pair.Key.Item2] = pair.Value.ParameterName;
+            }
+            return renames;
+        }
 
         protected override void Execute(BuildContext context) {
             var spsCtx = context.GetState<SpsContext>();
@@ -24,13 +58,7 @@ namespace VF.Plugin.Passes {
             var outputObj = new GameObject("SPS-NDMF Output");
             outputObj.transform.SetParent(avatarObj.transform, false);
 
-            // Modular Avatar renames the parameters of everything it merges, animator parameter
-            // curves included, and then destroys the components describing those renames. Record
-            // them here so passes running after MA can still reach the final names.
-            spsCtx.ParameterRenames = ParameterInfo.ForContext(context)
-                .GetParameterRemappingsAt(outputObj)
-                .Where(pair => pair.Key.Item1 == ParameterNamespace.Animator)
-                .ToDictionary(pair => pair.Key.Item2, pair => pair.Value.ParameterName);
+            spsCtx.ParameterRenames = CaptureParameterRenames(context, outputObj);
 
             // Controllers → MA Merge Animator
             foreach (var kvp in output.Controllers) {

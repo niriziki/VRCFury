@@ -61,7 +61,7 @@ namespace VF.Tests {
             if (expressionParams != null) Object.DestroyImmediate(expressionParams, true);
         }
 
-        private void BuildSocketWithAapActions() {
+        private void BuildSocketWithAapActions(string fxFloatParam = ActionParam) {
             var bodyObj = new GameObject("Body");
             bodyObj.transform.SetParent(avatar.transform, false);
             var smr = bodyObj.AddComponent<SkinnedMeshRenderer>();
@@ -86,7 +86,7 @@ namespace VF.Tests {
             socket.depthActions2.Add(new VRCFuryHapticSocket.DepthActionNew {
                 actionSet = {
                     actions = {
-                        new FxFloatAction { name = ActionParam, value = 1 },
+                        new FxFloatAction { name = fxFloatParam, value = 1 },
                         new BlendShapeAction { blendShape = "Foo", blendShapeValue = 100 }
                     }
                 }
@@ -227,6 +227,41 @@ namespace VF.Tests {
             var dump = string.Join(" / ", simple.Select(e => e.ToMessage()));
             Assert.That(simple.Count(e => e.ToMessage().Contains(renamedTo)), Is.EqualTo(1),
                 $"the renamed AAP was not reported under its final name. Reports: {dump}");
+        }
+
+        [Test]
+        public void ReportsAapRenamedByAPhysbonePrefix() {
+            // A physbone prefix remap of "SpsTest" renames the animator parameters MA derives from
+            // it, so an AAP named after one of those suffixes ends up renamed as well.
+            const string prefix = "SpsTest";
+            const string renamedPrefix = "SpsTestRenamed";
+            const string drivenParam = prefix + "_Angle";
+            const string renamedParam = renamedPrefix + "_Angle";
+
+            expressionParams = ScriptableObject.CreateInstance<VRCExpressionParameters>();
+            expressionParams.parameters = new[] {
+                new VRCExpressionParameters.Parameter {
+                    name = renamedParam,
+                    valueType = VRCExpressionParameters.ValueType.Float,
+                    networkSynced = true
+                }
+            };
+            avatar.GetComponent<VRCAvatarDescriptor>().expressionParameters = expressionParams;
+
+            var maParams = avatar.AddComponent<ModularAvatarParameters>();
+            maParams.parameters.Add(new ParameterConfig {
+                nameOrPrefix = prefix,
+                remapTo = renamedPrefix,
+                isPrefix = true
+            });
+
+            BuildSocketWithAapActions(drivenParam);
+            var errors = ProcessThroughTransforming();
+
+            var simple = errors.Select(e => e.TheError).OfType<SimpleError>().ToArray();
+            var dump = string.Join(" / ", simple.Select(e => e.ToMessage()));
+            Assert.That(simple.Count(e => e.ToMessage().Contains(renamedParam)), Is.EqualTo(1),
+                $"the prefix-renamed AAP was not reported under its final name. Reports: {dump}");
         }
     }
 }
