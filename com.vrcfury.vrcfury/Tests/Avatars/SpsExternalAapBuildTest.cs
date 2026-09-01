@@ -223,6 +223,8 @@ namespace VF.Tests {
             BuildSocketWithAapActions();
             var errors = ProcessThroughTransforming();
 
+            AssertAapWasRenamedTo(ActionParam, renamedTo);
+
             var simple = errors.Select(e => e.TheError).OfType<SimpleError>().ToArray();
             var dump = string.Join(" / ", simple.Select(e => e.ToMessage()));
             Assert.That(simple.Count(e => e.ToMessage().Contains(renamedTo)), Is.EqualTo(1),
@@ -231,8 +233,8 @@ namespace VF.Tests {
 
         [TestCase("_Angle")]
 #if MA_HAS_RAYCAST_PHYSBONE_PARAMS
-        // Only renamed by Modular Avatar 1.18 and up, which is also where we start
-        // claiming to follow it, so the case runs exactly where the claim applies.
+        // Only renamed by the Modular Avatar versions we start claiming to follow, so the case
+        // runs exactly where the claim applies.
         [TestCase("_Hit")]
 #endif
         public void ReportsAapRenamedByAPhysbonePrefix(string suffix) {
@@ -263,10 +265,32 @@ namespace VF.Tests {
             BuildSocketWithAapActions(drivenParam);
             var errors = ProcessThroughTransforming();
 
+            // The warning name is built from our own suffix list, so on its own it would still
+            // match if Modular Avatar had left the curve alone. Check what MA actually produced.
+            AssertAapWasRenamedTo(drivenParam, renamedParam);
+
             var simple = errors.Select(e => e.TheError).OfType<SimpleError>().ToArray();
             var dump = string.Join(" / ", simple.Select(e => e.ToMessage()));
             Assert.That(simple.Count(e => e.ToMessage().Contains(renamedParam)), Is.EqualTo(1),
                 $"the prefix-renamed AAP was not reported under its final name. Reports: {dump}");
+        }
+
+        private void AssertAapWasRenamedTo(string oldName, string newName) {
+            var fx = avatar.GetComponent<VRCAvatarDescriptor>().baseAnimationLayers
+                .Where(l => l.type == VRCAvatarDescriptor.AnimLayerType.FX)
+                .Select(l => l.animatorController)
+                .FirstOrDefault(c => c != null) as AnimatorController;
+            Assert.That(fx, Is.Not.Null, "no FX controller after build");
+
+            var aaps = fx.animationClips.Where(c => c != null).Distinct()
+                .SelectMany(AnimationUtility.GetCurveBindings)
+                .Where(b => b.type == typeof(Animator) && b.path == "")
+                .Select(b => b.propertyName)
+                .ToArray();
+            Assert.That(aaps, Does.Contain(newName),
+                $"Modular Avatar did not rename the AAP. AAPs in FX: {string.Join(", ", aaps)}");
+            Assert.That(aaps, Does.Not.Contain(oldName),
+                $"the old AAP name survived the rename. AAPs in FX: {string.Join(", ", aaps)}");
         }
     }
 }
