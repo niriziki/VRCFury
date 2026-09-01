@@ -30,6 +30,19 @@ namespace VF.Plugin {
         [VFAutowired] private readonly VRCFArmatureCache armatureCache;
         [VFAutowired] private readonly FakeHeadService fakeHead;
         [VFAutowired] private readonly ScalePropertyCompensationService scaleCompensationService;
+        [VFAutowired] private readonly WorldScaleDetectorService worldScaleService;
+
+        /**
+         * Creating a world scale detector registers an object-enabled AAP, which is only wired up
+         * by IsObjectEnabledService's own action. Ask for the detectors before that runs, or the
+         * one built later from ApplyTpsScaleFix never gets enabled and reports a frozen scale.
+         */
+        [FeatureBuilderAction(FeatureOrder.IsObjectEnabled, -1)]
+        public void PrepareWorldScaleDetectors() {
+            foreach (var rootBone in GetTpsScaleFixRootBones()) {
+                worldScaleService.GetWorldScale(rootBone, WorldScaleName);
+            }
+        }
 
         [FeatureBuilderAction(FeatureOrder.TpsScaleFix)]
         public void Apply() {
@@ -61,13 +74,30 @@ namespace VF.Plugin {
 #endif
         }
 
-        private void ApplyTpsScaleFix() {
-            var renderers = new HashSet<Renderer>(globals.allFeaturesInRun
+        // Matches the name ScalePropertyCompensationService passes, so the detector is identical
+        // whichever of the two calls creates it.
+        private const string WorldScaleName = "tps scale fix";
+
+        private IEnumerable<Renderer> GetTpsScaleFixRenderers() {
+            return new HashSet<Renderer>(globals.allFeaturesInRun
                 .OfType<TpsScaleFix>()
                 .Select(model => model.singleRenderer)
                 .Where(renderer => renderer != null));
+        }
 
-            foreach (var renderer in renderers) {
+        private static VFGameObject GetScaleRootBone(Renderer renderer) {
+            if (renderer is SkinnedMeshRenderer skin && skin.rootBone != null) return skin.rootBone;
+            return renderer.owner();
+        }
+
+        private IEnumerable<VFGameObject> GetTpsScaleFixRootBones() {
+            return GetTpsScaleFixRenderers()
+                .Where(renderer => TpsScaleFixBuilder.GetScaledProps(renderer.sharedMaterials).Count > 0)
+                .Select(GetScaleRootBone);
+        }
+
+        private void ApplyTpsScaleFix() {
+            foreach (var renderer in GetTpsScaleFixRenderers()) {
                 var scaledProps = TpsScaleFixBuilder.GetScaledProps(renderer.sharedMaterials);
                 if (scaledProps.Count == 0) continue;
 
@@ -84,11 +114,7 @@ namespace VF.Plugin {
                     return mat;
                 }).ToArray();
 
-                var rootBone = renderer.owner();
-                if (renderer is SkinnedMeshRenderer skin && skin.rootBone != null) {
-                    rootBone = skin.rootBone;
-                }
-
+                var rootBone = GetScaleRootBone(renderer);
                 scaleCompensationService.AddScaledProp(rootBone, scaledProps.Select(p => (
                     (UnityEngine.Component)renderer,
                     $"material.{p.Key}",
