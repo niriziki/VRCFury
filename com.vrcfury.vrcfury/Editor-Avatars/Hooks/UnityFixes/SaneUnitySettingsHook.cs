@@ -29,6 +29,7 @@ namespace VF.Hooks.UnityFixes {
             }
         }
         
+        [ReflectionHelperOptional] // SPS-NDMF: dormant, keep it out of the eager validation
         private abstract class ConsoleReflection : ReflectionHelper {
             public static readonly Type ConsoleWindow = ReflectionUtils.GetTypeFromAnyAssembly("UnityEditor.ConsoleWindow");
             public delegate void SetConsoleErrorPause_(bool enabled);

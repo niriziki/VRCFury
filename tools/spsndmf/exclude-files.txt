@@ -17,6 +17,7 @@ Editor-Common/Hooks/VrcsdkFixes/FixVrcsdkSavingEverythingOnDomainReloadHook.cs
 
 # Unity bug workarounds and editor UX interventions
 Editor-Avatars/Hooks/UnityFixes/FixAnimatorPreviewBreakingInPlayModeHook.cs
+Editor-Common/Utils/AnimatorControllerToolHelper.cs
 Editor-Avatars/Hooks/UnityFixes/UnpackWarningHook.cs
 Editor-Common/Hooks/UnityFixes/InputFieldOnValidateDuringRefreshHook.cs
 

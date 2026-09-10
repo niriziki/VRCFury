@@ -13,6 +13,7 @@ namespace VF.Hooks.VrcsdkFixes {
      */
     internal static class KeepEditorOnlyComponentsLongerHook {
 
+        [ReflectionHelperOptional] // SPS-NDMF: dormant, keep it out of the eager validation
         private abstract class Reflection : ReflectionHelper {
             public static readonly Type VRCBuildPipelineCallbacks =
                 ReflectionUtils.GetTypeFromAnyAssembly("VRC.SDKBase.Editor.BuildPipeline.VRCBuildPipelineCallbacks");

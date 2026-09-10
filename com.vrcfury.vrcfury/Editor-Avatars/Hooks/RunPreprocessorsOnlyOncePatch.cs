@@ -7,6 +7,7 @@ using VRC.SDKBase.Editor.BuildPipeline;
 
 namespace VF.Hooks {
     internal static class RunPreprocessorsOnlyOncePatch {
+        [ReflectionHelperOptional] // SPS-NDMF: dormant, keep it out of the eager validation
         private abstract class Reflection : ReflectionHelper {
             public static readonly HarmonyUtils.PatchObj Patch = HarmonyUtils.Patch(
                 typeof(RunPreprocessorsOnlyOncePatch),

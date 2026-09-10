@@ -12,6 +12,7 @@ using VF.VrcfEditorOnly;
 
 namespace VF.Hooks.VrcsdkFixes {
     internal static class WhitelistPatch {
+        [ReflectionHelperOptional] // SPS-NDMF: dormant, keep it out of the eager validation
         private abstract class Reflection : ReflectionHelper {
             public static readonly Type AvatarValidationSdkBase =
                 ReflectionUtils.GetTypeFromAnyAssembly("VRC.SDKBase.Validation.AvatarValidation");

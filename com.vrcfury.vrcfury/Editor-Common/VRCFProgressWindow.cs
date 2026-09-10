@@ -8,6 +8,7 @@ using VF.Utils;
 
 namespace VF {
     internal class VRCFProgressWindow : EditorWindow {
+        [ReflectionHelperOptional] // SPS-NDMF: dormant, keep it out of the eager validation
         private abstract class Reflection : ReflectionHelper {
             public static readonly MethodInfo RepaintImmediately =
                 typeof(VRCFProgressWindow).VFMethod("RepaintImmediately");

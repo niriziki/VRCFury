@@ -13,6 +13,7 @@ namespace VF.Menu {
         
         private static readonly HashSet<Transform> unlocked = new HashSet<Transform>();
 
+        [ReflectionHelperOptional] // SPS-NDMF: dormant, keep it out of the eager validation
         private abstract class Reflection : ReflectionHelper {
             public static readonly PropertyInfo ConstrainProportionsScale = typeof(Transform)
                 .VFProperty("constrainProportionsScale");

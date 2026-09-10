@@ -12,6 +12,7 @@ namespace VF.Utils {
         private static Func<ISet<VFGameObject>> _GetExpanded = () => new HashSet<VFGameObject>();
 
 #if UNITY_2020_2_OR_NEWER
+        [ReflectionHelperOptional] // SPS-NDMF: dormant, keep it out of the eager validation
         private abstract class Reflection : ReflectionHelper {
             public static readonly Type SceneHierarchyWindow = ReflectionUtils.GetTypeFromAnyAssembly("UnityEditor.SceneHierarchyWindow");
             public static readonly MethodInfo SetExpanded = SceneHierarchyWindow?.VFMethod("SetExpanded");

@@ -16,6 +16,7 @@ namespace VF.Utils {
     internal static class RecorderUtils {
         private static Action restore = null;
 
+        [ReflectionHelperOptional] // SPS-NDMF: dormant, keep it out of the eager validation
         private abstract class Reflection : ReflectionHelper {
             private static readonly Type animStateType = ReflectionUtils.GetTypeFromAnyAssembly("UnityEditorInternal.AnimationWindowState");
             public static readonly PropertyInfo selectionField = animStateType?.VFProperty("selection");
