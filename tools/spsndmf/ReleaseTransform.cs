@@ -13,6 +13,7 @@ var includeTests = args.Contains("--include-tests");
 
 var sourcePackageDir = Path.Combine(repoRoot, "com.vrcfury.vrcfury");
 var guidMapPath = Path.Combine(scriptDir, "guid-map.json");
+var excludeListPath = Path.Combine(scriptDir, "exclude-files.txt");
 var outputDir = Path.Combine(repoRoot, "net.nrzk.spsndmf");
 
 // --- Configuration ---
@@ -59,6 +60,8 @@ Console.WriteLine("Copying files...");
 if (Directory.Exists(outputDir))
     Directory.Delete(outputDir, recursive: true);
 CopyPackageRoot(sourcePackageDir, outputDir, excludedRootDirs);
+var excludedFiles = LoadExcludeList(excludeListPath);
+RemoveExcludedFiles(sourcePackageDir, outputDir, excludedFiles);
 
 // --- Step 2: Build GUID map ---
 Console.WriteLine("Building GUID map...");
@@ -118,9 +121,61 @@ Console.WriteLine($"  .cs: {stats.CsFiles} ({stats.CsReplaced} modified)");
 Console.WriteLine($"  .asmdef: {stats.AsmdefFiles} ({stats.AsmdefReplaced} modified)");
 Console.WriteLine($"  .meta: {stats.MetaFiles} ({stats.MetaReplaced} modified)");
 Console.WriteLine($"  serialized: {stats.SerializedFiles} ({stats.SerializedReplaced} modified)");
+CheckExcludedTypesUnreferenced(sourcePackageDir, outputDir, excludedFiles);
 return 0;
 
 // ============================================================
+
+List<string> LoadExcludeList(string path)
+{
+    if (!File.Exists(path)) return new List<string>();
+    return File.ReadAllLines(path)
+        .Select(l => l.Trim())
+        .Where(l => l.Length > 0 && !l.StartsWith("#"))
+        .Select(l => l.Replace('\\', '/'))
+        .ToList();
+}
+
+void RemoveExcludedFiles(string source, string dest, List<string> excluded)
+{
+    foreach (var rel in excluded)
+    {
+        if (!File.Exists(Path.Combine(source, rel)))
+        {
+            Console.Error.WriteLine($"exclude-files.txt entry not found in source (renamed or removed upstream?): {rel}");
+            Environment.Exit(1);
+        }
+        File.Delete(Path.Combine(dest, rel));
+        var meta = Path.Combine(dest, rel + ".meta");
+        if (File.Exists(meta)) File.Delete(meta);
+    }
+    Console.WriteLine($"  {excluded.Count} files excluded");
+}
+
+// A shipped file that still names a type from an excluded file would only fail inside Unity,
+// so catch it here. Top-level types only: nested helpers like "Reflection" appear in every hook.
+void CheckExcludedTypesUnreferenced(string source, string dest, List<string> excluded)
+{
+    var typeDecl = new Regex(@"^ {0,4}(?:\[[^\]]*\] *)*(?:(?:internal|public|private|static|abstract|sealed|partial) )*(?:class|struct|enum|interface) +([A-Za-z_]\w*)", RegexOptions.Multiline);
+    var excludedTypes = excluded
+        .Where(rel => rel.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
+        .SelectMany(rel => typeDecl.Matches(File.ReadAllText(Path.Combine(source, rel))).Select(m => (Type: m.Groups[1].Value, File: rel)))
+        .ToList();
+    var failed = false;
+    foreach (var cs in Directory.EnumerateFiles(dest, "*.cs", SearchOption.AllDirectories))
+    {
+        var text = File.ReadAllText(cs);
+        foreach (var (type, file) in excludedTypes)
+        {
+            if (Regex.IsMatch(text, $@"\b{Regex.Escape(type)}\b"))
+            {
+                Console.Error.WriteLine($"{Path.GetRelativePath(dest, cs)} references {type} from excluded {file}");
+                failed = true;
+            }
+        }
+    }
+    if (failed) Environment.Exit(1);
+}
 
 void CopyDirectory(string source, string dest)
 {

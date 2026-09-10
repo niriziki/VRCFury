@@ -41,9 +41,6 @@ namespace VF.Hooks.UnityFixes {
 
         [VFInit]
         private static void Init() {
-            // SPS-NDMF: disabled, the shim patches are not allow-listed so the per-frame cache clear has nothing to serve
-            return;
-            #pragma warning disable CS0162
             if (!ReflectionHelper.IsReady<Reflection>()) return;
 
             foreach (var patch in Reflection.ShimPrefixPatches) {

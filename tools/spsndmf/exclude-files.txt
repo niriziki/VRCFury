@@ -1,0 +1,31 @@
+# Files dropped from the shipped package (paths relative to com.vrcfury.vrcfury/).
+# The .meta pair is dropped with each file. The transform fails if an entry does not
+# exist or if a shipped file still references a type declared in an excluded file.
+# Rule: only files that do nothing for SPS. Anything SPS needs stays in the source tree.
+
+# VRCSDK bug workarounds (Harmony patches; SPS-NDMF applies no patches outside its allow-list)
+Editor-Avatars/Hooks/VrcsdkFixes/AbortAfterClearingUnownedAvatarHook.cs
+Editor-Avatars/Hooks/VrcsdkFixes/DisableColliderUpdateInPlayModeHook.cs
+Editor-Avatars/Hooks/VrcsdkFixes/FixContactManagerStopwatchNull.cs
+Editor-Avatars/Hooks/VrcsdkFixes/FixContactsCrashHook.cs
+Editor-Avatars/Hooks/VrcsdkFixes/FixDupAnimatorWindowHook.cs
+Editor-Avatars/Hooks/VrcsdkFixes/FixLayerMaskUndoHook.cs
+Editor-Avatars/Hooks/VrcsdkFixes/FixNotPlayingWarningHook.cs
+Editor-Avatars/Hooks/VrcsdkFixes/FixTestUploadThumbnailErrorHook.cs
+Editor-Avatars/Hooks/VrcsdkFixes/RemoveDeadEditorsHook.cs
+Editor-Common/Hooks/VrcsdkFixes/FixVrcsdkSavingEverythingOnDomainReloadHook.cs
+
+# Unity bug workarounds and editor UX interventions
+Editor-Avatars/Hooks/UnityFixes/FixAnimatorPreviewBreakingInPlayModeHook.cs
+Editor-Avatars/Hooks/UnityFixes/UnpackWarningHook.cs
+Editor-Common/Hooks/UnityFixes/InputFieldOnValidateDuringRefreshHook.cs
+
+# Patches into third-party assets (Av3Emulator, Gesture Manager, Thry, Wholesome, Poiyomi/lilToon/UdonSharp)
+Editor-Avatars/Hooks/Av3EmuFixes/Av3EmuSyncTimeFixHook.cs
+Editor-Avatars/Hooks/GestureManagerFixes/DisableGestureManagerPlayerIdHook.cs
+Editor-Avatars/Hooks/ThryAutoAnchorHook.cs
+Editor-Avatars/Hooks/WholesomeSpsConfiguratorHook.cs
+Editor-Common/Hooks/DisablePluginsWhenNotUploadingHook.cs
+
+# Non-SPS debug utility (AssetModificationProcessor registers itself by type)
+Editor-Common/Menu/SceneDirtyLoggerMenuItem.cs
