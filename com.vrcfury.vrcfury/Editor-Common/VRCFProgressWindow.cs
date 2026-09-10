@@ -15,6 +15,9 @@ namespace VF {
 
         [VFInit]
         private static void Init() {
+            // SPS-NDMF: disabled, the progress window is only created by the non-NDMF build path
+            return;
+            #pragma warning disable CS0162
             EditorApplication.delayCall += () => {
                 foreach (var w in Resources.FindObjectsOfTypeAll<VRCFProgressWindow>()) {
                     if (w) w.Close();
