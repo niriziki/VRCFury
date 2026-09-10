@@ -8,6 +8,15 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1429.0] - 2026-09-10
+### Changed / 変更
+- Updated the bundled VRCFury source to upstream 1.1429.0.
+
+  同梱の VRCFury ソースを上流 1.1429.0 に更新しました。
+- SPS now skips its data passes when the render target is too small to hold 20 socket slots, instead of rendering into a grid that cannot fit them (upstream change). This is about the size of the render target, not the number of sockets you have set up.
+
+  描画ターゲットが小さすぎてソケット用のスロットを 20 個確保できない場合、SPS はその描画ターゲットへの処理を中断するようになりました。これまでは収まらないグリッドに描画していました（上流の変更）。ソケットの設定数ではなく、描画先の大きさの話です。
+
 ## [1.1426.3] - 2026-09-01
 ### Fixed / 修正
 - Fixed **Set an FX Float** doing nothing. Depth Animations, Active Animations and Post-Bake Actions all accepted the action, and the parameter simply never moved. The same fix covers an **Animation Clip** action whose clip animates an animator parameter directly.
