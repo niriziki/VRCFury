@@ -21,6 +21,9 @@ namespace VF.Hooks.VrcsdkFixes {
 
         [VFInit]
         private static void Init() {
+            // SPS-NDMF: disabled, the patch is outside the allow-list; FixPositionOffset stays for OriginalContactsHook
+            return;
+            #pragma warning disable CS0162
             if (!ReflectionHelper.IsReady<Reflection>()) return;
             Reflection.Patch.apply();
         }

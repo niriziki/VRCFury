@@ -84,6 +84,9 @@ namespace VF.Hooks {
         internal class StartCheck : IVRCSDKPreprocessAvatarCallback {
             public int callbackOrder => int.MinValue;
             public bool OnPreprocessAvatar(GameObject obj) {
+                // SPS-NDMF: disabled, NDMF owns preprocessor ordering and no VRCFuryTest copies are built
+                return true;
+                #pragma warning disable CS0162
                 var go = (VFGameObject)obj;
 
                 if (Application.isPlaying) {

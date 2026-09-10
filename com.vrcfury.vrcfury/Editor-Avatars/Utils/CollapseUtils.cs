@@ -20,6 +20,9 @@ namespace VF.Utils {
 
         [VFInit]
         private static void Init() {
+            // SPS-NDMF: disabled, its only user (RecorderUtils) is disabled
+            return;
+            #pragma warning disable CS0162
             if (!ReflectionHelper.IsReady<Reflection>()) {
                 return;
             }
