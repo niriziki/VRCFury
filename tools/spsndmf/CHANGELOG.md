@@ -16,6 +16,9 @@ Only versions that have a published release are listed.
 - SPS now skips its data passes when the render target is too small to hold 20 socket slots, instead of rendering into a grid that cannot fit them (upstream change). This is about the size of the render target, not the number of sockets you have set up.
 
   描画ターゲットが小さすぎてソケット用のスロットを 20 個確保できない場合、SPS はその描画ターゲットへの処理を中断するようになりました。これまでは収まらないグリッドに描画していました（上流の変更）。ソケットの設定数ではなく、描画先の大きさの話です。
+- Removed inherited VRCFury hook code that SPS for NDMF never used. It still looked up Unity and VRCSDK internals on every script reload and could log "VRCFury failed to find hook into some parts of Unity properly" on newer Unity or SDK versions; that lookup and warning are gone.
+
+  SPS for NDMF では使っていなかった VRCFury 由来のフックのコードを取り除きました。これらはスクリプトのリロードごとに Unity や VRCSDK の内部を探索し、新しい Unity や SDK では「VRCFury failed to find hook into some parts of Unity properly」という警告を出すことがありましたが、この探索と警告はなくなります。
 
 ## [1.1426.3] - 2026-09-01
 ### Fixed / 修正
