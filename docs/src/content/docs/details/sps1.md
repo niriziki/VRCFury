@@ -29,16 +29,22 @@ SPS1 を正しく動作させるには、アバター側の VRChat 設定が影�
 
 ## 使用する Contacts
 
-SPS1 は位置の伝達を点光源で行いますが、触覚通知や補助的な検出には VRChat Contacts も使います（**P** = Plug の数、**S** = Socket の数。Sender は発信、Receiver は受信）。
+SPS1 は位置の伝達を点光源で行いますが、触覚通知や補助的な検出には VRChat Contacts も使います（**P** = Plug の数、**S** = Socket の数。Sender は発信、Receiver は受信。「ランク」列は VRChat のパフォーマンスランクの Contacts 数に数えられるかどうか）。
 
-| 用途 | 種別 | Plug 側 | Socket 側 | 役割 | 有効になる条件 |
-|---|---|---|---|---|---|
-| 位置ビーコン | Sender | 4×P | 2×S | 「ここに Plug／Socket がある」と発信する。触覚通知・Depth Animations の Receiver が読む | Plug は常時／Socket はメニュー ON 時 |
-| 触覚通知（OGB） | Receiver | 8×P | (4〜11)×S | 位置ビーコンを検知し、触覚アプリに接触・挿入を伝える | 常時（SPS2 のようなゲートが無い。[Enable SPS Haptics](/spsndmf/ogb-haptics/) をオフにすると生成されない） |
-| 近くの Socket を探す（SPS Plus） | Receiver | 4×P | — | 近くに Socket があるか検知（SPS1 のみ。SPS2 で廃止） | 常時（半径3mと大きい） |
-| スケール補正 | Sender / Receiver | 2×P | — | アバターのスケールを測り挿入の計算を補正する | ほぼ常時 |
-| Depth Animations | Receiver | (1〜2)×P | (3〜6)×S | 挿入の深さを測り、アニメを動かす | Depth Animations を設定したときだけ |
-| Auto 選択 | Receiver | — | Auto 対象の Socket ごとに1 | 複数 Socket から最寄りを自動選択 | Auto 対象 Socket が2個以上 |
+| 用途 | 種別 | Plug 側 | Socket 側 | ランク | 役割 | 有効になる条件 |
+|---|---|---|---|---|---|---|
+| 位置ビーコン | Sender | 4×P | 2×S | 数える | 「ここに Plug／Socket がある」と発信する。触覚通知・Depth Animations の Receiver が読む | Plug は常時／Socket はメニュー ON 時 |
+| 触覚通知（OGB） | Receiver | 8×P | (4〜11)×S | 数えない（Local Only） | 位置ビーコンを検知し、触覚アプリに接触・挿入を伝える | 常時（SPS2 のようなゲートが無い。[Enable SPS Haptics](/spsndmf/ogb-haptics/) をオフにすると生成されない） |
+| 近くの Socket を探す（SPS Plus） | Receiver | 4×P | — | 数える | 近くに Socket があるか検知（SPS1 のみ。SPS2 で廃止） | 常時（半径3mと大きい） |
+| スケール補正 | Sender / Receiver | 2×P | — | 数える | アバターのスケールを測り挿入の計算を補正する | ほぼ常時 |
+| Depth Animations | Receiver | (1〜2)×P | (3〜6)×S | 数える | 挿入の深さを測り、アニメを動かす | Depth Animations を設定したときだけ |
+| Auto 選択 | Receiver | — | Auto 対象の Socket ごとに1 | 数える | 複数 Socket から最寄りを自動選択 | Auto 対象 Socket が2個以上 |
+
+### パフォーマンスランクに数えられる数
+
+VRChat は **Local Only** の Contact Receiver をパフォーマンスランクの Contacts 数に数えません（[VRChat 公式ドキュメント](https://creators.vrchat.com/common-components/contacts/#filtering)）。SPS1 で Local Only なのは触覚通知（OGB）の Receiver だけで、それ以外はすべて数えられます。
+
+基本的な使い方（Depth Animations 未設定・Auto 未使用）でランクに数えられるのは **10 ×（Plug 数）＋ 2 ×（Socket 数）** です。Plug 1・Socket 1 なら 12 個で、同じ構成の SPS2（6 個）の倍になります。Socket がメニューで OFF でも、ランクは生成された数で計算されるので Socket 分は減りません。
 
 **Sender と Receiver の関係**は SPS2 と同じで、位置を発信する Sender を、反対側のコンポーネント（Plug の Sender ↔ Socket の Receiver、およびその逆。自分・相手どちらのアバターにもある）の Receiver が受信します。詳しくは [SPS2 の詳細 — 使用する Contacts](/details/sps2/) を参照してください。
 

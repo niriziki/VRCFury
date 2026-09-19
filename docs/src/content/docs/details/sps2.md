@@ -28,14 +28,21 @@ Socket 自体は SPS のシェーダーで変形するわけではありませ�
 
 ## 使用する Contacts
 
-SPS2 の「Plug が Socket へ曲がる」というコアな動きは[共有テクスチャ](#位置を伝えるしくみ動作原理)で行うため、**Contacts を必要としません**。Contacts は、次の付加機能のためだけに使われます（**P** = Plug の数、**S** = Socket の数。Sender は発信、Receiver は受信）。
+SPS2 の「Plug が Socket へ曲がる」というコアな動きは[共有テクスチャ](#位置を伝えるしくみ動作原理)で行うため、**Contacts を必要としません**。Contacts は、次の付加機能のためだけに使われます（**P** = Plug の数、**S** = Socket の数。Sender は発信、Receiver は受信。「ランク」列は VRChat のパフォーマンスランクの Contacts 数に数えられるかどうか）。
 
-| 用途 | 種別 | Plug 側 | Socket 側 | 役割 | 有効になる条件 |
-|---|---|---|---|---|---|
-| 位置ビーコン | Sender | 4×P | 2×S | 「ここに Plug／Socket がある」と発信する。下の Receiver が読む | Plug は常時／Socket はメニュー ON 時 |
-| 触覚通知（OGB） | Receiver | 8×P | (4〜11)×S | 位置ビーコンを検知し、触覚アプリに接触・挿入を伝える | OSC 触覚アプリを起動している間だけ（[Enable SPS Haptics](/spsndmf/ogb-haptics/) をオフにすると生成されない） |
-| Depth Animations | Receiver | (1〜2)×P | (3〜6)×S | 挿入の深さを測り、ブレンドシェイプ等を動かす | [Depth Animations](/spsndmf/socket/) を設定したときだけ |
-| Auto 選択 | Receiver | — | 1（アバターで共有） | 複数の Socket から最寄りを自動で選ぶ | Auto 対象の Socket が2個以上のとき |
+| 用途 | 種別 | Plug 側 | Socket 側 | ランク | 役割 | 有効になる条件 |
+|---|---|---|---|---|---|---|
+| 位置ビーコン | Sender | 4×P | 2×S | 数える | 「ここに Plug／Socket がある」と発信する。下の Receiver が読む | Plug は常時／Socket はメニュー ON 時 |
+| 触覚通知（OGB） | Receiver | 8×P | (4〜11)×S | 数えない（Local Only） | 位置ビーコンを検知し、触覚アプリに接触・挿入を伝える | OSC 触覚アプリを起動している間だけ（[Enable SPS Haptics](/spsndmf/ogb-haptics/) をオフにすると生成されない） |
+| Depth Animations | Receiver | (1〜2)×P | (3〜6)×S | 数える | 挿入の深さを測り、ブレンドシェイプ等を動かす | [Depth Animations](/spsndmf/socket/) を設定したときだけ |
+| スケール検出 | Sender / Receiver | 1×P ＋ 1（アバターで共有） | 1×S | 数える | アバターの実際の大きさを測り、Depth Animations や DPS Tip Light の計算を補正する | Depth Animations・SPS パラメータ注入・DPS Tip Light のいずれかを使う Plug / Socket があるときだけ |
+| Auto 選択 | Receiver | — | 1（アバターで共有） | 数えない（Local Only） | 複数の Socket から最寄りを自動で選ぶ | Auto 対象の Socket が2個以上のとき |
+
+### パフォーマンスランクに数えられる数
+
+VRChat は **Local Only** の Contact Receiver をパフォーマンスランクの Contacts 数に数えません（[VRChat 公式ドキュメント](https://creators.vrchat.com/common-components/contacts/#filtering)）。SPS2 で Local Only なのは触覚通知（OGB）と Auto 選択の Receiver で、それ以外は数えられます。
+
+基本的な使い方（Depth Animations 未設定・DPS Tip Light 未使用）でランクに数えられるのは **位置ビーコンだけ**で、**4 ×（Plug 数）＋ 2 ×（Socket 数）** です。Plug 1・Socket 1 なら 6 個です。Socket がメニューで OFF でも、ランクは生成された数で計算されるので Socket 分は減りません。Depth Animations やスケール検出を使うと、その分が加算されます。
 
 **位置ビーコン（Sender）を読むのは、上表の「触覚通知」と「Depth Animations」の Receiver です。** Plug のビーコンは Socket 側のこれらの Receiver が、Socket のビーコンは Plug 側のこれらの Receiver が読みます（読み手は自分・相手どちらのアバターにもあります）。
 

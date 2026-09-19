@@ -58,14 +58,15 @@ Plug / Socket の数に応じて、次のようなリソースが生成されま
 | リソース | DPS | SPS1 | SPS2 |
 |---|---|---|---|
 | Unity のライト（Point Light） | 2S ＋ P | 2S | 2S（レガシー互換を OFF にすると 0） |
-| VRChat Contacts（Sender ＋ Receiver） | 0（使わない） | 約 6〜13S ＋ 18P | 約 6〜13S ＋ 12P |
+| VRChat Contacts（Sender ＋ Receiver）の生成総数 | 0（使わない） | 約 6〜13S ＋ 18P | 約 6〜13S ＋ 12P |
+| うちパフォーマンスランクに数えられる数 | 0 | 2S ＋ 10P | 2S ＋ 4P |
 | Mesh Renderer | 0 | 0 | S ＋ P |
 | マテリアルスロット | 0 | 0 | 2S ＋ 2P |
 
 この表の数は**生成される総数**です。たとえば SPS2 の Plug 側 Contacts は 12 個生成されますが、そのうち触覚通知（OGB）用の 8 個は既定で無効なため、実際に稼働時に有効なのは 4 個だけです。SPS1 にはこのような無効化のしくみが無いため、生成数がそのまま有効数になります。実際に有効な数の詳しい内訳は、このあとの「実際の干渉は『同時に有効な Contacts の数』で決まる」を参照してください。
 
 - **ライト**: DPS は Socket に加えて Plug にもライトを出すため、3方式の中で最も多くのライトを使います。SPS1 は Socket のみ、SPS2 は既定では SPS1 と同じですが、レガシー互換を切ればライトを 0 にできます。
-- **Contacts**: DPS は Contacts を使いません（点光源ベース）。SPS1・SPS2 は触覚通知や検出のために Contacts を使います。Socket 側の幅（6〜13）は、ハンドタッチゾーンや触覚通知（OGB）の有無で変わります。Plug 側は SPS1 が 18、SPS2 が 12 で、SPS2 は検出用の Contacts を共有テクスチャ方式へ移したぶん減っています（触覚通知や検出 Sender は両世代で共通のため、Contacts が完全に無くなるわけではありません）。それぞれの内訳は [SPS1 の詳細](/details/sps1/)・[SPS2 の詳細](/details/sps2/) を参照してください。Depth Animations を使うと、両世代とも Contacts はさらに増えます。
+- **Contacts**: DPS は Contacts を使いません（点光源ベース）。SPS1・SPS2 は触覚通知や検出のために Contacts を使います。Socket 側の幅（6〜13）は、ハンドタッチゾーンや触覚通知（OGB）の有無で変わります。Plug 側は SPS1 が 18、SPS2 が 12 で、SPS2 は検出用の Contacts を共有テクスチャ方式へ移したぶん減っています（触覚通知や検出 Sender は両世代で共通のため、Contacts が完全に無くなるわけではありません）。ただし触覚通知（OGB）の Receiver は Local Only で作られ、VRChat はこれをパフォーマンスランクに数えません。そのためランクに効く数は生成総数よりずっと少なく、基本的な使い方では SPS1 が 2S ＋ 10P、SPS2 が 2S ＋ 4P です。それぞれの内訳は [SPS1 の詳細](/details/sps1/)・[SPS2 の詳細](/details/sps2/) を参照してください。Depth Animations を使うと、両世代とも Contacts はさらに増えます。
 - **Mesh Renderer / マテリアルスロット**: SPS2 は Socket・Plug ごとに専用の Mesh Renderer（マテリアル2スロット）を1つ追加します。SPS1・DPS にはこれがありません（既存マテリアルのシェーダーを差し替えるだけでスロット数は変わりません）。
 - **VRAM**: SPS2 が位置伝達に使う共有テクスチャは、実行時にシェーダー間でデータを受け渡すための一時的なもので、アバターに保存されるテクスチャ（画像アセット）ではありません。追加のマーカー/リゾルバのマテリアルもテクスチャを参照しません。そのため、パフォーマンスランクの Texture VRAM には計上されません。
 
@@ -73,7 +74,7 @@ Plug / Socket の数に応じて、次のようなリソースが生成されま
 
 VRChat のアバターパフォーマンスランクは、これらのリソースの量で決まります（具体的な閾値は VRChat 側の仕様によります）。
 
-- **Contacts** は Avatar Dynamics（コンタクト数）に数えられます。多いほどランクが下がりやすく、SPS1 は特に Plug 側の Contacts が多いため不利で、前述の不具合も起きやすくなります。SPS2 は Plug 側の Contacts を減らしています。
+- **Contacts** は Avatar Dynamics（コンタクト数）に数えられます。ただし Local Only の Receiver（触覚通知（OGB）用、SPS2 では Auto 選択用も）は数えられません。数えられるのは Sender と、SPS1 では SPS Plus・スケール補正・Auto 選択の Receiver、両世代では Depth Animations の Receiver です。SPS1 は Plug 1 個あたり 10 個がランクに効くため不利で、前述の不具合も起きやすくなります。SPS2 は Plug 1 個あたり 4 個です。
 - **ライト** は描画（Lights）の統計に数えられます。DPS が最も多く使います。
 - **マテリアルスロット・Mesh Renderer** はそれぞれの統計に数えられます。SPS2 はこれらが Socket・Plug ごとに増えます。
 
