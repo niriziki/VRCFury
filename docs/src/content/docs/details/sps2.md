@@ -33,7 +33,7 @@ SPS2 の「Plug が Socket へ曲がる」というコアな動きは[共有テ�
 | 用途 | 種別 | Plug 側 | Socket 側 | 役割 | 有効になる条件 |
 |---|---|---|---|---|---|
 | 位置ビーコン | Sender | 4×P | 2×S | 「ここに Plug／Socket がある」と発信する。下の Receiver が読む | Plug は常時／Socket はメニュー ON 時 |
-| 触覚通知（OGB） | Receiver | 8×P | (4〜11)×S | 位置ビーコンを検知し、触覚アプリに接触・挿入を伝える | OSC 触覚アプリを起動している間だけ |
+| 触覚通知（OGB） | Receiver | 8×P | (4〜11)×S | 位置ビーコンを検知し、触覚アプリに接触・挿入を伝える | OSC 触覚アプリを起動している間だけ（[Enable SPS Haptics](/spsndmf/ogb-haptics/) をオフにすると生成されない） |
 | Depth Animations | Receiver | (1〜2)×P | (3〜6)×S | 挿入の深さを測り、ブレンドシェイプ等を動かす | [Depth Animations](/spsndmf/socket/) を設定したときだけ |
 | Auto 選択 | Receiver | — | 1（アバターで共有） | 複数の Socket から最寄りを自動で選ぶ | Auto 対象の Socket が2個以上のとき |
 

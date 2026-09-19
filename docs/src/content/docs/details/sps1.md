@@ -34,7 +34,7 @@ SPS1 は位置の伝達を点光源で行いますが、触覚通知や補助的
 | 用途 | 種別 | Plug 側 | Socket 側 | 役割 | 有効になる条件 |
 |---|---|---|---|---|---|
 | 位置ビーコン | Sender | 4×P | 2×S | 「ここに Plug／Socket がある」と発信する。触覚通知・Depth Animations の Receiver が読む | Plug は常時／Socket はメニュー ON 時 |
-| 触覚通知（OGB） | Receiver | 8×P | (4〜11)×S | 位置ビーコンを検知し、触覚アプリに接触・挿入を伝える | 常時（SPS2 のようなゲートが無い） |
+| 触覚通知（OGB） | Receiver | 8×P | (4〜11)×S | 位置ビーコンを検知し、触覚アプリに接触・挿入を伝える | 常時（SPS2 のようなゲートが無い。[Enable SPS Haptics](/spsndmf/ogb-haptics/) をオフにすると生成されない） |
 | 近くの Socket を探す（SPS Plus） | Receiver | 4×P | — | 近くに Socket があるか検知（SPS1 のみ。SPS2 で廃止） | 常時（半径3mと大きい） |
 | スケール補正 | Sender / Receiver | 2×P | — | アバターのスケールを測り挿入の計算を補正する | ほぼ常時 |
 | Depth Animations | Receiver | (1〜2)×P | (3〜6)×S | 挿入の深さを測り、アニメを動かす | Depth Animations を設定したときだけ |

@@ -77,6 +77,8 @@ Activation distance の値の意味：
 
 **ID sent to OGB** は、対応する触覚（ハプティクス）デバイス連携アプリへ送信する識別名です。
 
+**Enable OGB Haptics** は PC 全体の設定の表示で、ここでは変更できません。触覚アプリを使わない場合にオフにできます。詳しくは [OGB Haptics（触覚アプリ連携）](/spsndmf/ogb-haptics/) を参照してください。
+
 ## Advanced（詳細設定）
 
 折りたたまれた詳細設定には、以下のような項目があります。
