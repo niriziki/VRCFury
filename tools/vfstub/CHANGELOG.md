@@ -8,6 +8,17 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1429.0] - 2026-09-21
+### Added / 追加
+- The stub now ships the SPS part of VRCFury's public API (`com.vrcfury.api`): creating a VRCFury Socket from code and adding depth actions to it. Tools that set up SPS through this API (such as SPS2 Setup Assistant's depth action generation) now recognize the stub as capable. The API assembly is only present when SPS for NDMF 1.1429.0 or newer and SPSNDMF Migrator 1.0.0 or newer are installed, because those packages are what actually build the data the API writes. The non-SPS parts of the API (Armature Link, Toggle, Full Controller) are not included.
+
+  VRCFury の公開 API（`com.vrcfury.api`）のうち SPS に関わる部分（コードから VRCFury Socket を作成し、深度アクションを追加する機能）を同梱するようになりました。この API を通じて SPS を設定するツール（SPS2 Setup Assistant の深度アクション生成など）が、スタブ環境を対応済みとして認識します。API が書き込んだデータを実際にビルドするのは SPS for NDMF と SPSNDMF Migrator なので、API のアセンブリは SPS for NDMF 1.1429.0 以上と SPSNDMF Migrator 1.0.0 以上の両方が入っているときだけ有効になります。SPS 以外の API（Armature Link・Toggle・Full Controller）は含みません。
+
+### Changed / 変更
+- The version number now follows the SPS for NDMF release (1.1429.0). The mirrored runtime types are unchanged from 1.1426.2; this keeps tools that read the installed VRCFury version from seeing an older release than the one SPS for NDMF is based on.
+
+  バージョン番号を SPS for NDMF のリリース（1.1429.0）に合わせました。写し取っているランタイム型は 1.1426.2 から変わっていません。導入済みの VRCFury のバージョンを読むツールが、SPS for NDMF の元になっているリリースより古い版だと判断しないようにするためです。
+
 ## [1.1426.2] - 2026-08-28
 ### Changed / 変更
 - Mirrored the runtime types of VRCFury 1.1426.0. The VRCFury Socket legacy type list gained the One-Way Ring option, so scenes and prefabs saved with that VRCFury keep the value while the stub is installed.
