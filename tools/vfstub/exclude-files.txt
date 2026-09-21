@@ -1,0 +1,7 @@
+# Files dropped from the shipped PublicApi (paths relative to com.vrcfury.vrcfury/).
+# The .meta pair is dropped with each file. The transform fails if an entry does not exist.
+# Rule: only API surface that SPSNDMF cannot act on. Anything SPS needs stays.
+PublicApi/FuryUtils.cs
+PublicApi/Components/FuryArmatureLink.cs
+PublicApi/Components/FuryFullController.cs
+PublicApi/Components/FuryToggle.cs

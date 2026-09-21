@@ -6,8 +6,13 @@ var repoRoot = Path.GetFullPath(Path.Combine(scriptDir, "..", ".."));
 
 var sourceRuntimeDir = Path.Combine(repoRoot, "com.vrcfury.vrcfury", "Runtime");
 var sourceRuntimeMeta = Path.Combine(repoRoot, "com.vrcfury.vrcfury", "Runtime.meta");
+var sourceApiDir = Path.Combine(repoRoot, "com.vrcfury.vrcfury", "PublicApi");
+var sourceApiMeta = Path.Combine(repoRoot, "com.vrcfury.vrcfury", "PublicApi.meta");
+var excludeListPath = Path.Combine(scriptDir, "exclude-files.txt");
+var apiAsmdefTemplate = Path.Combine(scriptDir, "com.vrcfury.api.asmdef");
 var outputDir = Path.Combine(repoRoot, "net.nrzk.vfstub");
 var outputRuntimeDir = Path.Combine(outputDir, "Runtime");
+var outputApiDir = Path.Combine(outputDir, "PublicApi");
 
 // --- Configuration ---
 // asmdef name is kept as-is ("VRCFury") so [SerializeReference] type references
@@ -36,6 +41,28 @@ Directory.CreateDirectory(outputDir);
 CopyDirectory(sourceRuntimeDir, outputRuntimeDir);
 File.Copy(sourceRuntimeMeta, Path.Combine(outputDir, "Runtime.meta"));
 
+// --- Step 1b: Copy PublicApi, drop non-SPS surface, swap in the stub asmdef ---
+// The asmdef name and GUID stay identical to upstream so tools that reference
+// com.vrcfury.api by name or GUID resolve it. The template gates the assembly on
+// SPSNDMF + migrator so the API only exists where the written data takes effect.
+Console.WriteLine("Copying PublicApi...");
+CopyDirectory(sourceApiDir, outputApiDir);
+File.Copy(sourceApiMeta, Path.Combine(outputDir, "PublicApi.meta"));
+foreach (var line in File.ReadAllLines(excludeListPath))
+{
+    var rel = line.Trim();
+    if (rel.Length == 0 || rel.StartsWith("#")) continue;
+    var target = Path.Combine(outputDir, rel);
+    if (!File.Exists(target) || !File.Exists(target + ".meta"))
+    {
+        Console.Error.WriteLine($"exclude-files.txt entry not found in source (renamed or removed upstream?): {rel}");
+        return 1;
+    }
+    File.Delete(target);
+    File.Delete(target + ".meta");
+}
+File.Copy(apiAsmdefTemplate, Path.Combine(outputApiDir, "com.vrcfury.api.asmdef"), overwrite: true);
+
 // Upstream folder metas use a legacy minimal format; normalize to Unity's
 // canonical folder meta so shipped packages match what Unity would write.
 foreach (var metaFile in Directory.EnumerateFiles(outputDir, "*.meta", SearchOption.AllDirectories))
@@ -50,7 +77,7 @@ foreach (var metaFile in Directory.EnumerateFiles(outputDir, "*.meta", SearchOpt
 // --- Step 2: Rewrite AddComponentMenu labels in .cs files ---
 Console.WriteLine("Rewriting AddComponentMenu labels...");
 var rewrittenCount = 0;
-foreach (var csFile in Directory.EnumerateFiles(outputRuntimeDir, "*.cs", SearchOption.AllDirectories))
+foreach (var csFile in Directory.EnumerateFiles(outputDir, "*.cs", SearchOption.AllDirectories))
 {
     var original = File.ReadAllText(csFile);
     var updated = original

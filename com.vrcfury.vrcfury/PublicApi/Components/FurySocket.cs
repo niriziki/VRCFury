@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using UnityEngine;
 using VF.Component;
 using VF.Model;
-using VF.Utils;
 
 namespace com.vrcfury.api.Components {
     /** Create an instance using <see cref="FuryComponents"/> */
@@ -33,7 +32,7 @@ namespace com.vrcfury.api.Components {
 
         public FuryActionSet AddDepthActions(Vector2 range, float smoothingSeconds, bool enableSelf = false) {
             var a = new VRCFuryHapticSocket.DepthActionNew {
-                range = range.Ordered(),
+                range = new Vector2(Mathf.Min(range.x, range.y), Mathf.Max(range.x, range.y)),
                 smoothingSeconds = smoothingSeconds,
                 enableSelf = enableSelf
             };

@@ -1,0 +1,32 @@
+{
+    "name": "com.vrcfury.api",
+    "rootNamespace": "com.vrcfury.api",
+    "references": [
+        "VRCFury"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "VFSTUB_API_SPSNDMF",
+        "VFSTUB_API_MIGRATOR"
+    ],
+    "versionDefines": [
+        {
+            "name": "net.nrzk.spsndmf",
+            "expression": "1.1429.0",
+            "define": "VFSTUB_API_SPSNDMF"
+        },
+        {
+            "name": "net.nrzk.spsndmf-migrator",
+            "expression": "1.0.0",
+            "define": "VFSTUB_API_MIGRATOR"
+        }
+    ],
+    "noEngineReferences": false
+}

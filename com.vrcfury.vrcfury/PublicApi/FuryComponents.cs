@@ -7,18 +7,6 @@ namespace com.vrcfury.api {
     [PublicAPI]
     public static class FuryComponents {
 
-        public static FuryArmatureLink CreateArmatureLink(GameObject obj) {
-            return new FuryArmatureLink(obj);
-        }
-
-        public static FuryFullController CreateFullController(GameObject obj) {
-            return new FuryFullController(obj);
-        }
-
-        public static FuryToggle CreateToggle(GameObject obj) {
-            return new FuryToggle(obj);
-        }
-
         public static FurySocket CreateSocket(GameObject obj) {
             return new FurySocket(obj);
         }
