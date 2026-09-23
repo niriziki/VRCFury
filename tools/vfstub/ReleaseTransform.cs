@@ -13,10 +13,13 @@ var sourceApiDir = Path.Combine(sourcePackageDir, "PublicApi");
 var sourceApiMeta = Path.Combine(sourcePackageDir, "PublicApi.meta");
 var excludeListPath = Path.Combine(scriptDir, "exclude-files.txt");
 var editorAvatarsIncludePath = Path.Combine(scriptDir, "editor-avatars-include.txt");
-var stripVfInitPath = Path.Combine(scriptDir, "strip-vfinit.txt");
+var stripLinesPath = Path.Combine(scriptDir, "strip-lines.txt");
+var loadMarkersPath = Path.Combine(scriptDir, "load-markers.txt");
 var apiAsmdefTemplate = Path.Combine(scriptDir, "com.vrcfury.api.asmdef");
+var commonAsmdefTemplate = Path.Combine(scriptDir, "VRCFury-Editor-Common.asmdef");
 var avatarsAsmdefTemplate = Path.Combine(scriptDir, "VRCFury-Editor-Avatars.asmdef");
 var stubEditorDir = Path.Combine(scriptDir, "Editor");
+var packageJsonTemplate = Path.Combine(scriptDir, "package.json");
 var outputDir = Path.Combine(repoRoot, "net.nrzk.vfstub");
 var outputRuntimeDir = Path.Combine(outputDir, "Runtime");
 var outputApiDir = Path.Combine(outputDir, "PublicApi");
@@ -30,20 +33,42 @@ const string NewMenuLabel = "VRCFuryStub";
 
 // Editor resources the stub must not share with SPSNDMF in the same project. Exact tokens;
 // the transform fails if one is not found so an upstream rename cannot silently re-share them.
+var stubPackageGuid = Regex.Match(File.ReadAllText(packageJsonTemplate + ".meta"), @"guid:\s*([0-9a-fA-F]{32})").Groups[1].Value;
 var editorRewrites = new (string Old, string New)[]
 {
     ("\"Tools/VRCFury/", "\"Tools/VRCFury Stub/"),
     ("new Harmony(\"com.vrcfury.harmony\")", "new Harmony(\"com.vrcfury.stub.harmony\")"),
     ("\"ProjectSettings/SpsNdmfPrefabInstanceMode.asset\"", "\"ProjectSettings/VfStubPrefabInstanceMode.asset\""),
     // VRCFPackageUtils.Version: upstream package.json GUID -> the stub's package.json GUID
-    ("GetVersionFromGuid(\"da4518ec79a04334b86a18805f1b8d24\")", "GetVersionFromGuid(\"60179d52e3b0ec4671ce15992ed99c34\")"),
+    ("GetVersionFromGuid(\"da4518ec79a04334b86a18805f1b8d24\")", $"GetVersionFromGuid(\"{stubPackageGuid}\")"),
     ("new Label(\"SPSNDMF\")", "new Label(\"VRCFuryStub\")"),
+};
+
+// Everything in the shipped editor code that runs on load or registers itself globally. The
+// occurrences are pinned in load-markers.txt so an upstream update cannot add one unnoticed.
+var loadMarkers = new (string Name, Regex Pattern)[]
+{
+    ("InitializeOnLoad", new Regex(@"\[InitializeOnLoad(Method)?\]")),
+    ("StaticConstructor", new Regex(@"\bstatic\s+[A-Z]\w*\s*\(\s*\)\s*\{")),
+    ("VFInit", new Regex(@"\[VFInit\]")),
+    ("MenuItem", new Regex(@"\[MenuItem\(")),
+    ("AssetProcessor", new Regex(@"\b(AssetPostprocessor|AssetModificationProcessor)\b")),
+    ("Harmony", new Regex(@"new Harmony\(")),
+    ("FilePath", new Regex(@"\[FilePath\(")),
+    ("SettingsProvider", new Regex(@"\bSettingsProvider\b")),
+    ("DidReloadScripts", new Regex(@"\[DidReloadScripts")),
+    ("BuildCallback", new Regex(@"\b(IVRCSDK\w*Callback|IPreprocessBuild\w*|IProcessScene\w*)\b")),
 };
 
 // --- Validate ---
 if (!Directory.Exists(sourceRuntimeDir))
 {
     Console.Error.WriteLine($"Source Runtime directory not found: {sourceRuntimeDir}");
+    return 1;
+}
+if (stubPackageGuid.Length != 32)
+{
+    Console.Error.WriteLine($"No GUID in {packageJsonTemplate}.meta");
     return 1;
 }
 
@@ -69,11 +94,13 @@ File.Copy(sourceApiMeta, Path.Combine(outputDir, "PublicApi.meta"));
 File.Copy(apiAsmdefTemplate, Path.Combine(outputApiDir, "com.vrcfury.api.asmdef"), overwrite: true);
 
 // --- Step 1c: Copy the inspector: Editor-Common wholesale, Editor-Avatars by include list ---
-// Editor-Common keeps its upstream asmdef; Editor-Avatars gets a template without the
-// SPSNDMF-only references. See .agent-docs/vfstub-editor-bundle-policy.md for what is kept and why.
+// Both asmdef templates gate the assemblies on NDMF + Modular Avatar (the upstream editor code
+// needs them); without those packages the stub falls back to Unity's default inspectors.
+// See .agent-docs/vfstub-editor-bundle-policy.md for what is kept and why.
 Console.WriteLine("Copying Editor-Common...");
 CopyDirectory(Path.Combine(sourcePackageDir, "Editor-Common"), Path.Combine(outputDir, "Editor-Common"));
 File.Copy(Path.Combine(sourcePackageDir, "Editor-Common.meta"), Path.Combine(outputDir, "Editor-Common.meta"));
+File.Copy(commonAsmdefTemplate, Path.Combine(outputDir, "Editor-Common", "VRCFury-Editor-Common.asmdef"), overwrite: true);
 CopyDirectory(Path.Combine(sourcePackageDir, "VrcfResources"), Path.Combine(outputDir, "VrcfResources"));
 File.Copy(Path.Combine(sourcePackageDir, "VrcfResources.meta"), Path.Combine(outputDir, "VrcfResources.meta"));
 foreach (var file in Directory.GetFiles(stubEditorDir))
@@ -152,30 +179,70 @@ for (var i = 0; i < editorRewrites.Length; i++)
     return 1;
 }
 
-// --- Step 2b: Strip [VFInit] from hooks whose Harmony patches SPSNDMF already applies ---
-Console.WriteLine("Stripping [VFInit] from shared Harmony hooks...");
-var stripVfInit = LoadList(stripVfInitPath);
-foreach (var rel in stripVfInit)
+// --- Step 2b: Strip individual lines (attributes that must not register in the stub) ---
+Console.WriteLine("Stripping lines...");
+var stripLines = LoadList(stripLinesPath);
+foreach (var entry in stripLines)
 {
-    var target = Path.Combine(outputDir, rel);
+    var parts = entry.Split(" :: ", 2);
+    if (parts.Length != 2)
+    {
+        Console.Error.WriteLine($"strip-lines.txt entry is not '<path> :: <line>': {entry}");
+        return 1;
+    }
+    var target = Path.Combine(outputDir, parts[0]);
     if (!File.Exists(target))
     {
-        Console.Error.WriteLine($"strip-vfinit.txt entry not found in output: {rel}");
+        Console.Error.WriteLine($"strip-lines.txt entry not found in output: {parts[0]}");
         return 1;
     }
     var lines = File.ReadAllText(target).Split('\n').ToList();
-    var hits = lines.Select((l, i) => (l, i)).Where(x => x.l.Trim() == "[VFInit]").Select(x => x.i).ToList();
+    var hits = lines.Select((l, i) => (l, i)).Where(x => x.l.Trim() == parts[1]).Select(x => x.i).ToList();
     if (hits.Count != 1)
     {
-        Console.Error.WriteLine($"Expected exactly one [VFInit] line in {rel}, found {hits.Count}");
+        Console.Error.WriteLine($"Expected exactly one line '{parts[1]}' in {parts[0]}, found {hits.Count}");
         return 1;
     }
     lines.RemoveAt(hits[0]);
     File.WriteAllText(target, string.Join('\n', lines));
 }
-Console.WriteLine($"  {stripVfInit.Count} files updated");
+Console.WriteLine($"  {stripLines.Count} lines stripped");
 
-// --- Step 2c: Tests (local verification only, never shipped) ---
+// --- Step 2c: Pin everything that runs on load in the shipped editor code ---
+var markerLines = new List<string>();
+foreach (var csFile in Directory.EnumerateFiles(outputDir, "*.cs", SearchOption.AllDirectories).OrderBy(p => p, StringComparer.Ordinal))
+{
+    if (!csFile.Contains(Path.DirectorySeparatorChar + "Editor-")) continue;
+    var code = Regex.Replace(File.ReadAllText(csFile), @"//.*", "");
+    var rel = Path.GetRelativePath(outputDir, csFile).Replace('\\', '/');
+    foreach (var (name, pattern) in loadMarkers)
+    {
+        var count = pattern.Matches(code).Count;
+        if (count > 0) markerLines.Add($"{rel} {name} {count}");
+    }
+}
+if (args.Contains("--update-load-markers"))
+{
+    File.WriteAllLines(loadMarkersPath, new[] { "# Generated by ReleaseTransform.cs --update-load-markers. Review every change: each line is code that runs on load or registers globally." }.Concat(markerLines));
+    Console.WriteLine($"  load-markers.txt updated ({markerLines.Count} entries)");
+}
+else
+{
+    var expected = LoadList(loadMarkersPath);
+    var added = markerLines.Except(expected).ToList();
+    var removed = expected.Except(markerLines).ToList();
+    if (added.Count > 0 || removed.Count > 0)
+    {
+        Console.Error.WriteLine("Load-time markers in the shipped editor code differ from load-markers.txt.");
+        foreach (var l in added) Console.Error.WriteLine($"  + {l}");
+        foreach (var l in removed) Console.Error.WriteLine($"  - {l}");
+        Console.Error.WriteLine("Review them, then run with --update-load-markers.");
+        return 1;
+    }
+    Console.WriteLine($"  {markerLines.Count} load-time markers match load-markers.txt");
+}
+
+// --- Step 2d: Tests (local verification only, never shipped) ---
 if (args.Contains("--include-tests"))
 {
     Console.WriteLine("Copying Tests...");
@@ -190,12 +257,6 @@ if (args.Contains("--include-tests"))
 
 // --- Step 3: Copy package.json template ---
 Console.WriteLine("Copying package.json...");
-var packageJsonTemplate = Path.Combine(scriptDir, "package.json");
-if (!File.Exists(packageJsonTemplate))
-{
-    Console.Error.WriteLine($"package.json template not found at {packageJsonTemplate}");
-    return 1;
-}
 File.Copy(packageJsonTemplate, Path.Combine(outputDir, "package.json"), overwrite: true);
 File.Copy(packageJsonTemplate + ".meta", Path.Combine(outputDir, "package.json.meta"), overwrite: true);
 

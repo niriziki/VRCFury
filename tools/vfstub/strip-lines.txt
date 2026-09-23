@@ -1,0 +1,10 @@
+# Lines removed from shipped files: "<path relative to com.vrcfury.vrcfury/> :: <exact trimmed line>".
+# Each entry must match exactly one line or the transform fails.
+
+# The only Harmony patch VRCFury actually applies (HarmonyUtils.allowedPatchClasses). SPSNDMF already
+# patches the same Unity/VRCSDK methods; the stub must not stack a second copy on them.
+Editor-Common/Hooks/PreventComponentDeletionHook.cs :: [VFInit]
+
+# Hierarchy/"+" menu entries would sit next to SPSNDMF's and read as if VRCFury itself were installed.
+Editor-Common/Menu/SpsMenuItem.cs :: [MenuItem("GameObject/VRCFury/Create SPS Socket", priority = 40)]
+Editor-Common/Menu/SpsMenuItem.cs :: [MenuItem("GameObject/VRCFury/Create SPS Plug", priority = 41)]
