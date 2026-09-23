@@ -74,6 +74,53 @@ namespace VfStubTests {
             Assert.That(Target(vfPlug, PlugTargetPath), Is.EqualTo(vfOtherPlug));
         }
 
+        // Two plugs on one GameObject: each reference must follow its own plug, not the first counterpart found.
+        [Test]
+        public void ReferencesDistinguishPlugsOnTheSameGameObject() {
+            var plugGo = Child("plugs");
+            var first = plugGo.AddComponent<VF.Component.VRCFuryHapticPlug>();
+            var second = plugGo.AddComponent<VF.Component.VRCFuryHapticPlug>();
+            var socketGo = Child("socket");
+            var socket = socketGo.AddComponent<VF.Component.VRCFuryHapticSocket>();
+            socket.depthActions2.Add(new VF.Component.VRCFuryHapticSocket.DepthActionNew {
+                actionSet = new State { actions = { new SpsOnAction { target = second } } }
+            });
+            foreach (var c in new Component[] { first, second, socket }) StubTestUtil.SetLatestVersions(c);
+            second.length = 0.25f;
+
+            var plan = new ConversionPlan();
+            PlugSocketConverter.Plan(root, vrcfToSpsNdmf: true, plan);
+            PlugSocketConverter.Execute(root, vrcfToSpsNdmf: true, plan, new BuildConversionOps());
+            Assert.That(plan.Entries.SelectMany(e => e.Warnings), Is.Empty);
+
+            var target = Target(socketGo.GetComponent(PackageBinding.SpsNdmfSocketType), SocketTargetPath);
+            Assert.That(target, Is.Not.Null);
+            Assert.That(new SerializedObject(target).FindProperty("length").floatValue, Is.EqualTo(0.25f), "the reference followed the wrong plug");
+        }
+
+        // A plug skipped because its counterpart already exists is not part of the conversion, so a reference
+        // to it is reported rather than redirected to the unrelated existing component.
+        [Test]
+        public void ReferenceToASkippedPlugIsReportedNotRedirected() {
+            var plugGo = Child("plug");
+            plugGo.AddComponent(PackageBinding.SpsNdmfPlugType);
+            var skipped = plugGo.AddComponent<VF.Component.VRCFuryHapticPlug>();
+            var socketGo = Child("socket");
+            var socket = socketGo.AddComponent<VF.Component.VRCFuryHapticSocket>();
+            socket.depthActions2.Add(new VF.Component.VRCFuryHapticSocket.DepthActionNew {
+                actionSet = new State { actions = { new SpsOnAction { target = skipped } } }
+            });
+            foreach (var c in new Component[] { skipped, socket }) StubTestUtil.SetLatestVersions(c);
+
+            var plan = new ConversionPlan();
+            PlugSocketConverter.Plan(root, vrcfToSpsNdmf: true, plan);
+            PlugSocketConverter.Execute(root, vrcfToSpsNdmf: true, plan, new BuildConversionOps());
+            var warnings = plan.Entries.SelectMany(e => e.Warnings).ToList();
+            Assert.That(warnings, Has.Count.EqualTo(1));
+            Assert.That(warnings[0].Path, Does.EndWith(".target"));
+            Assert.That(Target(socketGo.GetComponent(PackageBinding.SpsNdmfSocketType), SocketTargetPath), Is.Null);
+        }
+
         [Test]
         public void ReferenceToAPlugOutsideTheConversionIsReportedNotSilentlyDropped() {
             var outside = new GameObject("outside").AddComponent<VF.Component.VRCFuryHapticPlug>();

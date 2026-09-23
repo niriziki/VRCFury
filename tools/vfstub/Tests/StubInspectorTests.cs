@@ -42,6 +42,7 @@ namespace VfStubTests {
         [TearDown]
         public void ClearHost() {
             host.Clear();
+            StubTestUtil.DestroyHostedEditors();
         }
 
         // An Animator is enough for the editors to find the avatar root. A VRCAvatarDescriptor would also make
@@ -183,18 +184,14 @@ namespace VfStubTests {
             var twin = MirrorAvatar(avatar, stub);
             Assert.That(twin, Is.Not.Null);
 
-            // The very first display of a component can differ by a frame in scheduled refreshes (seen once in
-            // GuidWrapperPropertyDrawer's "last seen" label), so it is a warm-up; both sides are compared after it.
             yield return Show(stub);
-            Assert.That(Rendered(), Does.Not.Contain("Failed to render editor"));
+            var stubTree = Normalize(Rendered());
+            Assert.That(stubTree, Does.Not.Contain("Failed to render editor"));
 
             yield return Show(twin);
             var twinTree = Rendered();
             Assert.That(twinTree, Does.Not.Contain("Failed to render editor"));
             Assert.That(StubTestUtil.Host(host, twin).GetType().Namespace, Does.StartWith("SpsNdmf."), "SPSNDMF's component must not pick up the stub's editor");
-
-            yield return Show(stub);
-            var stubTree = Normalize(Rendered());
 
             if (stubTree != twinTree) {
                 System.IO.File.WriteAllText($"Temp/vfstub-tree-{stub.GetType().Name}-stub.txt", stubTree);
