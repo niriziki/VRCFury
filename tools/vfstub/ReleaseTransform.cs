@@ -175,6 +175,19 @@ foreach (var rel in stripVfInit)
 }
 Console.WriteLine($"  {stripVfInit.Count} files updated");
 
+// --- Step 2c: Tests (local verification only, never shipped) ---
+if (args.Contains("--include-tests"))
+{
+    Console.WriteLine("Copying Tests...");
+    CopyDirectory(Path.Combine(scriptDir, "Tests"), Path.Combine(outputDir, "Tests"));
+    File.Copy(Path.Combine(scriptDir, "Tests.meta"), Path.Combine(outputDir, "Tests.meta"));
+    var internalsPath = Path.Combine(outputRuntimeDir, "_InternalsVisibleTo.cs");
+    var internalsText = File.ReadAllText(internalsPath);
+    File.WriteAllText(internalsPath,
+        internalsText + (internalsText.EndsWith("\n") ? "" : "\r\n") +
+        "[assembly: InternalsVisibleTo(\"VRCFuryStub-Tests\")]\r\n");
+}
+
 // --- Step 3: Copy package.json template ---
 Console.WriteLine("Copying package.json...");
 var packageJsonTemplate = Path.Combine(scriptDir, "package.json");
