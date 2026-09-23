@@ -28,6 +28,7 @@ Editor-Common/Menu/SpsDevModeMenuItem.cs MenuItem 1
 Editor-Common/Menu/SpsMenuItem.cs MenuItem 2
 Editor-Common/Menu/UseInUploadMenuItem.cs MenuItem 1
 Editor-Common/Prefabs/PrefabInstanceMode.cs FilePath 1
+Editor-Common/Prefabs/PrefabInstanceMode.cs AssetProcessor 1
 Editor-Common/Prefabs/PrefabMigration.cs MenuItem 4
 Editor-Common/Utils/Controller/VFLayer.cs VFInit 1
 Editor-Common/Utils/DirtyUtils.cs VFInit 1

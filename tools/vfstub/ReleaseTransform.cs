@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
 // --- Paths (relative to this script file) ---
@@ -16,8 +18,6 @@ var editorAvatarsIncludePath = Path.Combine(scriptDir, "editor-avatars-include.t
 var stripLinesPath = Path.Combine(scriptDir, "strip-lines.txt");
 var loadMarkersPath = Path.Combine(scriptDir, "load-markers.txt");
 var apiAsmdefTemplate = Path.Combine(scriptDir, "com.vrcfury.api.asmdef");
-var commonAsmdefTemplate = Path.Combine(scriptDir, "VRCFury-Editor-Common.asmdef");
-var avatarsAsmdefTemplate = Path.Combine(scriptDir, "VRCFury-Editor-Avatars.asmdef");
 var stubEditorDir = Path.Combine(scriptDir, "Editor");
 var packageJsonTemplate = Path.Combine(scriptDir, "package.json");
 var outputDir = Path.Combine(repoRoot, "net.nrzk.vfstub");
@@ -38,6 +38,8 @@ var editorRewrites = new (string Old, string New)[]
 {
     ("\"Tools/VRCFury/", "\"Tools/VRCFury Stub/"),
     ("new Harmony(\"com.vrcfury.harmony\")", "new Harmony(\"com.vrcfury.stub.harmony\")"),
+    // UnpatchAll() without an id removes every owner's patches, SPSNDMF's included.
+    ("harmony.UnpatchAll();", "harmony.UnpatchAll(harmony.Id);"),
     ("\"ProjectSettings/SpsNdmfPrefabInstanceMode.asset\"", "\"ProjectSettings/VfStubPrefabInstanceMode.asset\""),
     // VRCFPackageUtils.Version: upstream package.json GUID -> the stub's package.json GUID
     ("GetVersionFromGuid(\"da4518ec79a04334b86a18805f1b8d24\")", $"GetVersionFromGuid(\"{stubPackageGuid}\")"),
@@ -48,16 +50,15 @@ var editorRewrites = new (string Old, string New)[]
 // occurrences are pinned in load-markers.txt so an upstream update cannot add one unnoticed.
 var loadMarkers = new (string Name, Regex Pattern)[]
 {
-    ("InitializeOnLoad", new Regex(@"\[InitializeOnLoad(Method)?\]")),
-    ("StaticConstructor", new Regex(@"\bstatic\s+[A-Z]\w*\s*\(\s*\)\s*\{")),
-    ("VFInit", new Regex(@"\[VFInit\]")),
-    ("MenuItem", new Regex(@"\[MenuItem\(")),
-    ("AssetProcessor", new Regex(@"\b(AssetPostprocessor|AssetModificationProcessor)\b")),
+    ("InitializeOnLoad", new Regex(@"\[(\w+\.)*(InitializeOnLoad\w*|InitializeOnEnterPlayMode|RuntimeInitializeOnLoadMethod)\b")),
+    ("StaticConstructor", new Regex(@"\bstatic\s+[A-Z]\w*\s*\(\s*\)\s*(\{|=>)")),
+    ("VFInit", new Regex(@"\[(\w+\.)*VFInit\b")),
+    ("MenuItem", new Regex(@"\[(\w+\.)*MenuItem\b")),
+    ("DidReloadScripts", new Regex(@"\[(\w+\.)*DidReloadScripts\b")),
+    ("FilePath", new Regex(@"\[(\w+\.)*FilePath\b")),
+    ("AssetProcessor", new Regex(@"\b(AssetPostprocessor|AssetModificationProcessor|ScriptableSingleton|SettingsProvider|MaterialPropertyDrawer|ShaderGUI)\b")),
     ("Harmony", new Regex(@"new Harmony\(")),
-    ("FilePath", new Regex(@"\[FilePath\(")),
-    ("SettingsProvider", new Regex(@"\bSettingsProvider\b")),
-    ("DidReloadScripts", new Regex(@"\[DidReloadScripts")),
-    ("BuildCallback", new Regex(@"\b(IVRCSDK\w*Callback|IPreprocessBuild\w*|IProcessScene\w*)\b")),
+    ("BuildCallback", new Regex(@"\b(IVRCSDK\w*Callback|IPreprocessBuild\w*|IPostprocessBuild\w*|IProcessScene\w*|IPreprocessShaders)\b")),
 };
 
 // --- Validate ---
@@ -94,13 +95,13 @@ File.Copy(sourceApiMeta, Path.Combine(outputDir, "PublicApi.meta"));
 File.Copy(apiAsmdefTemplate, Path.Combine(outputApiDir, "com.vrcfury.api.asmdef"), overwrite: true);
 
 // --- Step 1c: Copy the inspector: Editor-Common wholesale, Editor-Avatars by include list ---
-// Both asmdef templates gate the assemblies on NDMF + Modular Avatar (the upstream editor code
+// Both asmdefs are the upstream ones gated on NDMF + Modular Avatar (the upstream editor code
 // needs them); without those packages the stub falls back to Unity's default inspectors.
 // See .agent-docs/vfstub-editor-bundle-policy.md for what is kept and why.
 Console.WriteLine("Copying Editor-Common...");
 CopyDirectory(Path.Combine(sourcePackageDir, "Editor-Common"), Path.Combine(outputDir, "Editor-Common"));
 File.Copy(Path.Combine(sourcePackageDir, "Editor-Common.meta"), Path.Combine(outputDir, "Editor-Common.meta"));
-File.Copy(commonAsmdefTemplate, Path.Combine(outputDir, "Editor-Common", "VRCFury-Editor-Common.asmdef"), overwrite: true);
+GateAsmdef(Path.Combine(outputDir, "Editor-Common", "VRCFury-Editor-Common.asmdef"), dropReference: null);
 CopyDirectory(Path.Combine(sourcePackageDir, "VrcfResources"), Path.Combine(outputDir, "VrcfResources"));
 File.Copy(Path.Combine(sourcePackageDir, "VrcfResources.meta"), Path.Combine(outputDir, "VrcfResources.meta"));
 foreach (var file in Directory.GetFiles(stubEditorDir))
@@ -118,10 +119,17 @@ foreach (var rel in avatarsInclude)
     }
     CopyWithParentMetas(sourcePackageDir, outputDir, rel);
 }
-File.Copy(avatarsAsmdefTemplate, Path.Combine(outputDir, "Editor-Avatars", "VRCFury-Editor-Avatars.asmdef"));
-File.Copy(Path.Combine(sourcePackageDir, "Editor-Avatars", "VRCFury-Editor-Avatars.asmdef.meta"),
-    Path.Combine(outputDir, "Editor-Avatars", "VRCFury-Editor-Avatars.asmdef.meta"));
+foreach (var suffix in new[] { "", ".meta" })
+    File.Copy(Path.Combine(sourcePackageDir, "Editor-Avatars", "VRCFury-Editor-Avatars.asmdef" + suffix),
+        Path.Combine(outputDir, "Editor-Avatars", "VRCFury-Editor-Avatars.asmdef" + suffix));
+GateAsmdef(Path.Combine(outputDir, "Editor-Avatars", "VRCFury-Editor-Avatars.asmdef"), dropReference: "VRCFury-Runtime-SpsNdmf");
 Console.WriteLine($"  {avatarsInclude.Count} files included");
+// Editor-Avatars files left out are excluded files too: a shipped file that names one of their
+// types would only fail when Unity compiles the stub.
+var avatarsExcluded = Directory.EnumerateFiles(Path.Combine(sourcePackageDir, "Editor-Avatars"), "*.cs", SearchOption.AllDirectories)
+    .Select(p => Path.GetRelativePath(sourcePackageDir, p).Replace('\\', '/'))
+    .Where(rel => !avatarsInclude.Contains(rel))
+    .ToList();
 
 // --- Step 1d: Drop excluded files ---
 var excludedFiles = LoadList(excludeListPath);
@@ -212,8 +220,7 @@ Console.WriteLine($"  {stripLines.Count} lines stripped");
 var markerLines = new List<string>();
 foreach (var csFile in Directory.EnumerateFiles(outputDir, "*.cs", SearchOption.AllDirectories).OrderBy(p => p, StringComparer.Ordinal))
 {
-    if (!csFile.Contains(Path.DirectorySeparatorChar + "Editor-")) continue;
-    var code = Regex.Replace(File.ReadAllText(csFile), @"//.*", "");
+    var code = StripComments(File.ReadAllText(csFile));
     var rel = Path.GetRelativePath(outputDir, csFile).Replace('\\', '/');
     foreach (var (name, pattern) in loadMarkers)
     {
@@ -269,13 +276,42 @@ if (File.Exists(changelogTemplate))
     File.Copy(changelogTemplate + ".meta", Path.Combine(outputDir, "CHANGELOG.md.meta"), overwrite: true);
 }
 
-CheckExcludedTypesUnreferenced(sourcePackageDir, outputDir, excludedFiles);
+CheckExcludedTypesUnreferenced(sourcePackageDir, outputDir, excludedFiles.Concat(avatarsExcluded).ToList());
 
 Console.WriteLine();
 Console.WriteLine("Done.");
 return 0;
 
 // ============================================================
+
+// The upstream asmdef plus the stub's gate: the assembly only exists when NDMF and Modular Avatar
+// are installed. Editing the upstream JSON keeps its references and version defines current.
+void GateAsmdef(string path, string? dropReference)
+{
+    var json = JsonNode.Parse(File.ReadAllText(path).TrimStart('﻿'))!.AsObject();
+    var references = json["references"]!.AsArray();
+    if (dropReference != null)
+    {
+        var node = references.FirstOrDefault(r => r!.GetValue<string>() == dropReference);
+        if (node == null)
+        {
+            Console.Error.WriteLine($"{Path.GetFileName(path)}: reference {dropReference} not found upstream (changed?)");
+            Environment.Exit(1);
+        }
+        references.Remove(node);
+    }
+    var constraints = json["defineConstraints"]!.AsArray();
+    var versionDefines = json["versionDefines"]!.AsArray();
+    foreach (var (package, define) in new[] { ("nadena.dev.ndmf", "VFSTUB_HAS_NDMF"), ("nadena.dev.modular-avatar", "VFSTUB_HAS_MA") })
+    {
+        constraints.Add((JsonNode)JsonValue.Create(define));
+        versionDefines.Add((JsonNode)new JsonObject { ["name"] = JsonValue.Create(package), ["expression"] = JsonValue.Create(""), ["define"] = JsonValue.Create(define) });
+    }
+    File.WriteAllText(path, json.ToJsonString(new JsonSerializerOptions { WriteIndented = true }) + "\n");
+}
+
+string StripComments(string code) =>
+    Regex.Replace(Regex.Replace(code, @"/\*.*?\*/", "", RegexOptions.Singleline), @"//.*", "");
 
 List<string> LoadList(string path) =>
     File.ReadAllLines(path)
@@ -321,7 +357,7 @@ void CheckExcludedTypesUnreferenced(string source, string dest, List<string> exc
     var failed = false;
     foreach (var cs in Directory.EnumerateFiles(dest, "*.cs", SearchOption.AllDirectories))
     {
-        var text = File.ReadAllText(cs);
+        var text = StripComments(File.ReadAllText(cs));
         foreach (var (type, file) in excludedTypes)
         {
             if (Regex.IsMatch(text, $@"\b{Regex.Escape(type)}\b"))
