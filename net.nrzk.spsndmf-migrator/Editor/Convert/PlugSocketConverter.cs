@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Nrzk.SpsMigrator.Copy;
 using Nrzk.SpsMigrator.Reflection;
@@ -44,23 +45,27 @@ namespace Nrzk.SpsMigrator.Convert {
 
             if (srcPlug == null || dstPlug == null || srcSock == null || dstSock == null) return;
 
-            ExecuteOne(root, srcPlug, dstPlug, plan, ops);
-            ExecuteOne(root, srcSock, dstSock, plan, ops);
+            // Every counterpart is created before any field is copied, so a reference from one converted
+            // component to another (SpsOnAction.target) resolves regardless of conversion order.
+            var pending = new List<(Component src, Component dst, ConversionEntry entry)>();
+            Create(root, srcPlug, dstPlug, plan, ops, pending);
+            Create(root, srcSock, dstSock, plan, ops, pending);
+            foreach (var (src, dst, entry) in pending) {
+                var ctx = new CopyContext();
+                StructuralFieldCopier.CopyFields(src, dst, ctx, src.gameObject.name);
+                entry.Warnings.AddRange(ctx.Warnings);
+            }
+            foreach (var (src, _, _) in pending) ops.Destroy(src);
         }
 
-        private static void ExecuteOne(GameObject root, Type srcType, Type dstType, ConversionPlan plan, IConversionOps ops) {
+        private static void Create(GameObject root, Type srcType, Type dstType, ConversionPlan plan, IConversionOps ops,
+            List<(Component, Component, ConversionEntry)> pending) {
             foreach (var src in root.GetComponentsInChildren(srcType, true)) {
                 var go = src.gameObject;
                 var entry = plan.Entries.Find(e => e.Target == go && e.SourceTypeName == srcType.FullName);
                 if (entry == null) continue;
                 if (entry.Outcome == ConversionOutcome.Skipped) continue;
-
-                var dst = ops.AddComponent(go, dstType);
-                var ctx = new CopyContext();
-                StructuralFieldCopier.CopyFields(src, dst, ctx, go.name);
-                entry.Warnings.AddRange(ctx.Warnings);
-
-                ops.Destroy(src);
+                pending.Add((src, ops.AddComponent(go, dstType), entry));
             }
         }
     }

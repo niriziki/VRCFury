@@ -83,6 +83,12 @@ namespace Nrzk.SpsMigrator.Copy {
 
             if (typeof(UObject).IsAssignableFrom(targetType)) {
                 if (targetType.IsInstanceOfType(value)) return value;
+                // A reference to a component of the other package (e.g. SpsOnAction.target): its converted
+                // counterpart lives on the same GameObject.
+                if (value is Component referenced && referenced != null && typeof(Component).IsAssignableFrom(targetType)) {
+                    var counterpart = referenced.gameObject.GetComponent(targetType);
+                    if (counterpart != null) return counterpart;
+                }
                 ctx.Warnings.Add(new CopyWarning(path, $"UnityObject type mismatch {srcType.Name} -> {targetType.Name}"));
                 return null;
             }
