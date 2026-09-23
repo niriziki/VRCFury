@@ -1,0 +1,6 @@
+# Shipped files whose [VFInit] line is removed (paths relative to com.vrcfury.vrcfury/).
+# These apply process-wide Harmony patches that SPSNDMF already applies; the types stay for their other members.
+Editor-Common/Hooks/PreventComponentDeletionHook.cs
+Editor-Common/Hooks/UnityFixes/SkipAssetPostprocessorsForVrcfAssetWritesHook.cs
+Editor-Common/Hooks/UnityFixes/SuppressMaterialPropertyDrawersHook.cs
+Editor-Common/Hooks/UnityFixes/SpsSelectionOutlineHook.cs
