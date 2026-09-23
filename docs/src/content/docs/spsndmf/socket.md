@@ -39,6 +39,28 @@ Mode の選択肢：
 
 Radius Offset と Guided Path は、SPS2（1.x）系のコンポーネントで追加された設定です。SPS1（0.1.x）系のコンポーネントには存在しません。
 
+## Legacy Compatibility（レガシー互換）
+
+**Enable Legacy Compatibility**（既定で ON）をオンにすると、SPS1 / DPS / TPS の Plug が目印として使う点光源をこの Socket からも出力します。これにより、旧方式の Plug もこの Socket に向かって変形できます。SPS2 の Plug はこの点光源を使わないため、旧方式の Plug と組み合わせる予定がなければオフにできます（点光源の数については [バージョンごとの違い](/spsndmf/versions/#リソース消費とパフォーマンスランク) を参照）。
+
+オンにすると以下の設定が表示されます。
+
+| 設定 | 内容 |
+|---|---|
+| Override Legacy Type | 旧方式の Plug に伝える Socket の種類（Hole / Ring / One-Way Ring）を、上の Mode とは別に指定します。オフの場合は Mode の判定結果がそのまま使われます。 |
+| Override Legacy Offset | 点光源を置く位置を、Socket からの相対位置（Legacy Entry Offset）で手動指定します。オフの場合は下記の自動配置になります。 |
+
+### Radius Offset が旧方式の Plug に与える影響
+
+Radius Offset は SPS2 の Plug と旧方式の Plug で効き方が異なります。
+
+| Plug の方式 | Radius Offset ON のときの動き |
+|---|---|
+| SPS2（1.x） | Plug 自身の太さ（半径）の分だけ、向かう先を Socket の上方向にずらします。太さは Plug ごとに違うため、ずれ幅も Plug ごとに変わります。 |
+| SPS1 / DPS / TPS | 点光源の位置を Socket の上方向に **0.03（Socket のローカル単位）** だけずらします。旧方式では Socket 側が Plug の太さを知る手段がないため、固定値で近似しています。 |
+
+Override Legacy Offset をオンにすると、旧方式向けのこの自動オフセットは使われず、Legacy Entry Offset の値がそのまま点光源の位置になります（SPS2 の Plug への効き方は変わりません）。たとえば Legacy Entry Offset を `(0, 0.03, 0)` にすると Radius Offset ON の自動配置と同じになり、`(0, 0, 0)` にすると Radius Offset を SPS2 の Plug にだけ効かせて旧方式の Plug には効かせない、という使い方ができます。
+
 ## メニュートグルと同時利用
 
 **Enable Menu Toggle** をオンにすると、この Socket をアバターのメニューから ON / OFF できるようになります。
