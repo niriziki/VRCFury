@@ -70,7 +70,9 @@ namespace Nrzk.SpsMigrator.Copy {
 
             var srcType = value.GetType();
 
-            if (srcType == targetType) return value;
+            // Lists, arrays and plain classes are rebuilt even when the types match, so source and target never
+            // share a mutable instance (the stub inspector keeps both alive at once).
+            if (srcType == targetType && (srcType.IsValueType || srcType == typeof(string) || value is UObject)) return value;
 
             if (targetType.IsPrimitive || targetType == typeof(string) || targetType == typeof(decimal)) {
                 return System.Convert.ChangeType(value, targetType);
