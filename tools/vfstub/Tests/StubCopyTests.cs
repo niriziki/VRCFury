@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Nrzk.SpsMigrator.Copy;
 using UnityEngine;
+using UnityEngine.TestTools;
 using VF.Component;
 using VF.Model;
 using VF.Model.Feature;
@@ -140,19 +142,21 @@ namespace VfStubTests {
         // Showing a component upgrades legacy data in place and lets the editors normalize it. The stub does this
         // with its own (upstream) code; the result must be what SPSNDMF's inspector produces for the same data, or a
         // component shown in the stub and one converted by the migrator would diverge.
-        [TestCase(typeof(VF.Component.VRCFuryHapticSocket))]
-        [TestCase(typeof(VF.Component.VRCFuryHapticPlug))]
-        public void LegacyDataIsUpgradedOnDisplayTheSameWayAsSpsNdmf(Type componentType) {
+        [UnityTest]
+        public IEnumerator LegacyDataIsUpgradedOnDisplayTheSameWayAsSpsNdmf([Values(typeof(VF.Component.VRCFuryHapticSocket), typeof(VF.Component.VRCFuryHapticPlug))] Type componentType) {
             using (var fuzzer = new Fuzzer(7)) {
                 var stub = FuzzedStub(fuzzer, componentType, null, version: 0);
                 var twin = StubTestUtil.CopyToTwin(stub, NewObject("twin"), out var ctx);
                 Assert.That(ctx.Warnings, Is.Empty, string.Join("\n", ctx.Warnings));
 
+                // Bound fields write their normalizations on later frames, so each side gets the same settle time.
                 var host = StubTestUtil.OpenHost(out var window);
                 try {
                     StubTestUtil.Host(host, twin);
+                    for (var i = 0; i < 6; i++) yield return null;
                     host.Clear();
                     StubTestUtil.Host(host, stub);
+                    for (var i = 0; i < 6; i++) yield return null;
                     host.Clear();
                 } finally {
                     StubTestUtil.DestroyHostedEditors();

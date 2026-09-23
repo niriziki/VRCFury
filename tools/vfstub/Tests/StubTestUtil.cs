@@ -223,13 +223,16 @@ namespace VfStubTests {
         }
 
         // Structural description of a rendered inspector. The version/debug line differs between packages by design.
+        // An empty label's visibility is left out: GuidWrapperPropertyDrawer hides its "last seen" label from a
+        // value-changed callback that the initial binding fires on some frames and not others, on either side.
         public static string Describe(VisualElement root) {
             var lines = new List<string>();
             void Rec(VisualElement e, int depth) {
                 if (e.ClassListContains("vfVersionLabel")) return;
                 var text = e is TextElement te ? te.text : "";
                 var binding = e is IBindable b ? b.bindingPath : "";
-                lines.Add($"{new string(' ', depth)}{e.GetType().Name}|{text}|{binding}|{e.enabledInHierarchy}|{e.resolvedStyle.display}");
+                var display = e is TextElement && text == "" ? "-" : e.resolvedStyle.display.ToString();
+                lines.Add($"{new string(' ', depth)}{e.GetType().Name}|{text}|{binding}|{e.enabledInHierarchy}|{display}");
                 foreach (var c in e.Children()) Rec(c, depth + 1);
             }
             Rec(root, 0);
