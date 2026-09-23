@@ -52,6 +52,7 @@ namespace Nrzk.SpsMigrator.Convert {
             Create(root, srcSock, dstSock, plan, ops, pending);
             foreach (var (src, dst, entry) in pending) {
                 var ctx = new CopyContext();
+                foreach (var (s, d, _) in pending) ctx.Counterparts[s] = d;
                 StructuralFieldCopier.CopyFields(src, dst, ctx, src.gameObject.name);
                 entry.Warnings.AddRange(ctx.Warnings);
             }

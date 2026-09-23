@@ -5,6 +5,10 @@ using System.Reflection;
 namespace Nrzk.SpsMigrator.Copy {
     internal sealed class CopyContext {
         public readonly List<CopyWarning> Warnings = new List<CopyWarning>();
+        // Components being converted in the same run: a reference to a source component is redirected to its
+        // counterpart. Anything else that cannot be assigned as-is is reported and dropped.
+        public readonly Dictionary<UnityEngine.Object, UnityEngine.Object> Counterparts
+            = new Dictionary<UnityEngine.Object, UnityEngine.Object>();
         private readonly Dictionary<(Type src, string name), Type> _targetTypeCache
             = new Dictionary<(Type, string), Type>();
 

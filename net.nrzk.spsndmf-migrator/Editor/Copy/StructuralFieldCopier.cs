@@ -70,9 +70,11 @@ namespace Nrzk.SpsMigrator.Copy {
 
             var srcType = value.GetType();
 
-            // Lists, arrays and plain classes are rebuilt even when the types match, so source and target never
-            // share a mutable instance (the stub inspector keeps both alive at once).
-            if (srcType == targetType && (srcType.IsValueType || srcType == typeof(string) || value is UObject)) return value;
+            // Lists, arrays and plain model classes are rebuilt even when the types match, so source and target
+            // never share a mutable instance. Unity's own classes (AnimationCurve, Gradient) hold native handles
+            // and are not walkable by reflection, so they are assigned as-is.
+            if (srcType == targetType && (srcType.IsValueType || srcType == typeof(string) || value is UObject
+                                          || srcType.Namespace?.StartsWith("UnityEngine") == true)) return value;
 
             if (targetType.IsPrimitive || targetType == typeof(string) || targetType == typeof(decimal)) {
                 return System.Convert.ChangeType(value, targetType);
@@ -85,12 +87,8 @@ namespace Nrzk.SpsMigrator.Copy {
 
             if (typeof(UObject).IsAssignableFrom(targetType)) {
                 if (targetType.IsInstanceOfType(value)) return value;
-                // A reference to a component of the other package (e.g. SpsOnAction.target): its converted
-                // counterpart lives on the same GameObject.
-                if (value is Component referenced && referenced != null && typeof(Component).IsAssignableFrom(targetType)
-                    && ctx.ResolveTargetType(referenced.GetType(), targetType) == targetType) {
-                    var counterpart = referenced.gameObject.GetComponent(targetType);
-                    if (counterpart != null) return counterpart;
+                if (ctx.Counterparts.TryGetValue((UObject)value, out var counterpart) && targetType.IsInstanceOfType(counterpart)) {
+                    return counterpart;
                 }
                 ctx.Warnings.Add(new CopyWarning(path, $"UnityObject type mismatch {srcType.Name} -> {targetType.Name}"));
                 return null;
