@@ -7,8 +7,10 @@
         "VRCFury",
         "VRCFury-Editor-Common",
         "VRCFury-Editor-Avatars",
+        "VRCFury-Runtime-SpsNdmf",
         "nadena.dev.modular-avatar.core",
-        "nadena.dev.ndmf"
+        "nadena.dev.ndmf",
+        "nadena.dev.ndmf.vrchat"
     ],
     "includePlatforms": [
         "Editor"
