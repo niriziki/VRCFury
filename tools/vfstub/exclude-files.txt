@@ -1,7 +1,23 @@
-# Files dropped from the shipped PublicApi (paths relative to com.vrcfury.vrcfury/).
-# The .meta pair is dropped with each file. The transform fails if an entry does not exist.
-# Rule: only API surface that SPSNDMF cannot act on. Anything SPS needs stays.
+# Files dropped from the shipped PublicApi and Editor-Common (paths relative to com.vrcfury.vrcfury/).
+# The .meta pair is dropped with each file. The transform fails if an entry does not exist,
+# or if a shipped file still references a type declared in an excluded file.
+
+# PublicApi: only API surface that SPSNDMF cannot act on. Anything SPS needs stays.
 PublicApi/FuryUtils.cs
 PublicApi/Components/FuryArmatureLink.cs
 PublicApi/Components/FuryFullController.cs
 PublicApi/Components/FuryToggle.cs
+
+# Editor-Common: outside the Plug/Socket inspector closure. Same set SPSNDMF drops.
+Editor-Common/Hooks/VrcsdkFixes/FixVrcsdkSavingEverythingOnDomainReloadHook.cs
+Editor-Common/Utils/AnimatorControllerToolHelper.cs
+Editor-Common/Hooks/UnityFixes/InputFieldOnValidateDuringRefreshHook.cs
+Editor-Common/Hooks/DisablePluginsWhenNotUploadingHook.cs
+Editor-Common/Menu/SceneDirtyLoggerMenuItem.cs
+
+# Editor-Common: menus that would duplicate SPSNDMF's under Tools/VRCFury Stub/, and the
+# upstream VRCFury (feature container) editor, replaced by tools/vfstub/Editor/VRCFuryStubEditor.cs.
+Editor-Common/Menu/CleanupRedundantObjectReferenceOverridesMenuItem.cs
+Editor-Common/Menu/LogExternalSceneReferencesMenuItem.cs
+Editor-Common/Menu/VfInitTimingLoggerMenuItem.cs
+Editor-Common/Inspector/VRCFuryEditor.cs

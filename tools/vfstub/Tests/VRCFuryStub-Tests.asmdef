@@ -1,0 +1,61 @@
+{
+    "name": "VRCFuryStub-Tests",
+    "rootNamespace": "",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "VRCFury",
+        "VRCFury-Editor-Common",
+        "VRCFury-Editor-Avatars",
+        "Nrzk.SpsMigrator.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "VRCSDKBase.dll",
+        "VRCSDK3A.dll",
+        "0Harmony.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS",
+        "UNITY_TEST_FRAMEWORK_PRESENT",
+        "VFSTUB_HAS_NDMF",
+        "VFSTUB_HAS_MA",
+        "VFSTUB_TESTS_SPSNDMF",
+        "VFSTUB_TESTS_MIGRATOR"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.test-framework",
+            "expression": "",
+            "define": "UNITY_TEST_FRAMEWORK_PRESENT"
+        },
+        {
+            "name": "nadena.dev.ndmf",
+            "expression": "",
+            "define": "VFSTUB_HAS_NDMF"
+        },
+        {
+            "name": "nadena.dev.modular-avatar",
+            "expression": "",
+            "define": "VFSTUB_HAS_MA"
+        },
+        {
+            "name": "net.nrzk.spsndmf",
+            "expression": "",
+            "define": "VFSTUB_TESTS_SPSNDMF"
+        },
+        {
+            "name": "net.nrzk.spsndmf-migrator",
+            "expression": "",
+            "define": "VFSTUB_TESTS_MIGRATOR"
+        }
+    ],
+    "noEngineReferences": false
+}
