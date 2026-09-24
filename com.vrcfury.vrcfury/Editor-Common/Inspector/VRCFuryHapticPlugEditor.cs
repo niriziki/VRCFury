@@ -546,6 +546,7 @@ namespace VF.Inspector {
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected | GizmoType.Pickable)]
         //[DrawGizmo(GizmoType.Selected | GizmoType.Active | GizmoType.InSelectionHierarchy)]
         static void DrawGizmo(VRCFuryHapticPlug plug, GizmoType gizmoType) {
+            if (!VF.Menu.SpsGizmoSelectedOnlyMenuItem.ShouldDraw(gizmoType)) return;
             var transform = plug.owner();
             
             var cache = gizmoCache.GetOrCreateValue(plug);
