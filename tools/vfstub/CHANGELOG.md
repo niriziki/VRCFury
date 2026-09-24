@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1429.1-beta.2] - 2026-09-25
+### Changed / 変更
+- The scene view now shows the gizmos of **SPS Plug** and **SPS Socket** only for the selected object and its children, instead of for every plug and socket in the scene. To show them all the time as in VRCFury, uncheck **Tools/VRCFury Stub/Settings/Show SPS Gizmos Only When Selected**. This setting is shared with SPS for NDMF.
+
+  Scene ビューで **SPS Plug** と **SPS Socket** のギズモを、シーン内のすべてではなく、選択しているオブジェクトとその子にあるものだけ表示するようにしました。VRCFury と同じく常に表示したい場合は、**Tools/VRCFury Stub/Settings/Show SPS Gizmos Only When Selected** のチェックを外してください。この設定は SPS for NDMF と共通です。
+
 ## [1.1429.1-beta.1] - 2026-09-24
 ### Added / 追加
 - **SPS Plug** and **SPS Socket** components now open in the same inspector as in VRCFury, and can be edited in place: every option, the depth / active / post-bake actions, the scene gizmos and the prefab-instance handling behave as they do in VRCFury. The header reads "VRCFuryStub" instead of "VRCFury". This needs NDMF and Modular Avatar to be installed (the same packages SPS for NDMF needs); without them the stub keeps Unity's default inspector as before.

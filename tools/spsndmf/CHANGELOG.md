@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1429.2] - 2026-09-25
+### Changed / 変更
+- The scene view now shows the gizmos of **SPS Plug** and **SPS Socket** only for the selected object and its children, instead of for every plug and socket in the scene. To show them all the time as in VRCFury, uncheck **Tools/SPSNDMF/Settings/Show SPS Gizmos Only When Selected**.
+
+  Scene ビューで **SPS Plug** と **SPS Socket** のギズモを、シーン内のすべてではなく、選択しているオブジェクトとその子にあるものだけ表示するようにしました。VRCFury と同じく常に表示したい場合は、**Tools/SPSNDMF/Settings/Show SPS Gizmos Only When Selected** のチェックを外してください。
+
 ## [1.1429.1] - 2026-09-24
 ### Fixed / 修正
 - Fixed the **Record** button of an **Animation Clip** action leaving the avatar disabled, and its "(VRCFury Recording Copy)" object in the scene, after the recording stopped. As in VRCFury, the avatar is re-enabled and the copy removed when recording ends, and the recorded clip is saved with paths relative to the component's object.
