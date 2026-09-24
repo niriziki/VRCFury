@@ -8,6 +8,23 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1429.1-beta.1] - 2026-09-24
+### Added / 追加
+- **SPS Plug** and **SPS Socket** components now open in the same inspector as in VRCFury, and can be edited in place: every option, the depth / active / post-bake actions, the scene gizmos and the prefab-instance handling behave as they do in VRCFury. The header reads "VRCFuryStub" instead of "VRCFury". This needs NDMF and Modular Avatar to be installed (the same packages SPS for NDMF needs); without them the stub keeps Unity's default inspector as before.
+
+  **SPS Plug** と **SPS Socket** のコンポーネントを、VRCFury と同じインスペクターで表示し、そのまま編集できるようになりました。各オプション、Depth / Active / Post-Bake のアクション、シーンのギズモ、プレハブインスタンスの扱いはすべて VRCFury と同じです。ヘッダーの表記は「VRCFury」ではなく「VRCFuryStub」になります。NDMF と Modular Avatar のインストールが必要です（SPS for NDMF が必要とするものと同じ）。入っていない場合は、これまでどおり Unity の標準インスペクターのままです。
+- Other VRCFury components show their settings as plain fields instead of the "not available in this type of project" message. **Global Collider** and **Haptic Touch** use their VRCFury inspectors.
+
+  その他の VRCFury コンポーネントは、「not available in this type of project」の表示ではなく、設定を素のフィールドとして表示するようになりました。**Global Collider** と **Haptic Touch** は VRCFury のインスペクターで表示されます。
+- A **Tools/VRCFury Stub** menu with **Create Socket**, **Create Plug**, **Allow Editing on Prefab Instances**, **Migrate Project Data** and **Enable SPS Haptics**. The prefab-instance editing setting is stored separately from SPS for NDMF's.
+
+  **Tools/VRCFury Stub** メニューを追加しました（**Create Socket**・**Create Plug**・**Allow Editing on Prefab Instances**・**Migrate Project Data**・**Enable SPS Haptics**）。プレハブインスタンスの編集設定は SPS for NDMF とは別に保存されます。
+
+### Changed / 変更
+- Opening a Plug or Socket in the inspector upgrades data saved by an older VRCFury version, as VRCFury itself does. The migrator produces the same result, so a component edited in the stub and one converted to SPS for NDMF stay identical.
+
+  古い VRCFury で保存された Plug / Socket をインスペクターで開くと、VRCFury 本体と同じようにデータが最新の形式に更新されます。SPSNDMF Migrator も同じ結果を生成するので、スタブで編集したコンポーネントと SPS for NDMF へ変換したコンポーネントは一致します。
+
 ## [1.1429.0] - 2026-09-21
 ### Added / 追加
 - The stub now ships the SPS part of VRCFury's public API (`com.vrcfury.api`): creating a VRCFury Socket from code and adding depth actions to it. Tools that set up SPS through this API (such as SPS2 Setup Assistant's depth action generation) now recognize the stub as capable. The API assembly is only present when SPS for NDMF 1.1429.0 or newer and SPSNDMF Migrator 1.0.0 or newer are installed, because those packages are what actually build the data the API writes. The non-SPS parts of the API (Armature Link, Toggle, Full Controller) are not included.
