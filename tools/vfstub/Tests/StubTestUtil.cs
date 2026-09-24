@@ -36,7 +36,8 @@ namespace VfStubTests {
 
         [SetUp]
         public void OpenTempScene() {
-            if (AssetDatabase.IsValidFolder(TempDir)) AssetDatabase.DeleteAsset(TempDir);
+            // Never delete something the tests did not create.
+            Assert.That(AssetDatabase.IsValidFolder(TempDir), Is.False, $"{TempDir} already exists; remove it before running the tests");
             AssetDatabase.CreateFolder("Assets", Path.GetFileName(TempDir));
             File.WriteAllText(ScenePath, "%YAML 1.1\n%TAG !u! tag:unity3d.com,2011:\n");
             AssetDatabase.ImportAsset(ScenePath);

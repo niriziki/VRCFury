@@ -155,16 +155,20 @@ namespace VfStubTests {
                 byOriginal[originals[i].gameObject] = copies[i].gameObject;
                 byOriginal[originals[i]] = copies[i];
             }
-            Component twinOfStub = null;
+            // All twins exist before any field is copied, so references between VF components resolve.
+            var ctx = new Nrzk.SpsMigrator.Copy.CopyContext();
+            var pairs = new List<(Component vf, Component twin)>();
             foreach (var vf in avatar.GetComponentsInChildren<VF.Component.VRCFuryComponent>(true)) {
                 var copyGo = (GameObject)byOriginal[vf.gameObject];
                 foreach (var stale in copyGo.GetComponents<VF.Component.VRCFuryComponent>()) Object.DestroyImmediate(stale);
                 var twin = copyGo.AddComponent(StubTestUtil.Twin(vf.GetType()));
-                var ctx = new Nrzk.SpsMigrator.Copy.CopyContext();
-                Nrzk.SpsMigrator.Copy.StructuralFieldCopier.CopyFields(vf, twin, ctx, vf.name);
+                ctx.Counterparts[vf] = twin;
                 byOriginal[vf] = twin;
-                if (vf == stub) twinOfStub = twin;
+                pairs.Add((vf, twin));
             }
+            foreach (var (vf, twin) in pairs) Nrzk.SpsMigrator.Copy.StructuralFieldCopier.CopyFields(vf, twin, ctx, vf.name);
+            Assert.That(ctx.Warnings, Is.Empty, string.Join("\n", ctx.Warnings));
+            var twinOfStub = (Component)ctx.Counterparts[stub];
             foreach (var twin in mirror.GetComponentsInChildren<Component>(true)) {
                 var so = new SerializedObject(twin);
                 var prop = so.GetIterator();
@@ -187,6 +191,8 @@ namespace VfStubTests {
             yield return Show(stub);
             var stubTree = Normalize(Rendered());
             Assert.That(stubTree, Does.Not.Contain("Failed to render editor"));
+            // The depth actions must actually be on screen, with the SPS On target resolved on both sides.
+            if (stub is VF.Component.VRCFuryHapticSocket) Assert.That(stubTree, Does.Contain("plug (VRCFuryHapticPlug)"));
 
             yield return Show(twin);
             var twinTree = Rendered();
