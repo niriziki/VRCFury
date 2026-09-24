@@ -25,6 +25,7 @@ Editor-Common/Inspector/VRCFuryHapticSocketGizmo.cs VFInit 1
 Editor-Common/Menu/DisableVpmResolverInitMenuItem.cs MenuItem 1
 Editor-Common/Menu/PlayModeMenuItem.cs MenuItem 1
 Editor-Common/Menu/SpsDevModeMenuItem.cs MenuItem 1
+Editor-Common/Menu/SpsGizmoSelectedOnlyMenuItem.cs MenuItem 2
 Editor-Common/Menu/SpsMenuItem.cs MenuItem 2
 Editor-Common/Menu/UseInUploadMenuItem.cs MenuItem 1
 Editor-Common/Prefabs/PrefabInstanceMode.cs FilePath 1

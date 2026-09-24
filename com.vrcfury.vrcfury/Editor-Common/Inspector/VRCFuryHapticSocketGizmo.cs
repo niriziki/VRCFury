@@ -25,6 +25,7 @@ namespace VF.Inspector {
 
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected | GizmoType.Pickable)]
         static void DrawGizmo2(VRCFurySocketGizmo gizmo, GizmoType gizmoType) {
+            if (!VF.Menu.SpsGizmoSelectedOnlyMenuItem.ShouldDraw(gizmoType)) return;
             if (!gizmo.show) return;
             if (gizmo.data == null) return;
             VRCFuryHapticSocketGizmo.DrawGizmo(gizmo.owner(), gizmo.data);
@@ -347,6 +348,7 @@ namespace VF.Inspector {
 
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected | GizmoType.Pickable)]
         static void DrawGizmo2(VRCFuryHapticSocket socket, GizmoType gizmoType) {
+            if (!VF.Menu.SpsGizmoSelectedOnlyMenuItem.ShouldDraw(gizmoType)) return;
             var copy = VRCFuryComponentEditor.CreateUpgradedClone(socket, out var cloneObject);
             try {
                 var baker = VRCFuryPerFrameInjector.GetPerFrameInjector(socket.owner())
