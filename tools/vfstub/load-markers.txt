@@ -18,7 +18,7 @@ Editor-Common/Hooks/UnityFixes/SpsSelectionOutlineHook.cs VFInit 1
 Editor-Common/Hooks/UnityFixes/SuppressMaterialPropertyDrawersHook.cs VFInit 1
 Editor-Common/Hooks/VFInitHook.cs InitializeOnLoad 1
 Editor-Common/Hooks/VFInitHook.cs VFInit 1
-Editor-Common/Hooks/VrcsdkFixes/DisableVpmResolverAutoInitHook.cs InitializeOnLoad 1
+Editor-Common/Hooks/VrcsdkFixes/DisableVpmResolverAutoInitHook.cs InitializeOnLoad 2
 Editor-Common/Hooks/VrcsdkFixes/DisableVpmResolverAutoInitHook.cs VFInit 1
 Editor-Common/Injector/VRCFuryPerFrameInjector.cs VFInit 1
 Editor-Common/Inspector/VRCFuryHapticSocketGizmo.cs VFInit 1

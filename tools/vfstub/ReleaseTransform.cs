@@ -50,12 +50,12 @@ var editorRewrites = new (string Old, string New)[]
 // occurrences are pinned in load-markers.txt so an upstream update cannot add one unnoticed.
 var loadMarkers = new (string Name, Regex Pattern)[]
 {
-    ("InitializeOnLoad", new Regex(@"\[(\w+\.)*(InitializeOnLoad\w*|InitializeOnEnterPlayMode|RuntimeInitializeOnLoadMethod)\b")),
+    ("InitializeOnLoad", new Regex(@"\[(\w+\.)*(InitializeOnLoad\w*|InitializeOnEnterPlayMode(Attribute)?|RuntimeInitializeOnLoadMethod(Attribute)?)\b")),
     ("StaticConstructor", new Regex(@"\bstatic\s+[A-Z]\w*\s*\(\s*\)\s*(\{|=>)")),
-    ("VFInit", new Regex(@"\[(\w+\.)*VFInit\b")),
-    ("MenuItem", new Regex(@"\[(\w+\.)*MenuItem\b")),
-    ("DidReloadScripts", new Regex(@"\[(\w+\.)*DidReloadScripts\b")),
-    ("FilePath", new Regex(@"\[(\w+\.)*FilePath\b")),
+    ("VFInit", new Regex(@"\[(\w+\.)*VFInit(Attribute)?\b")),
+    ("MenuItem", new Regex(@"\[(\w+\.)*MenuItem(Attribute)?\b")),
+    ("DidReloadScripts", new Regex(@"\[(\w+\.)*DidReloadScripts(Attribute)?\b")),
+    ("FilePath", new Regex(@"\[(\w+\.)*FilePath(Attribute)?\b")),
     ("AssetProcessor", new Regex(@"\b(AssetPostprocessor|AssetModificationProcessor|ScriptableSingleton|SettingsProvider|MaterialPropertyDrawer|ShaderGUI)\b")),
     ("Harmony", new Regex(@"new Harmony\(")),
     ("BuildCallback", new Regex(@"\b(IVRCSDK\w*Callback|IPreprocessBuild\w*|IPostprocessBuild\w*|IProcessScene\w*|IPreprocessShaders)\b")),
@@ -304,14 +304,21 @@ void GateAsmdef(string path, string? dropReference)
     var versionDefines = json["versionDefines"]!.AsArray();
     foreach (var (package, define) in new[] { ("nadena.dev.ndmf", "VFSTUB_HAS_NDMF"), ("nadena.dev.modular-avatar", "VFSTUB_HAS_MA") })
     {
+        if (constraints.Any(c => c!.GetValue<string>() == define) || versionDefines.Any(v => v!["define"]!.GetValue<string>() == define))
+        {
+            Console.Error.WriteLine($"{Path.GetFileName(path)}: upstream already defines {define}");
+            Environment.Exit(1);
+        }
         constraints.Add((JsonNode)JsonValue.Create(define));
         versionDefines.Add((JsonNode)new JsonObject { ["name"] = JsonValue.Create(package), ["expression"] = JsonValue.Create(""), ["define"] = JsonValue.Create(define) });
     }
     File.WriteAllText(path, json.ToJsonString(new JsonSerializerOptions { WriteIndented = true }) + "\n");
 }
 
+// Removes comments only: string and char literals (which may contain "//") are kept as they are.
 string StripComments(string code) =>
-    Regex.Replace(Regex.Replace(code, @"/\*.*?\*/", "", RegexOptions.Singleline), @"//.*", "");
+    Regex.Replace(code, @"@""(?:""""|[^""])*""|""(?:\\.|[^""\\\n])*""|'(?:\\.|[^'\\\n])*'|/\*.*?\*/|//[^\n]*",
+        m => m.Value.StartsWith("/") ? "" : m.Value, RegexOptions.Singleline);
 
 List<string> LoadList(string path) =>
     File.ReadAllLines(path)
