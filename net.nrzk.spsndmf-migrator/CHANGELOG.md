@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.0.1] - 2026-09-24
+### Fixed / 修正
+- Fixed the **Enable SPS** action losing its plug when plugs and sockets are converted between VRCFury and SPS for NDMF. The reference now follows the converted plug in both directions, including on the build-time conversion of VRCFury Stub components. A plug outside the conversion is still listed as a warning in the Migrator window's result.
+
+  Plug / Socket を VRCFury と SPS for NDMF の間で変換すると、**Enable SPS** アクションの対象 Plug が失われていた問題を修正しました。参照は変換後の Plug に両方向で追従し、VRCFury Stub コンポーネントのビルド時変換でも同様です。同じ変換に含まれない Plug を指している場合は、これまでどおり Migrator ウィンドウの結果に警告として表示します。
+
 ## [1.0.0] - 2026-08-06
 ### Changed / 変更
 - First stable release. This package keeps its own version numbering, while SPS for NDMF and VRCFury Stub now follow the version of the VRCFury release they are built from. Nothing changed since 0.2.0-beta.13.

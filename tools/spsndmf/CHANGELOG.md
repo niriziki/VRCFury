@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1429.1] - 2026-09-24
+### Fixed / 修正
+- Fixed the **Record** button of an **Animation Clip** action leaving the avatar disabled, and its "(VRCFury Recording Copy)" object in the scene, after the recording stopped. As in VRCFury, the avatar is re-enabled and the copy removed when recording ends, and the recorded clip is saved with paths relative to the component's object.
+
+  **Animation Clip** アクションの **Record** ボタンで録画を止めた後、アバターが無効化されたままになり「(VRCFury Recording Copy)」オブジェクトがシーンに残る問題を修正しました。VRCFury と同様に、録画の終了時にアバターが再び有効になり、コピーは削除され、録画したクリップはコンポーネントのオブジェクトを基準にしたパスで保存されます。
+
 ## [1.1429.0] - 2026-09-10
 ### Changed / 変更
 - Updated the bundled VRCFury source to upstream 1.1429.0.
