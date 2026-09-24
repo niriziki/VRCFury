@@ -190,6 +190,8 @@ namespace VfStubTests {
             host.style.left = 0;
             host.style.top = 0;
             host.style.width = 420;
+            // Lists virtualize against the host size: with no height the depth-action rows would never be built.
+            host.style.height = 4000;
             window.rootVisualElement.Add(host);
             Assume.That(host.panel, Is.Not.Null, "no showing editor window could host the inspector under test");
             return host;
@@ -234,7 +236,8 @@ namespace VfStubTests {
                 var binding = e is IBindable b ? b.bindingPath : "";
                 var display = e is TextElement && text == "" ? "-" : e.resolvedStyle.display.ToString();
                 lines.Add($"{new string(' ', depth)}{e.GetType().Name}|{text}|{binding}|{e.enabledInHierarchy}|{display}");
-                foreach (var c in e.Children()) Rec(c, depth + 1);
+                // hierarchy, not Children(): a ListView's rows live outside its (null) contentContainer.
+                foreach (var c in e.hierarchy.Children()) Rec(c, depth + 1);
             }
             Rec(root, 0);
             return string.Join("\n", lines);

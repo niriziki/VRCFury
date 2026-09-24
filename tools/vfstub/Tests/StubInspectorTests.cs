@@ -123,14 +123,16 @@ namespace VfStubTests {
         public IEnumerator ASocketRendersTheSameTreeAsItsSpsNdmfTwin([Values(false, true)] bool fuzzed) {
             var socket = Socket();
             var plug = Plug();
-            AddDepthActions(socket, plug);
             if (fuzzed) {
                 using (var fuzzer = new Fuzzer(11)) {
                     fuzzer.Fill(socket);
                     StubTestUtil.SetLatestVersions(socket);
+                    // The fuzzer cannot reference stub components; the plug-targeting actions go on top of its data.
+                    AddDepthActions(socket, plug);
                     yield return Compare(socket);
                 }
             } else {
+                AddDepthActions(socket, plug);
                 yield return Compare(socket);
             }
         }
@@ -192,7 +194,7 @@ namespace VfStubTests {
             var stubTree = Normalize(Rendered());
             Assert.That(stubTree, Does.Not.Contain("Failed to render editor"));
             // The depth actions must actually be on screen, with the SPS On target resolved on both sides.
-            if (stub is VF.Component.VRCFuryHapticSocket) Assert.That(stubTree, Does.Contain("plug (VRCFuryHapticPlug)"));
+            if (stub is VF.Component.VRCFuryHapticSocket) Assert.That(stubTree, Does.Match(@"plug \(VRC ?Fury ?Haptic ?Plug\)"));
 
             yield return Show(twin);
             var twinTree = Rendered();
