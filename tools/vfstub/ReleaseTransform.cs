@@ -19,6 +19,7 @@ var stripLinesPath = Path.Combine(scriptDir, "strip-lines.txt");
 var loadMarkersPath = Path.Combine(scriptDir, "load-markers.txt");
 var apiAsmdefTemplate = Path.Combine(scriptDir, "com.vrcfury.api.asmdef");
 var stubEditorDir = Path.Combine(scriptDir, "Editor");
+var stubEditorAvatarsDir = Path.Combine(scriptDir, "Editor-Avatars");
 var packageJsonTemplate = Path.Combine(scriptDir, "package.json");
 var outputDir = Path.Combine(repoRoot, "net.nrzk.vfstub");
 var outputRuntimeDir = Path.Combine(outputDir, "Runtime");
@@ -119,6 +120,8 @@ foreach (var rel in avatarsInclude)
     }
     CopyWithParentMetas(sourcePackageDir, outputDir, rel);
 }
+foreach (var file in Directory.GetFiles(stubEditorAvatarsDir))
+    File.Copy(file, Path.Combine(outputDir, "Editor-Avatars", Path.GetFileName(file)));
 foreach (var suffix in new[] { "", ".meta" })
     File.Copy(Path.Combine(sourcePackageDir, "Editor-Avatars", "VRCFury-Editor-Avatars.asmdef" + suffix),
         Path.Combine(outputDir, "Editor-Avatars", "VRCFury-Editor-Avatars.asmdef" + suffix));
