@@ -360,6 +360,7 @@ namespace VfStubTests {
                 "Tools/VRCFury Stub/SPS/Create Socket",
                 "Tools/VRCFury Stub/SPS/Migrate Project Data",
                 "Tools/VRCFury Stub/Settings/Enable SPS Haptics",
+                "Tools/VRCFury Stub/Settings/Show SPS Gizmos Only When Selected",
             }));
         }
 
