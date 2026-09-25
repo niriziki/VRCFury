@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Reflection;
+using nadena.dev.modular_avatar.core;
 using nadena.dev.ndmf;
 using nadena.dev.ndmf.preview;
 using NUnit.Framework;
@@ -63,9 +64,14 @@ namespace VF.Tests {
         }
 
         private void AssertEstimateMatchesBuild(int expectedBits) {
-            var estimated = nadena.dev.ndmf.ParameterInfo.ForPreview(ComputeContext.NullContext)
+            var provided = nadena.dev.ndmf.ParameterInfo.ForPreview(ComputeContext.NullContext)
                 .GetParametersForObject(avatar)
-                .Sum(p => p.BitUsage);
+                .ToList();
+            var estimated = provided.Sum(p => p.BitUsage);
+            // Placeholder names must never be offered where a user picks a parameter.
+            Assert.That(provided.Where(p => p.Source is VRCFuryHapticSocket || p.Source is VRCFuryHapticPlug)
+                .Where(p => !p.IsHidden)
+                .Select(p => p.EffectiveName), Is.Empty, "SPS placeholder parameters must be hidden");
 
             var processorType = typeof(BuildContext).Assembly.GetType("nadena.dev.ndmf.AvatarProcessor");
             var process = processorType
@@ -168,6 +174,32 @@ namespace VF.Tests {
             plug.enableSps = false;
             plug.addDpsTipLight = true;
             AssertEstimateMatchesBuild(1);
+        }
+
+        // Before version 3 the build upgrades enableSps from configureSps; loading leaves it as saved.
+        [TestCase(false, 0)]
+        [TestCase(true, 2)]
+        public void PlugSavedBeforeVersion3(bool configureSps, int expectedBits) {
+            var plug = AddPlug();
+            plug.Version = 2;
+#pragma warning disable 0612
+            plug.configureSps = configureSps;
+            plug.enableSps = !configureSps;
+            AssertEstimateMatchesBuild(expectedBits);
+        }
+
+        // The user's own parameters stay separate, whatever they are called.
+        [Test]
+        public void UserParametersWithSpsLikeNames() {
+            var maParams = NewChild("UserParams").AddComponent<ModularAvatarParameters>();
+            foreach (var name in new[] { "Stealth", "SPS/Stealth", "Legacy" }) {
+                maParams.parameters.Add(new ParameterConfig {
+                    nameOrPrefix = name,
+                    syncType = ParameterSyncType.Bool
+                });
+            }
+            AddSocket();
+            AssertEstimateMatchesBuild(6);
         }
 
         [Test]
