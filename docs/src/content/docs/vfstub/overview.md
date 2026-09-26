@@ -16,15 +16,11 @@ VRCFury 本体を入れていなくても、既存のシーンやアバターに
 
 ## SPS Plug / Socket の編集
 
-VRCFury の **SPS Plug** と **SPS Socket** は、VRCFury と同じインスペクタで表示・編集できます。各オプションやアクションの設定も VRCFury と同じです。**Global Collider** と **Haptic Touch** も VRCFury と同じインスペクタで表示されます。
+**SPS Plug**・**SPS Socket**・**Global Collider**・**Haptic Touch** は、VRCFury と同じインスペクタで編集できます。それ以外の VRCFury コンポーネントは、項目を並べただけの簡易表示です。
 
-シーン上のギズモの表示は SPS for NDMF と同じで、既定では選択しているものだけを表示します（[シーン上の Socket / Plug の表示](/spsndmf/gizmos/)）。常に表示するには、**Tools > VRCFury Stub > Settings > Show SPS Gizmos Only When Selected** のチェックを外します。
+これらのインスペクタ・ギズモ・メニューを使うには、NDMF と Modular Avatar が必要です（SPS for NDMF を使っていれば、すでに入っています）。入っていない場合は、設定値がそのまま並ぶだけの表示になります。
 
-購入したアバターや衣装などプレハブの中にある Plug / Socket は、VRCFury と同じく、既定ではシーン上で編集できません。編集できるようにする方法と注意点は [プレハブの中の Socket / Plug を編集する](/spsndmf/prefab-instances/) を参照してください。VRCFury Stub では、メニューは **Tools > VRCFury Stub > SPS** の下にあり、この設定は SPS for NDMF とは別に保存されます。
-
-それ以外の VRCFury コンポーネント（Toggle などの VRCFury の機能）は、設定を保持したまま、項目をそのまま並べた簡易的な表示になります。
-
-これらの表示・編集画面とギズモの表示を使うには、[SPS for NDMF](/spsndmf/overview/) と同じく NDMF と Modular Avatar のインストールが必要です。入っていない場合は、どのコンポーネントも Unity の標準の表示になります。
+[ギズモの表示](/spsndmf/gizmos/)（既定では選択中のものだけ表示）と[プレハブの中の Socket / Plug の編集](/spsndmf/prefab-instances/)（既定では編集不可）は SPS for NDMF と同じです。メニューは **Tools > VRCFury Stub** の下にあり、プレハブの編集の許可は SPS for NDMF とは別に設定します。
 
 ## ビルド処理は持たない
 
