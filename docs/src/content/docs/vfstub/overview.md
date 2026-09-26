@@ -4,40 +4,22 @@ sidebar:
   order: 1
 ---
 
-VRCFury Stub（`net.nrzk.vfstub`）は、VRCFury 本体を使わずに VRCFury コンポーネント入りのシーン・プレハブを扱うための互換パッケージです。
+VRCFury Stub（`net.nrzk.vfstub`）は、VRCFury 本体を入れずに、VRCFury のコンポーネントを設定ごと保持するためのパッケージです。VRCFury から [SPS for NDMF](/spsndmf/overview/) へ移行するときに、VRCFury の代わりに入れます。手順は [移行の流れ](/migrator/migration-flow/) を参照してください。
 
 :::caution
-VRCFury Stub は **VRCFuryと同時にインストールすることはできません。** インストールする時はVRCFuryをアンインストールしてから！
+VRCFury と同時にはインストールできません。VRCFury をアンインストールしてから導入してください。
 :::
 
-## 役割
+## 編集
 
-VRCFury 本体を入れていなくても、既存のシーンやアバターに設定済みの VRCFury のコンポーネント（設定）が壊れたり消えたりせずにそのまま開けるようにするための互換用パッケージです。VRCFury 本体と同じ扱いでコンポーネントのデータを読み込めるようにする、という仕組みで実現しています。
+**SPS Plug**・**SPS Socket**・**Global Collider**・**Haptic Touch** は、VRCFury と同じインスペクタで編集できます。[ギズモの表示](/spsndmf/gizmos/)と[プレハブの中の Socket / Plug の編集](/spsndmf/prefab-instances/)（既定では編集不可）は SPS for NDMF と同じです。メニューは **Tools > VRCFury Stub** にあります。
 
-## SPS Plug / Socket の編集
+インスペクタとメニューを使うには、NDMF と Modular Avatar が必要です（SPS for NDMF を使っていれば入っています）。
 
-**SPS Plug**・**SPS Socket**・**Global Collider**・**Haptic Touch** は、VRCFury と同じインスペクタで編集できます。それ以外の VRCFury コンポーネントは、項目を並べただけの簡易表示です。
+## ビルド
 
-これらのインスペクタ・ギズモ・メニューを使うには、NDMF と Modular Avatar が必要です（SPS for NDMF を使っていれば、すでに入っています）。入っていない場合は、設定値がそのまま並ぶだけの表示になります。
+VRCFury Stub 自体はビルドを行いません。上の4つのコンポーネントは、SPS for NDMF と [SPSNDMF Migrator](/migrator/overview/) の両方を入れると、ビルド時に変換されてアバターに反映されます。それ以外の VRCFury の機能はビルドされません。
 
-[ギズモの表示](/spsndmf/gizmos/)（既定では選択中のものだけ表示）と[プレハブの中の Socket / Plug の編集](/spsndmf/prefab-instances/)（既定では編集不可）は SPS for NDMF と同じです。メニューは **Tools > VRCFury Stub** の下にあり、プレハブの編集の許可は SPS for NDMF とは別に設定します。
+## 公開 API
 
-## ビルド処理は持たない
-
-VRCFury Stub は **ビルド処理を含みません**。VRCFury Stub を入れただけでは SPS のビルドは行われません。ビルド時にコンポーネントを SPS for NDMF 側の形式へ自動変換する処理は、[SPSNDMF Migrator](/migrator/overview/) パッケージが担い、変換後のビルドは [SPS for NDMF](/spsndmf/overview/) が行います。SPS Plug / Socket・Global Collider・Haptic Touch 以外の VRCFury の機能（Toggle など）は、設定が保持されるだけで、ビルドには反映されません。
-
-SPS for NDMF と SPSNDMF Migrator の両方が入っている環境では、アップロード前に同期パラメータの使用量を表示するツールに、VRCFury Stub の SPS Plug / Socket が使う分も含まれます。
-
-## 他のツールから SPS を設定する API
-
-VRCFury には、他のツールがコードから VRCFury Socket を作って設定するための公開 API（`com.vrcfury.api`）があります。VRCFury Stub はこの API のうち **SPS に関わる部分** を同梱しているので、この API を使って SPS を組み込むツールは、VRCFury Stub の環境でも利用できます。
-
-この API は、書き込まれた設定を実際にビルドできる環境、つまり [SPS for NDMF](/spsndmf/overview/) と [SPSNDMF Migrator](/migrator/overview/) の両方がインストールされているときだけ有効になります。どちらかが欠けている場合、API は存在しない扱いになります。
-
-VRCFury Stub は SPS 専用のパッケージなので、SPS 以外の機能を作る API は含みません。
-
-## いつ使うか
-
-すでに VRCFury のギミック（SPS を含む）が組み込まれたプロジェクトから、VRCFury 本体を撤去したいときに使います。VRCFury 本体を削除すると、シーンやプレハブに残った VRCFury コンポーネントは設定を読み込めずに壊れてしまいますが、VRCFury Stub を代わりに導入しておくことで、コンポーネントの設定を保持したまま開ける状態を維持できます。
-
-具体的な移行手順は [移行の流れ](/migrator/migration-flow/) にまとめています。
+VRCFury には、他のツールがコードから SPS Socket を作成・設定するための公開 API（`com.vrcfury.api`）があります。VRCFury Stub はこの API の SPS に関わる部分を同梱しているので、この API で SPS を設定するツールを VRCFury Stub の環境でも使えます。API が有効になるのは、SPS for NDMF と SPSNDMF Migrator の両方が入っているときだけです。
