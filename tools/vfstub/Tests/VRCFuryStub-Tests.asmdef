@@ -7,7 +7,9 @@
         "VRCFury",
         "VRCFury-Editor-Common",
         "VRCFury-Editor-Avatars",
-        "Nrzk.SpsMigrator.Editor"
+        "Nrzk.SpsMigrator.Editor",
+        "nadena.dev.ndmf",
+        "nadena.dev.ndmf.vrchat"
     ],
     "includePlatforms": [
         "Editor"

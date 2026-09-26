@@ -5,6 +5,8 @@ Editor-Avatars/csc.rsp
 Editor-Avatars/VRCFPackageUtils.cs
 Editor-Avatars/Hooks/VRCFuryAvatarHook.cs
 Editor-Avatars/Plugin/IAvatarOutput.cs
+# Used by the stub's own parameter providers (tools/vfstub/Editor-Avatars/).
+Editor-Avatars/Plugin/SpsSuppliedParameters.cs
 Editor-Avatars/Builder/VRCFArmatureCache.cs
 
 Editor-Avatars/Actions/AnimationClipActionBuilder.cs

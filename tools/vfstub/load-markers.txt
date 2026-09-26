@@ -5,6 +5,7 @@ Editor-Avatars/Menu/AutoUpgradeConstraintsMenuItem.cs MenuItem 1
 Editor-Avatars/Menu/ConstrainedProportionsMenuItem.cs VFInit 1
 Editor-Avatars/Menu/ConstrainedProportionsMenuItem.cs MenuItem 1
 Editor-Avatars/Menu/HapticsToggleMenuItem.cs MenuItem 2
+Editor-Avatars/StubSpsParameterProviders.cs NdmfRegistration 2
 Editor-Avatars/Utils/ClosestBoneUtils.cs VFInit 1
 Editor-Avatars/Utils/CollapseUtils.cs VFInit 1
 Editor-Avatars/Utils/RecorderUtils.cs VFInit 1
