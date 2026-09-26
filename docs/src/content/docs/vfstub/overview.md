@@ -14,9 +14,23 @@ VRCFury Stub は **VRCFuryと同時にインストールすることはできま
 
 VRCFury 本体を入れていなくても、既存のシーンやアバターに設定済みの VRCFury のコンポーネント（設定）が壊れたり消えたりせずにそのまま開けるようにするための互換用パッケージです。VRCFury 本体と同じ扱いでコンポーネントのデータを読み込めるようにする、という仕組みで実現しています。
 
-## 編集機能やビルド処理は持たない
+## SPS Plug / Socket の編集
 
-VRCFury Stub はコンポーネントの設定を保持するためだけのパッケージで、**VRCFury のような編集機能やビルド処理は一切含みません**。つまり、VRCFury Stub を入れただけでは SPS のビルドは行われません。ビルド時にコンポーネントを SPSNDMF 側の形式へ自動変換する処理は、[SPSNDMF Migrator](/migrator/overview/) パッケージが担います。
+VRCFury の **SPS Plug** と **SPS Socket** は、VRCFury と同じインスペクタで表示・編集できます。各オプションやアクションの設定も VRCFury と同じです。**Global Collider** と **Haptic Touch** も VRCFury と同じインスペクタで表示されます。
+
+シーン上のギズモの表示は SPS for NDMF と同じで、既定では選択しているものだけを表示します（[シーン上の Socket / Plug の表示](/spsndmf/gizmos/)）。常に表示するには、**Tools > VRCFury Stub > Settings > Show SPS Gizmos Only When Selected** のチェックを外します。
+
+購入したアバターや衣装などプレハブの中にある Plug / Socket は、VRCFury と同じく、既定ではシーン上で編集できません。編集できるようにする方法と注意点は [プレハブの中の Socket / Plug を編集する](/spsndmf/prefab-instances/) を参照してください。VRCFury Stub では、メニューは **Tools > VRCFury Stub > SPS** の下にあり、この設定は SPS for NDMF とは別に保存されます。
+
+それ以外の VRCFury コンポーネント（Toggle などの VRCFury の機能）は、設定を保持したまま、項目をそのまま並べた簡易的な表示になります。
+
+これらの表示・編集画面とギズモの表示を使うには、[SPS for NDMF](/spsndmf/overview/) と同じく NDMF と Modular Avatar のインストールが必要です。入っていない場合は、どのコンポーネントも Unity の標準の表示になります。
+
+## ビルド処理は持たない
+
+VRCFury Stub は **ビルド処理を含みません**。VRCFury Stub を入れただけでは SPS のビルドは行われません。ビルド時にコンポーネントを SPS for NDMF 側の形式へ自動変換する処理は、[SPSNDMF Migrator](/migrator/overview/) パッケージが担い、変換後のビルドは [SPS for NDMF](/spsndmf/overview/) が行います。SPS Plug / Socket・Global Collider・Haptic Touch 以外の VRCFury の機能（Toggle など）は、設定が保持されるだけで、ビルドには反映されません。
+
+SPS for NDMF と SPSNDMF Migrator の両方が入っている環境では、アップロード前に同期パラメータの使用量を表示するツールに、VRCFury Stub の SPS Plug / Socket が使う分も含まれます。
 
 ## 他のツールから SPS を設定する API
 
