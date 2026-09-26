@@ -60,6 +60,7 @@ var loadMarkers = new (string Name, Regex Pattern)[]
     ("AssetProcessor", new Regex(@"\b(AssetPostprocessor|AssetModificationProcessor|ScriptableSingleton|SettingsProvider|MaterialPropertyDrawer|ShaderGUI)\b")),
     ("Harmony", new Regex(@"new Harmony\(")),
     ("BuildCallback", new Regex(@"\b(IVRCSDK\w*Callback|IPreprocessBuild\w*|IPostprocessBuild\w*|IProcessScene\w*|IPreprocessShaders)\b")),
+    ("NdmfRegistration", new Regex(@"\[(\w+\.)*(assembly:\s*)?(\w+\.)*(ParameterProviderFor|ExportsPlugin)(Attribute)?\b")),
 };
 
 // --- Validate ---

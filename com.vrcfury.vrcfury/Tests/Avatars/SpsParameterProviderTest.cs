@@ -31,6 +31,8 @@ namespace VF.Tests {
             Object.DestroyImmediate(tmp);
             plugMat = new Material(Shader.Find("Standard"));
             nextZ = 0.1f;
+            // The NDMF build emits benign Unity-internal [Assert] logs; the outcome is checked through
+            // the build report and the parameters instead.
             UnityEngine.TestTools.LogAssert.ignoreFailingMessages = true;
         }
 
@@ -68,10 +70,13 @@ namespace VF.Tests {
                 .GetParametersForObject(avatar)
                 .ToList();
             var estimated = provided.Sum(p => p.BitUsage);
+            var fromSps = provided.Where(p => p.Source is VRCFuryHapticSocket || p.Source is VRCFuryHapticPlug).ToList();
             // Placeholder names must never be offered where a user picks a parameter.
-            Assert.That(provided.Where(p => p.Source is VRCFuryHapticSocket || p.Source is VRCFuryHapticPlug)
-                .Where(p => !p.IsHidden)
-                .Select(p => p.EffectiveName), Is.Empty, "SPS placeholder parameters must be hidden");
+            Assert.That(fromSps.Where(p => !p.IsHidden).Select(p => p.EffectiveName), Is.Empty,
+                "SPS placeholder parameters must be hidden");
+            // Modular Avatar's usage window groups the bits by plugin.
+            Assert.That(fromSps.Where(p => p.Plugin != VF.Plugin.SpsNdmfPlugin.Instance).Select(p => p.EffectiveName),
+                Is.Empty, "SPS parameters must be attributed to SPSNDMF");
 
             var processorType = typeof(BuildContext).Assembly.GetType("nadena.dev.ndmf.AvatarProcessor");
             var process = processorType

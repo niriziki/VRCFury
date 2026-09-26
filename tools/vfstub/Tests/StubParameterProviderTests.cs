@@ -112,6 +112,17 @@ namespace VfStubTests {
             AssertEstimateMatchesBuild(4);
         }
 
+        // The migrator skips a stub component whose SPSNDMF counterpart is already on the same object.
+        [Test]
+        public void StubAndSpsNdmfSocketOnOneObject() {
+            var obj = NewChild("Socket");
+            obj.AddComponent<VRCFuryHapticSocket>();
+            // Without lights on the counterpart, counting the stub socket would also add Legacy.
+            var twin = obj.AddComponent(PackageBinding.SpsNdmfSocketType);
+            twin.GetType().GetField("useLights").SetValue(twin, false);
+            AssertEstimateMatchesBuild(2);
+        }
+
         [Test]
         public void StubPlugSavedBeforeVersion3() {
             var plug = NewPlugObject("Plug").AddComponent<VRCFuryHapticPlug>();

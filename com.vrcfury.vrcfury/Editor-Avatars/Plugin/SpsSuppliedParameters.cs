@@ -32,7 +32,7 @@ namespace VF.Plugin {
             if (plug.addDpsTipLight) yield return SyncedBool(plug, plugin, "TipLight");
         }
 
-        // The build upgrades components before reading them; loading does not.
+        // The upload build upgrades components before reading them; loading does not.
         private static bool EnableSps(VRCFuryHapticPlug plug) {
 #pragma warning disable 0612
             if (plug.Version >= 0 && plug.Version < 3) return plug.configureSps;
