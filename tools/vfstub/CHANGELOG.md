@@ -8,7 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
-## [1.1429.1-beta.3] - 2026-09-26
+## [1.1429.1] - 2026-09-26
+### Changed / 変更
+- Stable release of the 1.1429.1 line. It includes everything from 1.1429.1-beta.1 and 1.1429.1-beta.2 below: VRCFury's inspectors for **SPS Plug**, **SPS Socket**, **Global Collider** and **Haptic Touch**, the **Tools/VRCFury Stub** menu, and showing the gizmos only for the selection by default.
+
+  1.1429.1 系の安定版リリースです。下記の 1.1429.1-beta.1 と 1.1429.1-beta.2 の変更（**SPS Plug**・**SPS Socket**・**Global Collider**・**Haptic Touch** の VRCFury と同じインスペクタ、**Tools/VRCFury Stub** メニュー、既定で選択中のものだけギズモを表示する設定）をすべて含みます。
+
 ### Added / 追加
 - When SPS for NDMF and SPSNDMF Migrator are installed, **SPS Plug** and **SPS Socket** components of the stub are counted by tools that show how many synced parameter bits an avatar uses before upload, such as Modular Avatar's parameter usage view, the same way SPS for NDMF 1.1429.3 counts its own components. They appear under SPS for NDMF there, since it builds them.
 
