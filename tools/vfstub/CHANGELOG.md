@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1429.1-beta.3] - 2026-09-26
+### Added / 追加
+- When SPS for NDMF and SPSNDMF Migrator are installed, **SPS Plug** and **SPS Socket** components of the stub are counted by tools that show how many synced parameter bits an avatar uses before upload, such as Modular Avatar's parameter usage view, the same way SPS for NDMF 1.1429.3 counts its own components. They appear under SPS for NDMF there, since it builds them.
+
+  SPS for NDMF と SPSNDMF Migrator が入っている環境では、Modular Avatar のパラメータ使用状況表示など、アップロード前に同期パラメータの使用ビット数を表示するツールで、スタブの **SPS Plug** と **SPS Socket** も数えられるようになりました。数え方は SPS for NDMF 1.1429.3 の自前のコンポーネントと同じです。実際にビルドするのは SPS for NDMF なので、表示上は SPS for NDMF の分として扱われます。
+
 ## [1.1429.1-beta.2] - 2026-09-25
 ### Changed / 変更
 - The scene view now shows the gizmos of **SPS Plug** and **SPS Socket** only for the selected object and its children, instead of for every plug and socket in the scene. To show them all the time as in VRCFury, uncheck **Tools/VRCFury Stub/Settings/Show SPS Gizmos Only When Selected**. This setting is shared with SPS for NDMF.

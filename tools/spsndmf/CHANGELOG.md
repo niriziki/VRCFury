@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1429.3] - 2026-09-26
+### Added / 追加
+- Tools that show how many synced parameter bits an avatar uses before upload, such as Modular Avatar's parameter usage view, now count the parameters **SPS Socket** and **SPS Plug** add: each socket's menu toggle and the avatar-wide SPS options. The actual names are only decided during the build, so these tools see hidden placeholder names that do not appear in parameter selection lists.
+
+  Modular Avatar のパラメータ使用状況表示など、アップロード前に同期パラメータの使用ビット数を表示するツールで、**SPS Socket** と **SPS Plug** が追加するパラメータ（ソケットごとのメニューのトグルと、アバター全体の SPS 設定）も数えられるようになりました。実際のパラメータ名はビルド時に決まるため、これらのツールには仮の名前で伝えています。仮の名前は、パラメータを選ぶ一覧には表示されません。
+
 ## [1.1429.2] - 2026-09-25
 ### Changed / 変更
 - The scene view now shows the gizmos of **SPS Plug** and **SPS Socket** only for the selected object and its children, instead of for every plug and socket in the scene. To show them all the time as in VRCFury, uncheck **Tools/SPSNDMF/Settings/Show SPS Gizmos Only When Selected**.
