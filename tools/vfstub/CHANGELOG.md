@@ -9,12 +9,22 @@ Only versions that have a published release are listed.
 公開リリースのあるバージョンのみを掲載しています。
 
 ## [1.1429.1] - 2026-09-26
-### Changed / 変更
-- Stable release of the 1.1429.1 line. It includes everything from 1.1429.1-beta.1 and 1.1429.1-beta.2 below: VRCFury's inspectors for **SPS Plug**, **SPS Socket**, **Global Collider** and **Haptic Touch**, the **Tools/VRCFury Stub** menu, and showing the gizmos only for the selection by default.
-
-  1.1429.1 系の安定版リリースです。下記の 1.1429.1-beta.1 と 1.1429.1-beta.2 の変更（**SPS Plug**・**SPS Socket**・**Global Collider**・**Haptic Touch** の VRCFury と同じインスペクタ、**Tools/VRCFury Stub** メニュー、既定で選択中のものだけギズモを表示する設定）をすべて含みます。
-
 ### Added / 追加
+- **SPS Plug** and **SPS Socket** components now open in the same inspector as in VRCFury, and can be edited in place: every option, the depth / active / post-bake actions and the prefab-instance handling behave as they do in VRCFury. The header reads "VRCFuryStub" instead of "VRCFury". This needs NDMF and Modular Avatar to be installed (the same packages SPS for NDMF needs); without them the stub keeps Unity's default inspector as before.
+
+  **SPS Plug** と **SPS Socket** のコンポーネントを、VRCFury と同じインスペクターで表示し、そのまま編集できるようになりました。各オプション、Depth / Active / Post-Bake のアクション、プレハブインスタンスの扱いはすべて VRCFury と同じです。ヘッダーの表記は「VRCFury」ではなく「VRCFuryStub」になります。NDMF と Modular Avatar のインストールが必要です（SPS for NDMF が必要とするものと同じ）。入っていない場合は、これまでどおり Unity の標準インスペクターのままです。
+- Opening a Plug or Socket in the inspector upgrades data saved by an older VRCFury version, as VRCFury itself does. The migrator produces the same result, so a component edited in the stub and one converted to SPS for NDMF stay identical.
+
+  古い VRCFury で保存された Plug / Socket をインスペクターで開くと、VRCFury 本体と同じようにデータが最新の形式に更新されます。SPSNDMF Migrator も同じ結果を生成するので、スタブで編集したコンポーネントと SPS for NDMF へ変換したコンポーネントは一致します。
+- The scene view draws the gizmos of **SPS Plug** and **SPS Socket**, by default only for the selected object and its children. To show them all the time as in VRCFury, uncheck **Tools/VRCFury Stub/Settings/Show SPS Gizmos Only When Selected**. This needs NDMF and Modular Avatar.
+
+  Scene ビューに **SPS Plug** と **SPS Socket** のギズモを表示するようになりました。既定では、選択しているオブジェクトとその子にあるものだけを表示します。VRCFury と同じく常に表示したい場合は、**Tools/VRCFury Stub/Settings/Show SPS Gizmos Only When Selected** のチェックを外してください。NDMF と Modular Avatar が必要です。
+- Other VRCFury components show their settings as plain fields, with a note that the stub keeps their data but does not build them. **Global Collider** and **Haptic Touch** use their VRCFury inspectors. Like the Plug / Socket inspectors, this needs NDMF and Modular Avatar.
+
+  その他の VRCFury コンポーネントは、設定を素のフィールドとして表示し、スタブはデータを保持するだけでビルドしない旨を表示します。**Global Collider** と **Haptic Touch** は VRCFury のインスペクターで表示されます。Plug / Socket と同じく、NDMF と Modular Avatar が必要です。
+- A **Tools/VRCFury Stub** menu with **Create Socket**, **Create Plug**, **Allow Editing on Prefab Instances**, **Migrate Project Data**, **Enable SPS Haptics** and **Show SPS Gizmos Only When Selected**. The prefab-instance editing setting is stored separately from SPS for NDMF's; **Enable SPS Haptics** and the gizmo setting are shared with it.
+
+  **Tools/VRCFury Stub** メニューを追加しました（**Create Socket**・**Create Plug**・**Allow Editing on Prefab Instances**・**Migrate Project Data**・**Enable SPS Haptics**・**Show SPS Gizmos Only When Selected**）。プレハブインスタンスの編集設定は SPS for NDMF とは別に保存され、**Enable SPS Haptics** とギズモの設定は SPS for NDMF と共通です。
 - When SPS for NDMF and SPSNDMF Migrator are installed, **SPS Plug** and **SPS Socket** components of the stub are counted by tools that show how many synced parameter bits an avatar uses before upload, such as Modular Avatar's parameter usage view, the same way SPS for NDMF 1.1429.3 counts its own components. They appear under SPS for NDMF there, since it builds them.
 
   SPS for NDMF と SPSNDMF Migrator が入っている環境では、Modular Avatar のパラメータ使用状況表示など、アップロード前に同期パラメータの使用ビット数を表示するツールで、スタブの **SPS Plug** と **SPS Socket** も数えられるようになりました。数え方は SPS for NDMF 1.1429.3 の自前のコンポーネントと同じです。実際にビルドするのは SPS for NDMF なので、表示上は SPS for NDMF の分として扱われます。
