@@ -1060,6 +1060,9 @@ namespace VF.Builder.Haptics {
                 }
 
                 Add(HashBuster);
+                // The patcher's own logic is not among the inputs, so a release that changes how
+                // shaders are patched would otherwise keep serving shaders patched by the old one.
+                Add(UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(SpsPatcher).Assembly)?.version);
                 Add(keepImports.ToString());
                 Add(hasBlendshapes.ToString());
                 AddFile(sourcePath);
