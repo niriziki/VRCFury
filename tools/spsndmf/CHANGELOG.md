@@ -8,6 +8,20 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1430.0] - 2026-10-02
+### Changed / 変更
+- Updated the bundled VRCFury source to upstream 1.1430.0.
+
+  同梱の VRCFury ソースを上流 1.1430.0 に更新しました。
+
+### Fixed / 修正
+- Fixed SPS patching shaders such as Poiyomi Pro 11 incorrectly when a pass contains a shader program whose braces only balance under preprocessor conditions. SPS read such a pass as running on into the passes after it, and could leave the pass that actually draws the mesh unpatched (upstream change).
+
+  Poiyomi Pro 11 などで、プリプロセッサの条件によって波括弧の対応が変わるシェーダープログラムをパスに含むシェーダーを、SPS が正しくパッチできなかった問題を修正しました。そのパスが後続のパスまで続いていると読み取られ、メッシュを実際に描画するパスがパッチされないことがありました（上流の変更）。
+- Fixed shaders patched by an earlier version of SPS for NDMF being reused after an update, so that fixes to how shaders are patched did not reach shaders already patched in the project until the generated shader folder was deleted by hand. Each shader is now patched again once, on the first build after updating.
+
+  以前のバージョンの SPS for NDMF でパッチしたシェーダーが更新後も使い回され、シェーダーのパッチ方法の修正が、プロジェクトにパッチ済みのシェーダーには生成先のフォルダを手で消すまで反映されなかった問題を修正しました。更新後の最初のビルドで、各シェーダーが一度だけパッチし直されます。
+
 ## [1.1429.3] - 2026-09-26
 ### Added / 追加
 - Tools that show how many synced parameter bits an avatar uses before upload, such as Modular Avatar's parameter usage view, now count the parameters **SPS Socket** and **SPS Plug** add: each socket's menu toggle and the avatar-wide SPS options. The actual names are only decided during the build, so these tools see hidden placeholder names that do not appear in parameter selection lists.
