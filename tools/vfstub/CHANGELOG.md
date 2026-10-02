@@ -8,6 +8,12 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1430.0] - 2026-10-02
+### Changed / 変更
+- Version bump to keep the release line aligned with SPS for NDMF 1.1430.0, with the bundled VRCFury source updated to upstream 1.1430.0. The update only touches shader patching, which the stub never runs, so the stub behaves the same as before.
+
+  SPS for NDMF 1.1430.0 とバージョンを揃えるためのリリースです。同梱の VRCFury ソースを上流 1.1430.0 に更新しました。変更はシェーダーのパッチ処理だけで、スタブはこの処理を実行しないため、スタブの動作は変わりません。
+
 ## [1.1429.1] - 2026-09-26
 ### Added / 追加
 - **SPS Plug** and **SPS Socket** components now open in the same inspector as in VRCFury, and can be edited in place: every option, the depth / active / post-bake actions and the prefab-instance handling behave as they do in VRCFury. The header reads "VRCFuryStub" instead of "VRCFury". This needs NDMF and Modular Avatar to be installed (the same packages SPS for NDMF needs); without them the stub keeps Unity's default inspector as before.
