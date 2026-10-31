@@ -147,6 +147,7 @@ namespace VF.Tests {
                 }).ToList();
                 var menuService = new MenuService();
                 typeof(MenuService).VFField("avatar").SetValue(menuService, avatar);
+                typeof(MenuService).VFField("avatarOutput").SetValue(menuService, new VF.Plugin.DescriptorAvatarOutput(avatar));
                 var solver = new ParameterCompressorSolverService();
                 typeof(ParameterCompressorSolverService).VFField("menuService").SetValue(solver, menuService);
                 var method = typeof(ParameterCompressorSolverService).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)

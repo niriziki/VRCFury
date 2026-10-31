@@ -518,6 +518,7 @@ namespace VF.Tests {
                 var ft = new FaceTrackingService();
                 void Inject(object obj, string field, object value) => obj.GetType().VFField(field).SetValue(obj, value);
                 Inject(controllers, "avatar", avatar);
+                Inject(controllers, "avatarOutput", new VF.Plugin.DescriptorAvatarOutput(avatar));
                 Inject(ft, "avatar", avatar);
                 Inject(ft, "controllers", controllers);
                 var set = FaceTrackingUtils.CreateBlendshapeSet("Face");
