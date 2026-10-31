@@ -30,3 +30,6 @@ Editor-Common/Hooks/DisablePluginsWhenNotUploadingHook.cs
 
 # Non-SPS debug utility (AssetModificationProcessor registers itself by type)
 Editor-Common/Menu/SceneDirtyLoggerMenuItem.cs
+
+# Test of the upstream public API, which only the stub ships
+Tests/Avatars/FullControllerFaceTrackingTest.cs

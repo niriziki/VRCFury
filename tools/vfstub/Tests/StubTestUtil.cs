@@ -83,7 +83,7 @@ namespace VfStubTests {
         // Leaf types only: a non-abstract base such as StateAction.Action is never instantiated by VRCFury itself,
         // and SPSNDMF rejects a bare instance of it.
         public static IEnumerable<Type> ConcreteSubtypes(Type baseType) {
-            var all = VfAssembly.GetTypes();
+            var all = VfAssembly.GetTypes().Where(t => !t.ContainsGenericParameters).ToArray();
             return all
                 .Where(t => !t.IsAbstract && !t.IsInterface && baseType.IsAssignableFrom(t))
                 .Where(t => !all.Any(o => o != t && t.IsAssignableFrom(o)))
@@ -332,7 +332,7 @@ namespace VfStubTests {
             if (t.IsClass) {
                 if (depth <= 0) { Unfilled.Add(path); return current; }
                 var concrete = t;
-                if (t.IsAbstract || t.Assembly == StubTestUtil.VfAssembly) {
+                if (t.IsAbstract || (t.Assembly == StubTestUtil.VfAssembly && !t.IsConstructedGenericType)) {
                     var options = StubTestUtil.ConcreteSubtypes(t).ToList();
                     if (options.Count == 0) { Unfilled.Add(path); return null; }
                     concrete = options[subtypeCursor++ % options.Count];

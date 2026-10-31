@@ -145,8 +145,9 @@ void RemoveExcludedFiles(string source, string dest, List<string> excluded)
             Console.Error.WriteLine($"exclude-files.txt entry not found in source (renamed or removed upstream?): {rel}");
             Environment.Exit(1);
         }
-        File.Delete(Path.Combine(dest, rel));
-        var meta = Path.Combine(dest, rel + ".meta");
+        var target = Path.Combine(dest, rel);
+        if (File.Exists(target)) File.Delete(target);
+        var meta = target + ".meta";
         if (File.Exists(meta)) File.Delete(meta);
     }
     Console.WriteLine($"  {excluded.Count} files excluded");

@@ -42,6 +42,26 @@
         },
         {
             "name": "com.vrchat.base",
+            "expression": "3.10.6-beta.4",
+            "define": "VRCSDK_HAS_CONTACT_PARAMETER_FLAGS"
+        },
+        {
+            "name": "com.vrchat.avatars",
+            "expression": "3.10.6-beta.4",
+            "define": "VRCSDK_HAS_DYNAMIC_PARAMETER_BIT_WIDTH"
+        },
+        {
+            "name": "com.vrchat.base",
+            "expression": "[3.10.6-beta,3.10.6-beta.2]",
+            "define": "VRCSDK_HAS_ADVANCED_CONTACT_PARAMETERS_OLDNAME"
+        },
+        {
+            "name": "com.vrchat.base",
+            "expression": "3.10.6-0",
+            "define": "VRCSDK_HAS_ADVANCED_CONTACT_PARAMETERS"
+        },
+        {
+            "name": "com.vrchat.base",
             "expression": "3.1.12",
             "define": "VRC_NEW_HOOK_API"
         },
@@ -134,6 +154,11 @@
             "name": "com.vrcfury.vrcfury",
             "expression": "",
             "define": "VRCFURY_INSTALLED"
+        },
+        {
+            "name": "com.vrchat.avatars",
+            "expression": "3.10.6-0",
+            "define": "VRCSDK_HAS_FACE_TRACKING"
         }
     ],
     "noEngineReferences": false
