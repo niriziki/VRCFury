@@ -24,6 +24,7 @@ export default defineConfig({
         { label: 'VRCFury Stub の使い方', items: [{ autogenerate: { directory: 'vfstub' } }] },
         { label: 'SPSNDMF Migrator の使い方', items: [{ autogenerate: { directory: 'migrator' } }] },
         { label: '詳細', items: [{ autogenerate: { directory: 'details' } }] },
+        { label: 'ツール開発者向け', items: [{ autogenerate: { directory: 'developers' } }] },
         { label: '更新履歴', items: [{ autogenerate: { directory: 'changelog' } }] },
       ],
     }),
