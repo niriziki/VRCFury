@@ -43,7 +43,9 @@ Editor-Avatars/Feature/WorldConstraintBuilder.cs
 Editor-Avatars/Feature/VRCFuryHapticTouchReceiverBuilder.cs
 Editor-Avatars/Feature/VRCFuryHapticTouchSenderBuilder.cs
 
+Editor-Avatars/Inspector/FaceTrackingEditor.cs
 Editor-Avatars/Inspector/GuidWrapperPropertyDrawer.cs
+Editor-Avatars/Inspector/ObjectReferenceDrawer.cs
 Editor-Avatars/Inspector/VRCFGlobalColliderEditor.cs
 Editor-Avatars/Inspector/VRCFuryActionDrawer.cs
 Editor-Avatars/Inspector/VrcfDebugLine.cs
@@ -61,6 +63,7 @@ Editor-Avatars/Service/ClipBuilderService.cs
 Editor-Avatars/Service/ClipFactoryService.cs
 Editor-Avatars/Service/ControllersService.cs
 Editor-Avatars/Service/DbtLayerService.cs
+Editor-Avatars/Service/FaceTrackingService.cs
 Editor-Avatars/Service/FindAnimatedTransformsService.cs
 Editor-Avatars/Service/FloatToDriverService.cs
 Editor-Avatars/Service/FrameTimeService.cs
@@ -80,13 +83,17 @@ Editor-Avatars/Service/SmoothingService.cs
 Editor-Avatars/Service/TrackingConflictResolverService.cs
 Editor-Avatars/Service/WorldDropService.cs
 
+Editor-Avatars/Utils/BlendshapeUtils.cs
 Editor-Avatars/Utils/BlendtreeMath.cs
 Editor-Avatars/Utils/ClosestBoneUtils.cs
 Editor-Avatars/Utils/CollapseUtils.cs
+Editor-Avatars/Utils/ContactReceiverUtils.cs
 Editor-Avatars/Utils/ControllerManager.cs
+Editor-Avatars/Utils/FaceTrackingUtils.cs
 Editor-Avatars/Utils/FallbackBoneUtils.cs
 Editor-Avatars/Utils/MaHierarchyResolver.cs
 Editor-Avatars/Utils/MenuManager.cs
+Editor-Avatars/Utils/ObjectReferenceExtensions.cs
 Editor-Avatars/Utils/ParamManager.cs
 Editor-Avatars/Utils/RecorderUtils.cs
 Editor-Avatars/Utils/VFControllerWithVrcType.cs
