@@ -8,6 +8,23 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1436.0] - 2026-11-01
+### Changed / 変更
+- Version bump to keep the release line aligned with SPS for NDMF 1.1436.0, with the bundled VRCFury source updated to upstream 1.1436.0.
+
+  SPS for NDMF 1.1436.0 とバージョンを揃えるためのリリースです。同梱の VRCFury ソースを上流 1.1436.0 に更新しました。
+- Components keep the settings added in VRCFury 1.1436.0, so they are not lost when a scene or prefab saved with VRCFury is opened with the stub.
+
+  VRCFury 1.1436.0 で追加された設定を保持するようになり、VRCFury で保存したシーンやプレハブをスタブで開いても失われません。
+
+### Fixed / 修正
+- Fixed VRCFury Stub failing to compile with VRChat SDK 3.10.6 (upstream change).
+
+  VRChat SDK 3.10.6 で VRCFury Stub がコンパイルエラーになる問題を修正しました（上流の変更）。
+- Fixed the inspector becoming slow when an avatar has many SPS Plugs and SPS Sockets (upstream change).
+
+  SPS Plug や SPS Socket が多いアバターで、インスペクターの動作が重くなる問題を修正しました（上流の変更）。
+
 ## [1.1434.0] - 2026-10-31
 ### Changed / 変更
 - Version bump to keep the release line aligned with SPS for NDMF 1.1434.0, with the bundled VRCFury source updated to upstream 1.1434.0.

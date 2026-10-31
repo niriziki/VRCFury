@@ -8,6 +8,26 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1436.0] - 2026-11-01
+### Changed / 変更
+- Updated the bundled VRCFury source to upstream 1.1436.0.
+
+  同梱の VRCFury ソースを上流 1.1436.0 に更新しました。
+- **If an avatar has several SPS Plugs or SPS Sockets with the same name**, the second and later ones are now numbered `Name_2`, `Name_3` instead of `Name1`, `Name2`. Their menu names and their haptics parameter names (such as `OGB/Pen/Name1`) change with this, so OSC apps that watch the old names need to be set up again, and the saved menu toggle of those sockets may go back to its default. Avatars without duplicate names are not affected (upstream change).
+
+  **同じ名前の SPS Plug / SPS Socket が同じアバターに複数ある場合**、2個目以降の番号の付け方が `Name1`・`Name2` から `Name_2`・`Name_3` に変わります。これに伴ってメニューの項目名と触覚のパラメーター名（`OGB/Pen/Name1` など）も変わるので、以前の名前を監視している OSC アプリは設定し直す必要があります。また、該当する Socket のメニューのトグルは保存値が初期値に戻ることがあります。名前が重複していないアバターには影響しません（上流の変更）。
+
+### Fixed / 修正
+- Fixed SPS for NDMF failing to compile with VRChat SDK 3.10.6 (upstream change).
+
+  VRChat SDK 3.10.6 で SPS for NDMF がコンパイルエラーになる問題を修正しました（上流の変更）。
+- Fixed the VRChat SDK reporting a valid menu icon on an SPS Socket as invalid (upstream change).
+
+  SPS Socket に設定した正常なメニューアイコンを、VRChat SDK が不正と判定する問題を修正しました（上流の変更）。
+- Fixed the inspector becoming slow when an avatar has many SPS Plugs and SPS Sockets (upstream change).
+
+  SPS Plug や SPS Socket が多いアバターで、インスペクターの動作が重くなる問題を修正しました（上流の変更）。
+
 ## [1.1434.0] - 2026-10-31
 ### Changed / 変更
 - Updated the bundled VRCFury source to upstream 1.1434.0.
