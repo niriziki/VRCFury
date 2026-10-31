@@ -8,6 +8,20 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1434.0] - 2026-10-31
+### Changed / 変更
+- Updated the bundled VRCFury source to upstream 1.1434.0.
+
+  同梱の VRCFury ソースを上流 1.1434.0 に更新しました。
+
+### Fixed / 修正
+- Fixed SPS patching shaders that contain a Universal Render Pipeline SubShader alongside the built-in one, such as the latest Silent's Cel Shading Shader. SPS now patches only the built-in SubShader, which is the one VRChat uses (upstream change).
+
+  最新の Silent's Cel Shading Shader のように、Built-in 用と Universal Render Pipeline 用の両方の SubShader を持つシェーダーのパッチを修正しました。SPS は、VRChat が使う Built-in 用の SubShader だけをパッチします（上流の変更）。
+- Fixed the triangles on the component header in the inspector being drawn crooked (upstream change).
+
+  インスペクターのコンポーネントヘッダーの三角形が、まっすぐ描画されなかった問題を修正しました（上流の変更）。
+
 ## [1.1430.0] - 2026-10-02
 ### Changed / 変更
 - Updated the bundled VRCFury source to upstream 1.1430.0.

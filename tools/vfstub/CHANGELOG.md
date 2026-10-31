@@ -8,6 +8,17 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1434.0] - 2026-10-31
+### Changed / 変更
+- Version bump to keep the release line aligned with SPS for NDMF 1.1434.0, with the bundled VRCFury source updated to upstream 1.1434.0.
+
+  SPS for NDMF 1.1434.0 とバージョンを揃えるためのリリースです。同梱の VRCFury ソースを上流 1.1434.0 に更新しました。
+
+### Fixed / 修正
+- Fixed the triangles on the component header in the inspector being drawn crooked (upstream change).
+
+  インスペクターのコンポーネントヘッダーの三角形が、まっすぐ描画されなかった問題を修正しました（上流の変更）。
+
 ## [1.1430.0] - 2026-10-02
 ### Changed / 変更
 - Version bump to keep the release line aligned with SPS for NDMF 1.1430.0, with the bundled VRCFury source updated to upstream 1.1430.0. The update only touches shader patching, which the stub never runs, so the stub behaves the same as before.
