@@ -22,4 +22,4 @@ VRCFury Stub 自体はビルドを行いません。上の4つのコンポーネ
 
 ## 公開 API
 
-VRCFury には、他のツールがコードから SPS Socket を作成・設定するための公開 API（`com.vrcfury.api`）があります。VRCFury Stub はこの API の SPS に関わる部分を同梱しているので、この API で SPS を設定するツールを VRCFury Stub の環境でも使えます。API が有効になるのは、SPS for NDMF と SPSNDMF Migrator の両方が入っているときだけです。
+VRCFury には、他のツールがコードから SPS Socket を作成・設定するための公開 API（`com.vrcfury.api`）があります。VRCFury Stub はこの API の SPS に関わる部分を同梱しているので、この API で SPS を設定するツールを VRCFury Stub の環境でも使えます。API が有効になるのは、SPS for NDMF と SPSNDMF Migrator の両方が入っているときだけです。ツールの開発者は [公開 API](/developers/public-api/) を参照してください。
