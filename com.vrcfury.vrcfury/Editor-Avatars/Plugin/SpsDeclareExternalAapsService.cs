@@ -21,7 +21,7 @@ namespace VF.Plugin {
     [VFService]
     internal class SpsDeclareExternalAapsService {
         [VFAutowired] private readonly ControllersService controllers;
-        private ControllerManager fx => controllers.GetFx();
+        private VFAvatarController fx => controllers.GetFx();
 
         private readonly HashSet<string> drivenAaps = new HashSet<string>();
 
@@ -42,8 +42,8 @@ namespace VF.Plugin {
                 .Distinct();
             foreach (var aap in aaps) {
                 drivenAaps.Add(aap);
-                if (fx.GetParam(aap) != null) continue;
-                fx.NewFloat(aap, usePrefix: false);
+                if (fx.TryGetParam(aap, out _)) continue;
+                fx.GetOrCreateFloat(aap);
             }
         }
     }
