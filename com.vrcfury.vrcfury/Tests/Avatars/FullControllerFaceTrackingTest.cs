@@ -67,6 +67,7 @@ namespace VF.Tests {
             public readonly GlobalsService globals;
             public readonly FaceTrackingService faceTracking = new FaceTrackingService();
             private readonly ControllersService controllers = new ControllersService();
+            private readonly UniqueParamService uniqueParams = new UniqueParamService();
             private readonly List<Mesh> meshes = new List<Mesh>();
 
             public Build() {
@@ -80,10 +81,14 @@ namespace VF.Tests {
                 };
                 Inject(controllers, "avatar", avatar);
                 Inject(controllers, "globals", globals);
-                var parameters = new ParamsService();
+                var parameters = new ExpressionParamsService();
                 Inject(parameters, "avatar", avatar);
-                Inject(controllers, "paramsService", parameters);
-                Inject(controllers, "parameterSourceService", new ParameterSourceService());
+                Inject(controllers, "uniqueParams", new System.Lazy<UniqueParamService>(() => uniqueParams));
+                Inject(controllers, "expressionParams", parameters);
+                Inject(uniqueParams, "controllers", controllers);
+                Inject(uniqueParams, "expressionParams", parameters);
+                Inject(uniqueParams, "globals", globals);
+                Inject(uniqueParams, "parameterSourceService", new ParameterSourceService());
                 Inject(faceTracking, "avatar", avatar);
                 Inject(faceTracking, "controllers", controllers);
             }
@@ -121,6 +126,8 @@ namespace VF.Tests {
                 string path = null,
                 string blendshape = "Smile",
                 bool includeSet = true,
+                VRCAvatarDescriptor.VisemeDampenMode dampenMode = VRCAvatarDescriptor.VisemeDampenMode.None,
+                float dampenAmount = 1,
                 params VRCAvatarDescriptor.FaceTrackingParameterBehavior[] behaviors) {
                 var set = new VRCAvatarDescriptor.FaceTrackingBlendshapesSet { setName = setName, setWeight = setWeight };
                 if (visemes) SetMapping(set, 1, blendshape, visemes: true);
@@ -133,7 +140,9 @@ namespace VF.Tests {
                             : (skins ?? new[] { owner.GetComponent<SkinnedMeshRenderer>() })
                                 .Select(skin => (ObjectReference<SkinnedMeshRenderer>)skin).ToList(),
                         faceTrackingBlendshapeSets = includeSet ? new() { set } : new(),
-                        faceTrackingParameterBehaviors = behaviors.ToList()
+                        faceTrackingParameterBehaviors = behaviors.ToList(),
+                        visemeDampenMode = dampenMode,
+                        visemeDampenAmount = dampenAmount
                     }
                 };
                 Add(builder, builder.model);
@@ -159,9 +168,9 @@ namespace VF.Tests {
             public VF.Utils.Controller.VFBehaviour ControlSet(string name) {
                 var layerSource = new LayerSourceService();
                 Inject(layerSource, "globals", globals);
-                var controller = new ControllerManager(VF.Utils.Controller.VFController.Create(), null,
-                    VRCAvatarDescriptor.AnimLayerType.FX, () => 0, () => "", value => value, layerSource);
-                var cache = (Dictionary<VRCAvatarDescriptor.AnimLayerType, ControllerManager>)typeof(ControllersService)
+                var controller = new VFAvatarController(VF.Utils.Controller.VFController.Create(),
+                    VRCAvatarDescriptor.AnimLayerType.FX, () => 0, () => "", uniqueParams.GetUniqueName, layerSource);
+                var cache = (Dictionary<VRCAvatarDescriptor.AnimLayerType, VFAvatarController>)typeof(ControllersService)
                     .VFField("_controllers").GetValue(controllers);
                 cache[VRCAvatarDescriptor.AnimLayerType.FX] = controller;
                 return controller.NewLayer("Control").NewState("Control").behaviours.AddBehaviour<VRCAnimatorFaceTrackingBlendshapesSet>(behavior => {
@@ -188,6 +197,7 @@ namespace VF.Tests {
             }
 
             private void Add(FeatureBuilder builder, FeatureModel model) {
+                if (builder is FullControllerBuilder) Inject(builder, "uniqueParams", uniqueParams);
                 globals.allBuildersInRun.Add(builder);
                 globals.allFeaturesInRun.Add(model);
                 Inject(builder, "globals", globals);
@@ -204,6 +214,14 @@ namespace VF.Tests {
                 foreach (var action in actions.OrderBy(action => action.attribute.GetPriority()).ThenBy(action => action.attribute.GetPriorityOffset()))
                     action.method.Invoke(action.builder, null);
                 faceTracking.Apply();
+            }
+
+            public RemoveLegacyFaceTrackingService RemoveBuiltIns() {
+                var service = new RemoveLegacyFaceTrackingService();
+                Inject(service, "globals", globals);
+                Inject(service, "avatar", avatar);
+                service.Apply();
+                return service;
             }
 
             public void Dispose() {
@@ -562,6 +580,10 @@ namespace VF.Tests {
                 var skin = build.Skin("Native");
                 build.avatar.enableFaceTracking = true;
                 build.avatar.useAllTrackingKeys = true;
+                build.avatar.lipSync = VRC.SDKBase.VRC_AvatarDescriptor.LipSyncStyle.VisemeBlendShapeFaceTracking;
+                build.avatar.enableEyeLook = true;
+                build.avatar.customEyeLookSettings.eyelidType = VRCAvatarDescriptor.EyelidType.FaceTracking;
+                build.avatar.customEyeLookSettings.eyeGazeMode = VRCAvatarDescriptor.CustomEyeLookSettings.EyeGazeMode.Both;
                 build.NativeMesh(skin);
                 var input = build.NativeSet("Native");
                 var count = visemes ? (int)VRC.SDKBase.VRC_AvatarDescriptor.Viseme.Count : (int)VRCAvatarDescriptor.FaceTrackingKey.Max;
@@ -588,6 +610,180 @@ namespace VF.Tests {
                 Assert.That(outputMultipliers, Is.EqualTo(Enumerable.Range(0, count)
                     .Select(i => multipliers != null && i < multipliers.Length ? multipliers[i] : 1)));
                 Assert.That(JsonUtility.ToJson(input), Is.EqualTo(original));
+            }
+        }
+
+        [TestCase("all active")]
+        [TestCase("hardware disabled")]
+        [TestCase("visemes disabled")]
+        [TestCase("eye look disabled")]
+        [TestCase("legacy eyelids")]
+        [TestCase("face tracking disabled")]
+        public void NativeDescriptorIsNormalizedBeforeAnyImports(string state) {
+            using (var build = new Build()) {
+                var skin = build.Skin("Native");
+                var avatar = build.avatar;
+                avatar.enableFaceTracking = state != "face tracking disabled";
+                avatar.useAllTrackingKeys = state != "hardware disabled";
+                avatar.lipSync = state == "visemes disabled"
+                    ? VRC.SDKBase.VRC_AvatarDescriptor.LipSyncStyle.VisemeParameterOnly
+                    : VRC.SDKBase.VRC_AvatarDescriptor.LipSyncStyle.VisemeBlendShapeFaceTracking;
+                avatar.enableEyeLook = state != "eye look disabled";
+                avatar.customEyeLookSettings.eyelidType = state == "legacy eyelids"
+                    ? VRCAvatarDescriptor.EyelidType.Blendshapes : VRCAvatarDescriptor.EyelidType.FaceTracking;
+                avatar.customEyeLookSettings.eyeGazeMode = state == "legacy eyelids"
+                    ? VRCAvatarDescriptor.CustomEyeLookSettings.EyeGazeMode.BoneRotation
+                    : VRCAvatarDescriptor.CustomEyeLookSettings.EyeGazeMode.Both;
+                avatar.customEyeLookSettings.leftEye = skin.transform;
+                avatar.customEyeLookSettings.rightEye = skin.transform;
+                avatar.customEyeLookSettings.eyelidsSkinnedMesh = skin;
+                avatar.customEyeLookSettings.eyelidsBlendshapes = new[] { 0, 0, 0 };
+                avatar.visemeDampenMode = VRCAvatarDescriptor.VisemeDampenMode.DampenTracking;
+                build.NativeMesh(skin);
+                var source = build.NativeSet("Native");
+                var keys = new[] { VRCAvatarDescriptor.FaceTrackingKey.JawOpen,
+                    VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft, VRCAvatarDescriptor.FaceTrackingKey.EyeLookUpLeft };
+                foreach (var key in keys) SetMapping(source, (int)key, "Smile", multiplier: 0.25f);
+                SetMapping(source, 1, "Smile", visemes: true, multiplier: 0.25f);
+                avatar.faceTrackingParameterBehaviors = keys.Select(key => new VRCAvatarDescriptor.FaceTrackingParameterBehavior {
+                    outputParameterName = key.ToString(), inputTrackingKeyNames = new[] { key.ToString() },
+                    targetMode = VRCAvatarDescriptor.ParameterBehaviorTargetMode.ForwardToAnimator
+                }).Concat(new[] { new VRCAvatarDescriptor.FaceTrackingParameterBehavior {
+                    outputParameterName = "Viseme", inputTrackingKeyNames = new[] { "Viseme_aa" },
+                    targetMode = VRCAvatarDescriptor.ParameterBehaviorTargetMode.ForwardToAnimator
+                } }).ToList();
+                var json = JsonUtility.ToJson(source);
+                build.faceTracking.CaptureInitialState();
+                Assert.That(JsonUtility.ToJson(source), Is.EqualTo(json), "Do not mutate shared source settings");
+                if (state == "face tracking disabled") {
+                    Assert.That(avatar.faceTrackingBlendshapesSetList, Is.Empty);
+                    Assert.That(avatar.faceTrackingParameterBehaviors, Is.Empty);
+                    Assert.That(avatar.useAllTrackingKeys, Is.False);
+                } else {
+                    var normalized = avatar.faceTrackingBlendshapesSetList.Single();
+                    foreach (var key in keys) {
+                        var active = key == VRCAvatarDescriptor.FaceTrackingKey.JawOpen
+                            ? state != "hardware disabled"
+                            : state != "legacy eyelids";
+                        Assert.That(normalized.faceTrackingBlendshapeNames[(int)key], active ? Is.EqualTo("Smile") : Is.Empty);
+                        Assert.That(normalized.faceTrackingBlendshapeMultipliers[(int)key], Is.EqualTo(active ? 0.25f : 1));
+                        Assert.That(avatar.faceTrackingParameterBehaviors.Any(b => b.outputParameterName == key.ToString()), Is.EqualTo(active));
+                    }
+                    Assert.That(normalized.visemeBlendshapeNames.ElementAtOrDefault(1) ?? "",
+                        state == "visemes disabled" ? Is.Empty : Is.EqualTo("Smile"));
+                    Assert.That(avatar.faceTrackingParameterBehaviors.Any(b => b.outputParameterName == "Viseme"),
+                        Is.EqualTo(state != "visemes disabled"));
+                }
+                Assert.That(avatar.visemeDampenMode, Is.EqualTo(state == "all active" || state == "eye look disabled" || state == "legacy eyelids"
+                    ? VRCAvatarDescriptor.VisemeDampenMode.DampenTracking : VRCAvatarDescriptor.VisemeDampenMode.None));
+                if (state == "eye look disabled") {
+                    Assert.That(avatar.customEyeLookSettings.leftEye, Is.Null);
+                    Assert.That(avatar.customEyeLookSettings.rightEye, Is.Null);
+                    Assert.That(avatar.customEyeLookSettings.eyelidType, Is.EqualTo(VRCAvatarDescriptor.EyelidType.None));
+                    Assert.That(avatar.customEyeLookSettings.eyeGazeMode,
+                        Is.EqualTo(VRCAvatarDescriptor.CustomEyeLookSettings.EyeGazeMode.BoneRotation));
+                }
+                if (state == "legacy eyelids") Assert.That(avatar.customEyeLookSettings.eyelidType,
+                    Is.EqualTo(VRCAvatarDescriptor.EyelidType.Blendshapes));
+            }
+        }
+
+        [Test, Combinatorial]
+        public void NativeEyeInputNormalizationMatchesSdkGates(
+            [Values] bool eyeLookEnabled,
+            [Values(VRCAvatarDescriptor.EyelidType.None, VRCAvatarDescriptor.EyelidType.Blendshapes,
+                VRCAvatarDescriptor.EyelidType.Bones, VRCAvatarDescriptor.EyelidType.FaceTracking)] VRCAvatarDescriptor.EyelidType eyelids,
+            [Values(VRCAvatarDescriptor.CustomEyeLookSettings.EyeGazeMode.BoneRotation,
+                VRCAvatarDescriptor.CustomEyeLookSettings.EyeGazeMode.FaceTracking,
+                VRCAvatarDescriptor.CustomEyeLookSettings.EyeGazeMode.Both)] VRCAvatarDescriptor.CustomEyeLookSettings.EyeGazeMode gaze) {
+            using (var build = new Build()) {
+                var skin = build.Skin("Native");
+                build.avatar.enableFaceTracking = build.avatar.useAllTrackingKeys = true;
+                build.avatar.enableEyeLook = eyeLookEnabled;
+                build.avatar.customEyeLookSettings.eyelidType = eyelids;
+                build.avatar.customEyeLookSettings.eyeGazeMode = gaze;
+                build.NativeMesh(skin);
+                var set = build.NativeSet("Native");
+                var keys = new[] { VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft,
+                    VRCAvatarDescriptor.FaceTrackingKey.EyeClosedRight, VRCAvatarDescriptor.FaceTrackingKey.EyeLookUpLeft,
+                    VRCAvatarDescriptor.FaceTrackingKey.EyeLookOutRight };
+                foreach (var key in keys) SetMapping(set, (int)key, "Smile");
+                foreach (var key in keys) {
+                    foreach (var custom in new[] { false, true }) {
+                        if (build.avatar.faceTrackingParameterBehaviors == null)
+                            build.avatar.faceTrackingParameterBehaviors = new();
+                        build.avatar.faceTrackingParameterBehaviors.Add(new VRCAvatarDescriptor.FaceTrackingParameterBehavior {
+                            targetMode = VRCAvatarDescriptor.ParameterBehaviorTargetMode.ForwardToAnimator,
+                            outputParameterName = key + (custom ? "Custom" : "List"),
+                            inputTrackingKeyNames = custom ? System.Array.Empty<string>() : new[] { key.ToString() },
+                            combineMode = custom ? VRCAvatarDescriptor.ParameterBehaviorCombineMode.Custom
+                                : VRCAvatarDescriptor.ParameterBehaviorCombineMode.Max,
+                            customExpression = key.ToString()
+                        });
+                    }
+                }
+                build.faceTracking.CaptureInitialState();
+                foreach (var key in keys) {
+                    var blink = key == VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft
+                                || key == VRCAvatarDescriptor.FaceTrackingKey.EyeClosedRight;
+                    var active = !eyeLookEnabled || (blink
+                        ? eyelids == VRCAvatarDescriptor.EyelidType.None || eyelids == VRCAvatarDescriptor.EyelidType.FaceTracking
+                        : gaze != VRCAvatarDescriptor.CustomEyeLookSettings.EyeGazeMode.BoneRotation);
+                    Assert.That(build.avatar.faceTrackingBlendshapesSetList.Single().faceTrackingBlendshapeNames[(int)key],
+                        active ? Is.EqualTo("Smile") : Is.Empty);
+                    foreach (var suffix in new[] { "List", "Custom" })
+                        Assert.That(build.avatar.faceTrackingParameterBehaviors.Any(b => b.outputParameterName == key + suffix), Is.EqualTo(active));
+                }
+            }
+        }
+
+        [TestCase(VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft, false)]
+        [TestCase(VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft, true)]
+        [TestCase(VRCAvatarDescriptor.FaceTrackingKey.EyeLookUpLeft, false)]
+        [TestCase(VRCAvatarDescriptor.FaceTrackingKey.EyeLookUpLeft, true)]
+        public void NativeEyeInputsAreCleanedOnceAndImportedInputsSurviveLaterEnablement(
+            VRCAvatarDescriptor.FaceTrackingKey key, bool custom) {
+            using (var build = new Build()) {
+                var native = build.Skin("Native");
+                var imported = build.Skin("Imported");
+                build.avatar.enableFaceTracking = build.avatar.useAllTrackingKeys = true;
+                build.avatar.enableEyeLook = true;
+                build.avatar.customEyeLookSettings.eyelidType = VRCAvatarDescriptor.EyelidType.Blendshapes;
+                build.avatar.customEyeLookSettings.eyeGazeMode = VRCAvatarDescriptor.CustomEyeLookSettings.EyeGazeMode.BoneRotation;
+                build.NativeMesh(native);
+                var source = build.NativeSet("Native");
+                SetMapping(source, (int)key, "Smile");
+                build.avatar.faceTrackingParameterBehaviors = new List<VRCAvatarDescriptor.FaceTrackingParameterBehavior> {
+                    new VRCAvatarDescriptor.FaceTrackingParameterBehavior {
+                        targetMode = VRCAvatarDescriptor.ParameterBehaviorTargetMode.ForwardToAnimator,
+                        outputParameterName = "InactiveNative",
+                        inputTrackingKeyNames = custom ? System.Array.Empty<string>() : new[] { key.ToString() },
+                        combineMode = custom ? VRCAvatarDescriptor.ParameterBehaviorCombineMode.Custom
+                            : VRCAvatarDescriptor.ParameterBehaviorCombineMode.Max,
+                        customExpression = key.ToString()
+                    },
+                    new VRCAvatarDescriptor.FaceTrackingParameterBehavior {
+                        targetMode = VRCAvatarDescriptor.ParameterBehaviorTargetMode.ForwardToAnimator,
+                        outputParameterName = "VoiceOnly", inputTrackingKeyNames = new[] { "Voice" }
+                    }
+                };
+                build.faceTracking.CaptureInitialState();
+                Assert.That(build.avatar.faceTrackingParameterBehaviors.Select(b => b.outputParameterName), Is.EqualTo(new[] { "VoiceOnly" }));
+                build.Full(imported.gameObject, key, behaviors: new[] {
+                    new VRCAvatarDescriptor.FaceTrackingParameterBehavior {
+                        targetMode = VRCAvatarDescriptor.ParameterBehaviorTargetMode.ForwardToAnimator,
+                        outputParameterName = "ImportedInput", inputTrackingKeyNames = new[] { key.ToString() }
+                    }
+                });
+                build.faceTracking.CaptureInitialState();
+                build.Run();
+                Assert.That(build.avatar.faceTrackingBlendshapesSetList.Single(set => set.setName == "Native")
+                    .faceTrackingBlendshapeNames[(int)key], Is.Empty);
+                Assert.That(build.avatar.faceTrackingBlendshapesSetList.Single(set => set.setName == "VF1_Face")
+                    .faceTrackingBlendshapeNames[(int)key], Is.Not.Empty);
+                Assert.That(build.avatar.faceTrackingParameterBehaviors.Select(b => b.outputParameterName),
+                    Is.EquivalentTo(new[] { "VoiceOnly", "VF1_ImportedInput" }));
+                Assert.That(source.faceTrackingBlendshapeNames[(int)key], Is.EqualTo("Smile"));
             }
         }
 
@@ -1400,6 +1596,31 @@ namespace VF.Tests {
 
         [TestCase(false)]
         [TestCase(true)]
+        public void ImportingUnrelatedFtKeysUpgradesBuiltInsOnTheSameMesh(bool sameMesh) {
+            using (var build = new Build()) {
+                var legacy = build.Skin("Legacy");
+                var source = sameMesh ? legacy : build.Skin("Source");
+                build.avatar.lipSync = VRC.SDKBase.VRC_AvatarDescriptor.LipSyncStyle.VisemeBlendShape;
+                build.avatar.VisemeSkinnedMesh = legacy;
+                build.avatar.VisemeBlendShapes = Enumerable.Repeat("Smile", FaceTrackingUtils.VisemeCount).ToArray();
+                build.avatar.enableEyeLook = true;
+                build.avatar.customEyeLookSettings.eyelidType = VRCAvatarDescriptor.EyelidType.Blendshapes;
+                build.avatar.customEyeLookSettings.eyelidsSkinnedMesh = legacy;
+                build.avatar.customEyeLookSettings.eyelidsBlendshapes = new[] { 0, -1, -1 };
+                build.Full(source.gameObject, VRCAvatarDescriptor.FaceTrackingKey.JawOpen);
+                build.Run();
+                Assert.That(build.avatar.lipSync, Is.EqualTo(sameMesh
+                    ? VRC.SDKBase.VRC_AvatarDescriptor.LipSyncStyle.VisemeBlendShapeFaceTracking
+                    : VRC.SDKBase.VRC_AvatarDescriptor.LipSyncStyle.VisemeBlendShape));
+                Assert.That(build.avatar.customEyeLookSettings.eyelidType, Is.EqualTo(sameMesh
+                    ? VRCAvatarDescriptor.EyelidType.FaceTracking : VRCAvatarDescriptor.EyelidType.Blendshapes));
+                Assert.That(build.avatar.faceTrackingBlendshapesSetList.Any(set => set.setName == "_vrcf_upgraded_visemes"), Is.EqualTo(sameMesh));
+                Assert.That(build.avatar.faceTrackingBlendshapesSetList.Any(set => set.setName == "_vrcf_upgraded_eyelids"), Is.EqualTo(sameMesh));
+            }
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
         public void JawFlapBlendshapeMigratesToVoiceBehavior(bool nativeTracking) {
             using (var build = new Build()) {
                 var jaw = build.Skin("Jaw");
@@ -1542,12 +1763,17 @@ namespace VF.Tests {
                 var plan = build.faceTracking.CreatePlan();
                 Assert.That(build.avatar.MouthOpenBlendShapeName, Is.EqualTo("Smile"), "Planning must not rewrite the descriptor");
                 build.faceTracking.ApplyPlan(plan);
-                Assert.That(build.avatar.lipSync, Is.EqualTo(mode));
+                Assert.That(build.avatar.lipSync, Is.EqualTo(mode == VRC.SDKBase.VRC_AvatarDescriptor.LipSyncStyle.JawFlapBlendShape
+                    ? VRC.SDKBase.VRC_AvatarDescriptor.LipSyncStyle.VisemeBlendShapeFaceTracking : mode));
                 var mapping = build.avatar.faceTrackingBlendshapesSetList.Single()
                     .faceTrackingBlendshapeNames[(int)VRCAvatarDescriptor.FaceTrackingKey.JawOpen];
                 Assert.That(skin.HasBlendshape(mapping), Is.True);
-                Assert.That(build.avatar.MouthOpenBlendShapeName,
-                    Is.EqualTo(mode == VRC.SDKBase.VRC_AvatarDescriptor.LipSyncStyle.JawFlapBlendShape ? mapping : "Smile"));
+                if (mode == VRC.SDKBase.VRC_AvatarDescriptor.LipSyncStyle.JawFlapBlendShape) {
+                    var jaw = build.avatar.faceTrackingParameterBehaviors.Single();
+                    Assert.That(skin.HasBlendshape(jaw.targetBlendshapeName), Is.True);
+                    Assert.That(jaw.inputTrackingKeyNames, Is.EqualTo(new[] { "Voice" }));
+                }
+                Assert.That(build.avatar.MouthOpenBlendShapeName, Is.EqualTo("Smile"));
             }
         }
 
@@ -1744,6 +1970,70 @@ namespace VF.Tests {
             }
         }
 
+        [TestCase(VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft, false)]
+        [TestCase(VRCAvatarDescriptor.FaceTrackingKey.EyeClosedRight, false)]
+        [TestCase(VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft, true)]
+        [TestCase(VRCAvatarDescriptor.FaceTrackingKey.EyeClosedRight, true)]
+        [TestCase(VRCAvatarDescriptor.FaceTrackingKey.JawOpen, false)]
+        [TestCase(VRCAvatarDescriptor.FaceTrackingKey.JawOpen, true)]
+        public void ImportedBehaviorEyeClosedInputsEnableEyelidModeWithoutDirectMappings(
+            VRCAvatarDescriptor.FaceTrackingKey key, bool custom) {
+            using (var build = new Build()) {
+                var source = build.Skin("Source");
+                build.avatar.enableEyeLook = false;
+                build.avatar.customEyeLookSettings.eyelidType = VRCAvatarDescriptor.EyelidType.None;
+                var behavior = new VRCAvatarDescriptor.FaceTrackingParameterBehavior {
+                    targetMode = VRCAvatarDescriptor.ParameterBehaviorTargetMode.ForwardToAnimator,
+                    outputParameterName = "Output",
+                    inputTrackingKeyNames = custom ? System.Array.Empty<string>() : new[] { "Voice", key.ToString() },
+                    inputTrackingKeys = new[] { (int)VRCAvatarDescriptor.FaceTrackingKey.JawOpen },
+                    combineMode = custom ? VRCAvatarDescriptor.ParameterBehaviorCombineMode.Custom
+                        : VRCAvatarDescriptor.ParameterBehaviorCombineMode.Max,
+                    customExpression = $"max(Voice, {key})"
+                };
+                build.Full(source.gameObject, includeSet: false, behaviors: new[] { behavior });
+                build.Run();
+                var eyelids = key == VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft
+                              || key == VRCAvatarDescriptor.FaceTrackingKey.EyeClosedRight;
+                Assert.That(build.avatar.customEyeLookSettings.eyelidType, Is.EqualTo(eyelids
+                    ? VRCAvatarDescriptor.EyelidType.FaceTracking : VRCAvatarDescriptor.EyelidType.None));
+                Assert.That(build.avatar.enableEyeLook, Is.EqualTo(eyelids));
+                Assert.That(build.avatar.faceTrackingParameterBehaviors, Has.Count.EqualTo(1));
+            }
+        }
+
+        [Test, Combinatorial]
+        public void ImportedBehaviorGazeInputsEnableGazeWithoutDirectMappings(
+            [Values(VRCAvatarDescriptor.FaceTrackingKey.EyeLookOutRight, VRCAvatarDescriptor.FaceTrackingKey.EyeLookInRight,
+                VRCAvatarDescriptor.FaceTrackingKey.EyeLookUpRight, VRCAvatarDescriptor.FaceTrackingKey.EyeLookDownRight,
+                VRCAvatarDescriptor.FaceTrackingKey.EyeLookOutLeft, VRCAvatarDescriptor.FaceTrackingKey.EyeLookInLeft,
+                VRCAvatarDescriptor.FaceTrackingKey.EyeLookUpLeft, VRCAvatarDescriptor.FaceTrackingKey.EyeLookDownLeft,
+                VRCAvatarDescriptor.FaceTrackingKey.JawOpen)] VRCAvatarDescriptor.FaceTrackingKey key,
+            [Values] bool custom, [Values] bool eyeLookEnabled) {
+            using (var build = new Build()) {
+                var source = build.Skin("Source");
+                build.avatar.enableEyeLook = eyeLookEnabled;
+                build.avatar.customEyeLookSettings.eyeGazeMode = VRCAvatarDescriptor.CustomEyeLookSettings.EyeGazeMode.BoneRotation;
+                var behavior = new VRCAvatarDescriptor.FaceTrackingParameterBehavior {
+                    targetMode = VRCAvatarDescriptor.ParameterBehaviorTargetMode.ForwardToAnimator,
+                    outputParameterName = "Output",
+                    inputTrackingKeyNames = custom ? System.Array.Empty<string>() : new[] { key.ToString() },
+                    inputTrackingKeys = new[] { (int)VRCAvatarDescriptor.FaceTrackingKey.JawOpen },
+                    combineMode = custom ? VRCAvatarDescriptor.ParameterBehaviorCombineMode.Custom
+                        : VRCAvatarDescriptor.ParameterBehaviorCombineMode.Max,
+                    customExpression = $"max(Voice, {key})"
+                };
+                build.Full(source.gameObject, includeSet: false, behaviors: new[] { behavior });
+                build.Run();
+                var gaze = key != VRCAvatarDescriptor.FaceTrackingKey.JawOpen;
+                Assert.That(build.avatar.enableEyeLook, Is.EqualTo(eyeLookEnabled || gaze));
+                Assert.That(build.avatar.customEyeLookSettings.eyeGazeMode, Is.EqualTo(gaze
+                    ? VRCAvatarDescriptor.CustomEyeLookSettings.EyeGazeMode.Both
+                    : VRCAvatarDescriptor.CustomEyeLookSettings.EyeGazeMode.BoneRotation));
+                Assert.That(build.avatar.faceTrackingParameterBehaviors, Has.Count.EqualTo(1));
+            }
+        }
+
         [TestCase(false, false)]
         [TestCase(false, true)]
         [TestCase(true, false)]
@@ -1803,6 +2093,9 @@ namespace VF.Tests {
             using (var build = new Build()) {
                 var skin = build.Skin("Original");
                 build.avatar.enableFaceTracking = true;
+                build.avatar.useAllTrackingKeys = true;
+                build.avatar.enableEyeLook = true;
+                build.avatar.customEyeLookSettings.eyelidType = VRCAvatarDescriptor.EyelidType.FaceTracking;
                 build.NativeMesh(skin);
                 var shadowed = build.NativeSet("Shared");
                 SetMapping(shadowed, (int)VRCAvatarDescriptor.FaceTrackingKey.JawOpen, "Smile");
@@ -1876,7 +2169,7 @@ namespace VF.Tests {
         [TestCase(VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft, false)]
         [TestCase(VRCAvatarDescriptor.FaceTrackingKey.EyeLookUpLeft, false)]
         [TestCase(VRCAvatarDescriptor.FaceTrackingKey.JawOpen, true)]
-        public void BasicImportsDoNotEnableInactiveNativeHardwareMappings(VRCAvatarDescriptor.FaceTrackingKey key, bool visemes) {
+        public void BasicImportsDiscardInactiveNativeHardwareMappings(VRCAvatarDescriptor.FaceTrackingKey key, bool visemes) {
             using (var build = new Build()) {
                 var native = build.Skin("Native");
                 var imported = build.Skin("Imported");
@@ -1889,7 +2182,7 @@ namespace VF.Tests {
                 build.Run();
                 Assert.That(build.avatar.useAllTrackingKeys, Is.False);
                 Assert.That(build.avatar.faceTrackingBlendshapesSetList.Single(entry => entry.setName == "Native")
-                    .faceTrackingBlendshapeNames[(int)VRCAvatarDescriptor.FaceTrackingKey.JawOpen], Is.EqualTo("Smile"));
+                    .faceTrackingBlendshapeNames[(int)VRCAvatarDescriptor.FaceTrackingKey.JawOpen], Is.Empty);
             }
         }
 
@@ -1945,6 +2238,195 @@ namespace VF.Tests {
             }
         }
 
+        [TestCase(VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft, false)]
+        [TestCase(VRCAvatarDescriptor.FaceTrackingKey.EyeClosedRight, false)]
+        [TestCase(VRCAvatarDescriptor.FaceTrackingKey.JawOpen, false)]
+        [TestCase(VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft, true)]
+        [TestCase(VRCAvatarDescriptor.FaceTrackingKey.EyeClosedRight, true)]
+        [TestCase(VRCAvatarDescriptor.FaceTrackingKey.JawOpen, true)]
+        public void BehaviorInputsMarkEyelidsHandledWithoutDirectBlendshapeMappings(
+            VRCAvatarDescriptor.FaceTrackingKey key, bool custom) {
+            using (var build = new Build()) {
+                var covered = build.Skin("Covered");
+                var other = build.Skin("Other");
+                build.avatar.enableEyeLook = true;
+                build.avatar.customEyeLookSettings.eyelidType = VRCAvatarDescriptor.EyelidType.Blendshapes;
+                build.avatar.customEyeLookSettings.eyelidsSkinnedMesh = covered;
+                build.globals.allFeaturesInRun.Add(new FullController {
+                    faceTrackingMeshes = { (ObjectReference<SkinnedMeshRenderer>)covered },
+                    faceTrackingParameterBehaviors = {
+                        new VRCAvatarDescriptor.FaceTrackingParameterBehavior {
+                            targetMode = VRCAvatarDescriptor.ParameterBehaviorTargetMode.ApplyToBlendshape,
+                            targetBlendshapeName = "Smile",
+                            inputTrackingKeyNames = custom ? System.Array.Empty<string>() : new[] { "Voice", key.ToString() },
+                            combineMode = custom ? VRCAvatarDescriptor.ParameterBehaviorCombineMode.Custom
+                                : VRCAvatarDescriptor.ParameterBehaviorCombineMode.Max,
+                            customExpression = $"max(Voice, {key})"
+                        }
+                    }
+                });
+                var service = build.RemoveBuiltIns();
+                var eyelids = key == VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft
+                              || key == VRCAvatarDescriptor.FaceTrackingKey.EyeClosedRight;
+                Assert.That(service.GetHandled(covered).eyelids, Is.EqualTo(eyelids));
+                Assert.That(service.GetHandled(other).eyelids, Is.False);
+                Assert.That(build.avatar.customEyeLookSettings.eyelidType, Is.EqualTo(eyelids
+                    ? VRCAvatarDescriptor.EyelidType.None : VRCAvatarDescriptor.EyelidType.Blendshapes));
+            }
+        }
+
+        [TestCase(false, false)]
+        [TestCase(false, true)]
+        [TestCase(true, false)]
+        [TestCase(true, true)]
+        public void BehaviorOnlyVisemesReplaceLegacyVisemesOnCoveredRenderer(bool custom, bool jawFlap) {
+            using (var build = new Build()) {
+                var covered = build.Skin("Covered");
+                var other = build.Skin("Other");
+                build.avatar.VisemeSkinnedMesh = covered;
+                build.avatar.lipSync = jawFlap ? VRC.SDKBase.VRC_AvatarDescriptor.LipSyncStyle.JawFlapBlendShape
+                    : VRC.SDKBase.VRC_AvatarDescriptor.LipSyncStyle.VisemeBlendShape;
+                build.avatar.VisemeBlendShapes = Enumerable.Repeat("Smile", FaceTrackingUtils.VisemeCount).ToArray();
+                build.avatar.MouthOpenBlendShapeName = "Smile";
+                build.globals.allFeaturesInRun.Add(new FullController {
+                    faceTrackingMeshes = { (ObjectReference<SkinnedMeshRenderer>)covered },
+                    faceTrackingParameterBehaviors = {
+                        new VRCAvatarDescriptor.FaceTrackingParameterBehavior {
+                            targetMode = VRCAvatarDescriptor.ParameterBehaviorTargetMode.ApplyToBlendshape,
+                            targetBlendshapeName = "Smile",
+                            inputTrackingKeyNames = custom ? System.Array.Empty<string>() : new[] { "Viseme_aa" },
+                            combineMode = custom ? VRCAvatarDescriptor.ParameterBehaviorCombineMode.Custom
+                                : VRCAvatarDescriptor.ParameterBehaviorCombineMode.Max,
+                            customExpression = "max(Viseme_aa, Voice)"
+                        }
+                    }
+                });
+                var service = build.RemoveBuiltIns();
+                Assert.That(service.GetHandled(covered).visemes, Is.True);
+                Assert.That(service.GetHandled(other).visemes, Is.False);
+                Assert.That(build.avatar.lipSync, Is.EqualTo(VRC.SDKBase.VRC_AvatarDescriptor.LipSyncStyle.VisemeParameterOnly));
+            }
+        }
+
+        [TestCase(false, false)]
+        [TestCase(false, true)]
+        [TestCase(true, false)]
+        [TestCase(true, true)]
+        public void BlinkControllerDropsActionsTargetingFtCoveredRenderers(bool allRenderers, bool eyelids) {
+            using (var build = new Build()) {
+                var covered = build.Skin("Covered");
+                var other = build.Skin("Other");
+                var settings = FaceTrackingUtils.CreateBlendshapeSet("Covered");
+                SetMapping(settings, eyelids ? (int)VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft : 1,
+                    "Smile", visemes: !eyelids);
+                build.globals.allFeaturesInRun.Add(new FullController {
+                    faceTrackingMeshes = { (ObjectReference<SkinnedMeshRenderer>)covered },
+                    faceTrackingBlendshapeSets = { settings }
+                });
+                var service = build.RemoveBuiltIns();
+                Assert.That(service.GetHandled(covered).eyelids, Is.EqualTo(eyelids));
+                Assert.That(service.GetHandled(covered).visemes, Is.EqualTo(!eyelids));
+                Assert.That(service.GetHandled(other), Is.EqualTo((false, false)));
+                var action = new BlendShapeAction {
+                    renderer = covered, allRenderers = allRenderers, blendShape = "Smile",
+                    blendShapeValue = 70, localOnly = true
+                };
+                var builder = new BlinkingBuilder { model = new Blinking { state = new State { actions = { action } } } };
+                typeof(BlinkingBuilder).VFField("avatarObject").SetValue(builder, (VFGameObject)build.root);
+                typeof(BlinkingBuilder).VFField("legacyFaceTracking").SetValue(builder, service);
+                var state = builder.GetBlinkState();
+                var shapes = state.actions.Cast<BlendShapeAction>().ToArray();
+                Assert.That(shapes, Is.EqualTo(eyelids ? System.Array.Empty<BlendShapeAction>() : new[] { action }));
+                Assert.That(action.allRenderers, Is.EqualTo(allRenderers), "Do not modify authored actions");
+                if (eyelids) {
+                    // No animator services are injected: returning here proves no parameters/layers are created.
+                    Assert.DoesNotThrow(() => builder.Apply());
+                }
+                other.sharedMesh.AddBlendShapeFrame("OtherBlink", 100, new[] { Vector3.down }, null, null);
+                var otherAction = new BlendShapeAction { allRenderers = true, blendShape = "OtherBlink" };
+                builder.model.state.actions.Add(otherAction);
+                Assert.That(builder.GetBlinkState().actions, Does.Contain(otherAction), "A shape absent from covered renderers is retained");
+                var nonShape = new ObjectToggleAction { obj = other.gameObject };
+                builder.model.state.actions.Add(nonShape);
+                Assert.That(builder.GetBlinkState().actions, Does.Contain(nonShape));
+            }
+        }
+
+        [Test, Combinatorial]
+        public void FullControllerCoverageReplacesOnlyMatchingBuiltInGroups(
+            [Values("blink", "gaze", "visemes")] string group,
+            [Values] bool sameMesh, [Values] bool coveredFirst, [Values] bool validShape) {
+            using (var build = new Build()) {
+                var legacy = build.Skin("Legacy");
+                legacy.sharedMesh.AddBlendShapeFrame("Up", 100, new[] { Vector3.right }, null, null);
+                legacy.sharedMesh.AddBlendShapeFrame("Down", 100, new[] { Vector3.down }, null, null);
+                var covered = sameMesh ? legacy : build.Skin("Covered");
+                var other = build.Skin("Other");
+                build.avatar.lipSync = VRC.SDKBase.VRC_AvatarDescriptor.LipSyncStyle.VisemeBlendShape;
+                build.avatar.VisemeSkinnedMesh = legacy;
+                build.avatar.VisemeBlendShapes = Enumerable.Repeat("Smile", FaceTrackingUtils.VisemeCount).ToArray();
+                build.avatar.enableEyeLook = true;
+                build.avatar.customEyeLookSettings.eyelidType = VRCAvatarDescriptor.EyelidType.Blendshapes;
+                build.avatar.customEyeLookSettings.eyeGazeMode = VRCAvatarDescriptor.CustomEyeLookSettings.EyeGazeMode.BoneRotation;
+                build.avatar.customEyeLookSettings.eyelidsSkinnedMesh = legacy;
+                build.avatar.customEyeLookSettings.eyelidsBlendshapes = new[] { 0, 1, 2 };
+                var key = group == "blink" ? VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft
+                    : VRCAvatarDescriptor.FaceTrackingKey.EyeLookUpLeft;
+                var shape = validShape ? "Smile" : "Missing";
+                var settings = FaceTrackingUtils.CreateBlendshapeSet("Covered");
+                SetMapping(settings, group == "visemes" ? 1 : (int)key, shape, visemes: group == "visemes");
+                // The prepass sees all components, including the one applied last.
+                build.globals.allFeaturesInRun.Add(new FullController {
+                    faceTrackingMeshes = { (ObjectReference<SkinnedMeshRenderer>)covered },
+                    faceTrackingBlendshapeSets = { settings }
+                });
+                build.RemoveBuiltIns();
+                void Covered() => build.Full(covered.gameObject, key, visemes: group == "visemes", blendshape: shape);
+                void Other() => build.Full(other.gameObject,
+                    group == "blink" ? VRCAvatarDescriptor.FaceTrackingKey.EyeLookUpLeft
+                        : VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft,
+                    visemes: group == "visemes");
+                if (coveredFirst) { Covered(); Other(); }
+                else { Other(); Covered(); }
+                build.Run();
+                var replaced = sameMesh;
+                var upgradedVisemes = build.avatar.faceTrackingBlendshapesSetList
+                    .Where(set => set.setName.StartsWith("_vrcf_upgraded_visemes")).ToArray();
+                if (group == "visemes") Assert.That(upgradedVisemes.Any(), Is.EqualTo(!replaced));
+                if (group != "visemes") {
+                    var upgradedEyes = build.avatar.faceTrackingBlendshapesSetList
+                        .Where(set => set.setName.StartsWith("_vrcf_upgraded_eyelids")).ToArray();
+                    bool HasLegacy(VRCAvatarDescriptor.FaceTrackingKey eyeKey) => upgradedEyes.Any(set =>
+                        !string.IsNullOrEmpty(set.faceTrackingBlendshapeNames[(int)eyeKey]));
+                    Assert.That(HasLegacy(VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft), Is.EqualTo(group != "blink" || !replaced));
+                    Assert.That(HasLegacy(VRCAvatarDescriptor.FaceTrackingKey.EyeLookUpLeft), Is.EqualTo(group != "blink" || !replaced));
+                }
+            }
+        }
+
+        [TestCase(VRCAvatarDescriptor.EyelidType.Blendshapes, VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft)]
+        [TestCase(VRCAvatarDescriptor.EyelidType.Bones, VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft)]
+        [TestCase(VRCAvatarDescriptor.EyelidType.Blendshapes, VRCAvatarDescriptor.FaceTrackingKey.EyeLookUpLeft)]
+        [TestCase(VRCAvatarDescriptor.EyelidType.Bones, VRCAvatarDescriptor.FaceTrackingKey.EyeLookUpLeft)]
+        public void RemovingBuiltInBlinkingPreventsLegacyFtMigration(VRCAvatarDescriptor.EyelidType eyelidType, VRCAvatarDescriptor.FaceTrackingKey importedKey) {
+            using (var build = new Build()) {
+                var legacy = build.Skin("Legacy");
+                var imported = build.Skin("Imported");
+                build.avatar.enableEyeLook = true;
+                build.avatar.customEyeLookSettings.eyelidType = eyelidType;
+                build.avatar.customEyeLookSettings.eyelidsSkinnedMesh = legacy;
+                build.avatar.customEyeLookSettings.eyelidsBlendshapes = new[] { 0, -1, -1 };
+                build.globals.allFeaturesInRun.Add(new RemoveBlinking());
+                build.RemoveBuiltIns();
+                build.Full(imported.gameObject, importedKey);
+                build.Run();
+                Assert.That(build.avatar.faceTrackingBlendshapesSetList
+                    .Any(set => set.setName.StartsWith("_vrcf_upgraded_eyelids")), Is.False);
+                Assert.That(build.avatar.faceTrackingBlendshapesSetList
+                    .Any(set => !string.IsNullOrEmpty(set.faceTrackingBlendshapeNames[(int)importedKey])), Is.True);
+            }
+        }
+
         [TestCase(VRCAvatarDescriptor.FaceTrackingKey.EyeClosedLeft)]
         [TestCase(VRCAvatarDescriptor.FaceTrackingKey.EyeLookUpLeft)]
         public void ExplicitUpgradeRegistrationPreservesLegacyEyeScopes(VRCAvatarDescriptor.FaceTrackingKey importedKey) {
@@ -1989,8 +2471,13 @@ namespace VF.Tests {
                     : VRC.SDKBase.VRC_AvatarDescriptor.LipSyncStyle.VisemeParameterOnly;
                 build.avatar.visemeDampenMode = mode;
                 build.avatar.visemeDampenAmount = 0.37f;
+                var accessory = new GameObject("Accessory");
+                accessory.transform.SetParent(build.root.transform);
+                source.transform.SetParent(accessory.transform);
                 build.Full(source.gameObject, visemes: !hardwareFirst);
-                build.Full(build.Skin("OtherSource").gameObject, visemes: hardwareFirst);
+                var other = build.Skin("OtherSource");
+                other.transform.SetParent(accessory.transform);
+                build.Full(other.gameObject, visemes: hardwareFirst);
                 build.Run();
                 Assert.That(build.avatar.enableFaceTracking, Is.True);
                 Assert.That(build.avatar.useAllTrackingKeys, Is.True);
@@ -1998,6 +2485,62 @@ namespace VF.Tests {
                 Assert.That(build.avatar.visemeDampenMode,
                     Is.EqualTo(faceTrackingEnabled && hardwareEnabled && visemesEnabled ? mode : VRCAvatarDescriptor.VisemeDampenMode.None));
                 Assert.That(build.avatar.visemeDampenAmount, Is.EqualTo(0.37f));
+            }
+        }
+
+        [TestCase(VRCAvatarDescriptor.VisemeDampenMode.None, false)]
+        [TestCase(VRCAvatarDescriptor.VisemeDampenMode.None, true)]
+        [TestCase(VRCAvatarDescriptor.VisemeDampenMode.DampenTracking, false)]
+        [TestCase(VRCAvatarDescriptor.VisemeDampenMode.DampenTracking, true)]
+        [TestCase(VRCAvatarDescriptor.VisemeDampenMode.DampenVisemes, false)]
+        [TestCase(VRCAvatarDescriptor.VisemeDampenMode.DampenVisemes, true)]
+        public void FirstDirectChildFtControllerDeterminesDampening(VRCAvatarDescriptor.VisemeDampenMode mode, bool visemesFirst) {
+            using (var build = new Build()) {
+                var nested = build.Skin("Nested");
+                var parent = new GameObject("Accessory");
+                parent.transform.SetParent(build.root.transform);
+                nested.transform.SetParent(parent.transform);
+                build.Full(nested.gameObject, dampenMode: VRCAvatarDescriptor.VisemeDampenMode.DampenVisemes, dampenAmount: 0.9f);
+                build.Full(build.Skin("Primary").gameObject, visemes: visemesFirst, dampenMode: mode, dampenAmount: 0.37f);
+                build.Full(build.Skin("Other").gameObject, visemes: !visemesFirst,
+                    dampenMode: VRCAvatarDescriptor.VisemeDampenMode.DampenTracking, dampenAmount: 0.8f);
+                build.Run();
+                Assert.That(build.avatar.visemeDampenMode, Is.EqualTo(mode));
+                Assert.That(build.avatar.visemeDampenAmount, Is.EqualTo(0.37f));
+            }
+        }
+
+        [TestCase("Body", true)]
+        [TestCase("Nested/Body", false)]
+        [TestCase("", false)]
+        [TestCase("direct", true)]
+        [TestCase("nested", false)]
+        [TestCase("bone", false)]
+        public void DampeningInspectorUsesPrimaryMeshReferences(string target, bool expected) {
+            using (var build = new Build()) {
+                var owner = ScriptableObject.CreateInstance<AuthoringFields>();
+                try {
+                    var skin = build.Skin("Body");
+                    var entry = new ObjectReference<SkinnedMeshRenderer> { useBone = false, offset = target };
+                    if (target == "direct" || target == "nested") {
+                        entry.useObj = true;
+                        entry.obj = skin.gameObject;
+                        entry.offset = "";
+                        if (target == "nested") {
+                            var parent = new GameObject("Nested");
+                            parent.transform.SetParent(build.root.transform);
+                            skin.transform.SetParent(parent.transform);
+                        }
+                    }
+                    if (target == "bone") entry.useBone = true;
+                    owner.controller.faceTrackingMeshes.Add(entry);
+                    using (var serialized = new SerializedObject(owner)) {
+                        Assert.That(FaceTrackingEditor.CanConfigureVisemeDampening(
+                            serialized.FindProperty("controller.faceTrackingMeshes")), Is.EqualTo(expected));
+                    }
+                } finally {
+                    Object.DestroyImmediate(owner);
+                }
             }
         }
 
@@ -2258,6 +2801,7 @@ namespace VF.Tests {
                 build.NativeMesh(native);
                 var originalSet = build.NativeSet("Native");
                 SetMapping(originalSet, (int)VRCAvatarDescriptor.FaceTrackingKey.JawOpen, "Smile");
+                build.faceTracking.CaptureInitialState();
                 var originalSets = build.avatar.faceTrackingBlendshapesSetList;
                 var originalMeshes = build.avatar.faceTrackingMeshes;
                 var originalBehaviors = build.avatar.faceTrackingParameterBehaviors;
@@ -2310,6 +2854,7 @@ namespace VF.Tests {
                     for (var i = 1; i < FaceTrackingUtils.MaxFaceTrackingMeshes; i++)
                         build.NativeMesh(build.Skin("Extra" + i));
                 }
+                build.faceTracking.CaptureInitialState();
                 var originalSets = build.avatar.faceTrackingBlendshapesSetList;
                 var originalBehaviors = build.avatar.faceTrackingParameterBehaviors;
                 var originalMeshes = build.avatar.faceTrackingMeshes;

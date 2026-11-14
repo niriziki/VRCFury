@@ -1,12 +1,17 @@
 using UnityEditor;
+using System.Linq;
 using UnityEngine.UIElements;
+using UnityEngine;
 using VF.Feature.Base;
 using VF.Injector;
 using VF.Inspector;
 using VF.Model.Feature;
+using VF.Model;
+using VF.Model.StateAction;
 using VF.Service;
 using VF.Utils;
 using VF.Utils.Controller;
+using VRC.SDK3.Avatars.ScriptableObjects;
 
 namespace VF.Feature {
 
@@ -15,17 +20,23 @@ namespace VF.Feature {
         [VFAutowired] private readonly ActionClipService actionClipService;
         [VFAutowired] private readonly TrackingConflictResolverService trackingConflictResolverService;
         [VFAutowired] private readonly ControllersService controllers;
-        private ControllerManager fx => controllers.GetFx();
-        private ControllerManager actionController => controllers.GetAction();
+        [VFAutowired] private readonly VFGameObject avatarObject;
+        [VFAutowired] private readonly RemoveLegacyFaceTrackingService legacyFaceTracking;
+        private VFAvatarController fx => controllers.GetFx();
+        private VFAvatarController actionController => controllers.GetAction();
 
         [FeatureBuilderAction]
         public void Apply() {
-            var blinkTriggerSynced = fx.NewBool("BlinkTriggerSynced", synced: true);
-            actionController.AddParam(blinkTriggerSynced);
+            var state = GetBlinkState();
+            if (state.actions.Count == 0) return;
+
+            var blinkTriggerSynced = fx.CreateUniqueBool("BlinkTriggerSynced");
+            blinkTriggerSynced.MakeExpressionBool();
+            blinkTriggerSynced.CopyTo(actionController);
 
             // Generator
             {
-                var blinkCounter = actionController.NewInt("BlinkCounter");
+                var blinkCounter = actionController.CreateUniqueInt("BlinkCounter");
                 var layer = actionController.NewLayer("Blink - Generator");
                 var remote = layer.NewState("Remote Trap");
                 var entry = layer.NewState("Entry");
@@ -56,7 +67,7 @@ namespace VF.Feature {
 
             // Receiver / Animator
             {
-                var blinkClip = actionClipService.LoadState("blink", model.state);
+                var blinkClip = actionClipService.LoadState("blink", state);
                 var blinkDuration = model.transitionTime >= 0 ? model.transitionTime : 0.07f;
                 var holdDuration = model.holdTime >= 0 ? model.holdTime : 0;
                 var layer = fx.NewLayer("Blink - Receiver");
@@ -97,6 +108,21 @@ namespace VF.Feature {
                         .When(fx.Always());
                 }
             }
+        }
+
+        internal State GetBlinkState() {
+            var state = new State();
+            if (model.state == null) return state;
+            foreach (var action in model.state.actions) {
+                if (action is BlendShapeAction shape) {
+                    if (shape.allRenderers) {
+                        if (avatarObject.GetComponentsInSelfAndChildren<SkinnedMeshRenderer>()
+                            .Any(skin => legacyFaceTracking.GetHandled(skin).eyelids && skin.HasBlendshape(shape.blendShape))) continue;
+                    } else if (legacyFaceTracking.GetHandled(shape.renderer).eyelids) continue;
+                }
+                if (action != null) state.actions.Add(action);
+            }
+            return state;
         }
 
         [FeatureEditor]

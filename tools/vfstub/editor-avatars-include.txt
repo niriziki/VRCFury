@@ -77,10 +77,11 @@ Editor-Avatars/Service/ObjectMoveService.cs
 Editor-Avatars/Service/OverlappingContactsFixService.cs
 Editor-Avatars/Service/ParameterInjectService.cs
 Editor-Avatars/Service/ParameterSourceService.cs
-Editor-Avatars/Service/ParamsService.cs
+Editor-Avatars/Service/ExpressionParamsService.cs
 Editor-Avatars/Service/PhysboneResetService.cs
 Editor-Avatars/Service/SmoothingService.cs
 Editor-Avatars/Service/TrackingConflictResolverService.cs
+Editor-Avatars/Service/UniqueParamService.cs
 Editor-Avatars/Service/WorldDropService.cs
 
 Editor-Avatars/Utils/BlendshapeUtils.cs
@@ -88,13 +89,12 @@ Editor-Avatars/Utils/BlendtreeMath.cs
 Editor-Avatars/Utils/ClosestBoneUtils.cs
 Editor-Avatars/Utils/CollapseUtils.cs
 Editor-Avatars/Utils/ContactReceiverUtils.cs
-Editor-Avatars/Utils/ControllerManager.cs
+Editor-Avatars/Utils/VFAvatarController.cs
 Editor-Avatars/Utils/FaceTrackingUtils.cs
 Editor-Avatars/Utils/FallbackBoneUtils.cs
 Editor-Avatars/Utils/MaHierarchyResolver.cs
 Editor-Avatars/Utils/MenuManager.cs
 Editor-Avatars/Utils/ObjectReferenceExtensions.cs
-Editor-Avatars/Utils/ParamManager.cs
 Editor-Avatars/Utils/RecorderUtils.cs
 Editor-Avatars/Utils/VFControllerWithVrcType.cs
 Editor-Avatars/Utils/VRCExpressionsMenuExtensions.cs
@@ -104,4 +104,3 @@ Editor-Avatars/Utils/VFLazyCache.cs
 Editor-Avatars/Utils/VFStateAvatarExtensions.cs
 Editor-Avatars/Utils/VRCAvatarDescriptorExtensions.cs
 Editor-Avatars/Utils/VRCExpressionParameterExtensions.cs
-Editor-Avatars/Utils/VRCExpressionParametersExtensions.cs

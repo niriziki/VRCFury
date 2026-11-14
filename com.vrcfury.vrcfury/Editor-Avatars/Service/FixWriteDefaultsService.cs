@@ -26,11 +26,22 @@ namespace VF.Service {
         [VFAutowired] private readonly FullBodyEmoteService fullBodyEmoteService;
         [VFAutowired] private readonly ClipFactoryService clipFactory;
         [VFAutowired] private readonly ControllersService controllers;
-        private ControllerManager fx => controllers.GetFx();
+        private VFAvatarController fx => controllers.GetFx();
+
+        private bool RecordAllForFaceTracking =>
+#if VRCSDK_HAS_FACE_TRACKING
+            avatar.enableFaceTracking;
+#else
+            false;
+#endif
 
         public void RecordDefaultNow(VFBinding binding, bool isFloat, bool force = false) {
             if (binding.IsAnimatorBinding()) return;
             if (GetDefaultClip().GetCurve(binding, isFloat) != null) return;
+
+            // Temporarily record all defaults, including WD-on states and blend trees, for
+            // https://feedback.vrchat.com/bug-reports/p/animator-defaults-are-improperly-changed-only-on-remote-clients-when-native-ft-i
+            force |= RecordAllForFaceTracking;
 
             var shouldRecord = force;
             if (!shouldRecord) {
@@ -98,7 +109,7 @@ namespace VF.Service {
                 }
             }
 
-            var bindings = GetMaintainedLayers(fx)
+            var bindings = (RecordAllForFaceTracking ? fx.GetLayers() : GetMaintainedLayers(fx))
                 .SelectMany(layer => new AnimatorIterator.States().From(layer))
                 .Where(state => state.writeDefaultValues)
                 .SelectMany(state => new AnimatorIterator.Clips().From(state))
@@ -230,7 +241,7 @@ namespace VF.Service {
             return _buildSettings;
         }
 
-        private IList<VFLayer> GetMaintainedLayers(ControllerManager controller) {
+        private IList<VFLayer> GetMaintainedLayers(VFAvatarController controller) {
             var settings = GetBuildSettings();
             return settings.applyToUnmanagedLayers ? controller.GetLayers() : controller.GetManagedLayers();
         }

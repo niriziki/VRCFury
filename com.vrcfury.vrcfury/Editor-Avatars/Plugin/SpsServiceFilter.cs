@@ -45,7 +45,7 @@ namespace VF.Plugin {
             typeof(MenuChangesService),
 
             // ---- Controller/menu/params finalization ----
-            // Safe: these operate through ControllersService/MenuService/ParamsService,
+            // Safe: these operate through ControllersService/MenuService/ExpressionParamsService,
             // which are isolated by NdmfAvatarOutput (SPS-generated data only).
             typeof(FixWriteDefaultsService),
             typeof(CleanupEmptyLayersService),
