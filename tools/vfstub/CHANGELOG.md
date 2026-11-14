@@ -8,6 +8,18 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1442.0] - 2026-11-14
+### Changed / 変更
+- Version bump to keep the release line aligned with SPS for NDMF 1.1442.0, with the bundled VRCFury source updated to upstream 1.1442.0.
+
+  SPS for NDMF 1.1442.0 とバージョンを揃えるためのリリースです。同梱の VRCFury ソースを上流 1.1442.0 に更新しました。
+- Components keep the settings added in VRCFury 1.1442.0, so they are not lost when a scene or prefab saved with VRCFury is opened with the stub.
+
+  VRCFury 1.1442.0 で追加された設定を保持するようになり、VRCFury で保存したシーンやプレハブをスタブで開いても失われません。
+- VRChat SDK 3.10.6 beta versions are no longer supported. Use VRChat SDK 3.10.6 or later, or 3.10.5 or earlier (upstream change).
+
+  VRChat SDK 3.10.6 のベータ版には対応しなくなりました。VRChat SDK 3.10.6 以降、または 3.10.5 以前を使ってください（上流の変更）。
+
 ## [1.1436.0] - 2026-11-01
 ### Changed / 変更
 - Version bump to keep the release line aligned with SPS for NDMF 1.1436.0, with the bundled VRCFury source updated to upstream 1.1436.0.

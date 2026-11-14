@@ -8,6 +8,18 @@ Only versions that have a published release are listed.
 
 公開リリースのあるバージョンのみを掲載しています。
 
+## [1.1442.0] - 2026-11-14
+### Changed / 変更
+- Updated the bundled VRCFury source to upstream 1.1442.0, the last version of SPS2.
+
+  同梱の VRCFury ソースを、SPS2 の最終版である上流 1.1442.0 に更新しました。
+- The internal names of the parameters SPS creates (such as `VF45_Anal` or `VF36_disableDepth`) change their number. Because of this, the saved SPS menu options (such as the "ghost" plug fixes) go back to their default once, and OSC apps that watch these names need to be set up again. The haptics parameters (`OGB/...`) are not affected (upstream change).
+
+  SPS が作るパラメーターの内部名（`VF45_Anal`・`VF36_disableDepth` など）の番号が変わります。このため、保存される SPS メニューの設定（「ghost」プラグ対策など）が一度初期値に戻ります。これらの名前を監視している OSC アプリは設定し直す必要があります。触覚のパラメーター（`OGB/...`）は変わりません（上流の変更）。
+- VRChat SDK 3.10.6 beta versions are no longer supported. Use VRChat SDK 3.10.6 or later, or 3.10.5 or earlier (upstream change).
+
+  VRChat SDK 3.10.6 のベータ版には対応しなくなりました。VRChat SDK 3.10.6 以降、または 3.10.5 以前を使ってください（上流の変更）。
+
 ## [1.1436.0] - 2026-11-01
 ### Changed / 変更
 - Updated the bundled VRCFury source to upstream 1.1436.0.
